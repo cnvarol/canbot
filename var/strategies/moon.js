@@ -9,7 +9,7 @@ module.exports = class {
     indicatorBuilder.add('candles', 'candles', options.period);
     indicatorBuilder.add('rsi', 'rsi', options.period);
     indicatorBuilder.add('mfi', 'mfi', options.period);
-    indicatorBuilder.add('stoch', 'stoch', options.period)
+    indicatorBuilder.add('stoch', 'stoch', options.period);
     indicatorBuilder.add('macd', 'macd_ext', options.period, options);
     indicatorBuilder.add('bb', 'bb', options.period);
     indicatorBuilder.add('adx', 'adx', options.period);
@@ -70,7 +70,7 @@ module.exports = class {
       macd: macd.macd,
       bb: bb,
       candle: candle
-    }
+    };
 
     const lastSignal = indicatorPeriod.getLastSignal();
     if ((lastSignal === 'long' && short) || (lastSignal === 'short' && long)) {
@@ -154,4 +154,3 @@ module.exports = class {
     return '1m';
   }
 };
-

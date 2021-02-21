@@ -11,8 +11,10 @@
     "ecmaVersion": 2017
   },
   "rules": {
+    "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
     "prettier/prettier": "error",
     "no-unused-vars": "warn",
+    "camelcase": "off",
     "no-console": "off",
     "func-names": "off",
     "no-process-exit": "off",

@@ -9,9 +9,9 @@ module.exports = class {
     indicatorBuilder.add('candles', 'candles', options.period);
     indicatorBuilder.add('rsi', 'rsi', options.period);
     indicatorBuilder.add('mfi', 'mfi', options.period);
-    indicatorBuilder.add('stoch', 'stoch', options.period)
+    indicatorBuilder.add('stoch', 'stoch', options.period);
     indicatorBuilder.add('sma', 'sma', options.period);
-    indicatorBuilder.add('sar', 'psar', options.period, {step: 0.04, max: 0.4});
+    indicatorBuilder.add('sar', 'psar', options.period, { step: 0.04, max: 0.4 });
     indicatorBuilder.add('bb', 'bb', options.period);
     indicatorBuilder.add('adx', 'adx', options.period);
   }
@@ -34,23 +34,24 @@ module.exports = class {
     const lastCandles = candlesFull.slice(-4, -1);
     let decline = false;
 
-    for (let i=0; i < lastCandles.length; i++) {
-      if (lastCandles[i].high > lastCandles[i].close*1.025) {
+    for (let i = 0; i < lastCandles.length; i++) {
+      if (lastCandles[i].high > lastCandles[i].close * 1.025) {
         decline = true;
       }
     }
 
-    const fastd = stoch['stoch_d'];
-    const fastk = stoch['stoch_k'];
+    const fastd = stoch.stoch_d;
+    const fastk = stoch.stoch_k;
 
-    const rsiP = 0.1 * (rsi - 50)
+    const rsiP = 0.1 * (rsi - 50);
     const fisher_rsi = (Math.exp(2 * rsiP) - 1) / (Math.exp(2 * rsiP) + 1);
 
-    const long = rsi < 25 & rsi > 0 & fastd > 0 & candle.close < sma & fisher_rsi <= -0.98 & mfi < 23;
-    const short = (fastd > 70 | fastk > 70) & fisher_rsi >= 0.91 & sar > candle.close & decline & adx > 30 & mfi > 70;
+    const long = rsi < 25 && rsi > 0 && fastd > 0 && candle.close < sma && fisher_rsi <= -0.98 && mfi < 23;
+    const short =
+      (fastd > 70 || fastk > 70) && fisher_rsi >= 0.91 && sar > candle.close && decline && adx > 30 && mfi > 70;
 
     const longClose = fisher_rsi > 0.5;
-    const shortClose = fisher_rsi < -0.4 & sar > candle.close;
+    const shortClose = fisher_rsi < -0.4 && sar > candle.close;
 
     const debug = {
       rsi: rsi,
@@ -63,15 +64,17 @@ module.exports = class {
       sma: sma,
       adx: adx,
       candle: candle
-    }
+    };
 
     const lastSignal = indicatorPeriod.getLastSignal();
     if ((lastSignal === 'long' && short) || (lastSignal === 'short' && long)) {
       return SignalResult.createSignal('close', debug);
     }
 
-
-    if ((lastSignal === 'long' && longClose && indicatorPeriod.getProfit() > 0) || (lastSignal === 'short' && shortClose && indicatorPeriod.getProfit() > 0)) {
+    if (
+      (lastSignal === 'long' && longClose && indicatorPeriod.getProfit() > 0) ||
+      (lastSignal === 'short' && shortClose && indicatorPeriod.getProfit() > 0)
+    ) {
       return SignalResult.createSignal('close', debug);
     }
 
@@ -142,7 +145,7 @@ module.exports = class {
       },
       {
         label: 'Fisher RSI',
-        value: 'fisher_rsi',
+        value: 'fisher_rsi'
       }
     ];
   }
@@ -158,4 +161,3 @@ module.exports = class {
     return '15m';
   }
 };
-
