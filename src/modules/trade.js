@@ -39,21 +39,27 @@ module.exports = class Trade {
   start() {
     this.logger.debug('Trade module started');
 
-    process.on('SIGINT', async () => {
-      // force exit in any case
-      setTimeout(() => {
-        process.exit();
-      }, 7500);
-
-      await this.pairStateManager.onTerminate();
-
-      process.exit();
-    });
-
     const instanceId = crypto.randomBytes(4).toString('hex');
 
-    const notifyActivePairs = this.instances.symbols.map(symbol => {
-      return `${symbol.exchange}.${symbol.symbol}`;
+    process.on('SIGINT', async () => {
+      setTimeout(() => {
+        process.exit(0);
+      }, 2000); // may 7500 if pairStateManager active
+
+      console.log('Stopping...');
+
+      // await this.pairStateManager.onTerminate();
+
+      const message = `Stop (${'SIGINT'}): ${instanceId} - ${os.hostname()} - ${os.platform()} - ${moment().format()}`;
+
+      this.notify.send(message);
+      // process.exit();
+    });
+
+    process.on('uncaughtException', (err, origin) => {
+      const message = `UncaughtException (${origin}): ${instanceId} - ${os.hostname()} - ${os.platform()} - ${moment().format()} ${err}`;
+
+      this.notify.send(message);
     });
 
     const message = `Start: ${instanceId} - ${os.hostname()} - ${os.platform()} - ${moment().format()}`;
@@ -101,9 +107,9 @@ module.exports = class Trade {
       me.tickerDatabaseListener.onTicker(tickerEvent);
     });
 
-    eventEmitter.on('orderbook', function(orderbookEvent) {
-      // console.log(orderbookEvent.orderbook)
-    });
+    /* eventEmitter.on('orderbook', function(orderbookEvent) {
+      console.log(orderbookEvent.orderbook);
+    }); */
 
     eventEmitter.on('order', async event => me.createOrderListener.onCreateOrder(event));
 
