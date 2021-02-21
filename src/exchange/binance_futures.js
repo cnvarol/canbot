@@ -1,3 +1,8 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable no-multi-assign */
+/* eslint-disable new-cap */
+/* eslint-disable no-param-reassign */
+// eslint-disable-next-line max-classes-per-file
 const WebSocket = require('ws');
 const ccxt = require('ccxt');
 const moment = require('moment');
