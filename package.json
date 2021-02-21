@@ -1,18 +1,13 @@
 {
   "name": "crypto-trading-bot",
-  "version": "0.0.0",
-  "author": "Daniel Espendiller",
-  "bugs": "https://github.com/Haehnchen/crypto-trading-bot/issues",
+  "version": "1.0.0",
+  "author": "YSA",
+  "bugs": "https://github.com/semihalev/crypto-trading-bot/issues",
   "contributors": [
     {
-      "email": "daniel@espendiller.net",
-      "name": "Daniel Espendiller",
-      "url": "http://espend.de/"
-    },
-    {
-      "email": "phuc@nguyenminhphuc.com",
-      "name": "Phuc Nguyen Minh",
-      "url": "https://nguyenminhphuc.com/"
+      "email": "semihalev@gmail.com",
+      "name": "YSA",
+      "url": "http://4lev.com/"
     }
   ],
   "dependencies": {
@@ -20,7 +15,7 @@
     "basic-auth": "^2.0.1",
     "better-queue": "^3.8.10",
     "better-sqlite3": "^5.4.2",
-    "binance-api-node": "^0.10.28",
+    "binance-api-node": "^0.10.30",
     "bitfinex-api-node": "^3.0.2",
     "bitmex-realtime-api": "^0.4.0",
     "ccxt": "^1.41.92",
@@ -57,7 +52,7 @@
     "zero-fill": "^2.2.4"
   },
   "engines": {
-    "node": "^8.3.0 || ^10"
+    "node": "^8.3.0 || ^10 || ^14 || ^15"
   },
   "homepage": "https://github.com/coinbase/coinbase-pro-node",
   "keywords": [
@@ -80,7 +75,7 @@
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Haehnchen/crypto-trading-bot.git"
+    "url": "https://github.com/semihalev/crypto-trading-bot.git"
   },
   "scripts": {
     "start": "node index.js trade",
