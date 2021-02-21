@@ -181,6 +181,9 @@ module.exports = class TickListener {
       const exchangeOrder = Order.createLimitPostOnlyOrder(symbol.symbol, order.side, order.price, amount);
 
       await this.orderExecutor.executeOrderWithAmountAndPrice(symbol.exchange, exchangeOrder);
+
+      this.notified[symbol.exchange + symbol.symbol + order.side] = new Date();
+      this.notifier.send(`[update - ${order.side}` + `] ${symbol.exchange}:${symbol.symbol} - ${order.price} - ${amount}`);
     }
   }
 
