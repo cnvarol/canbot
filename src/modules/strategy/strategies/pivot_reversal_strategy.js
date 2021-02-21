@@ -6,7 +6,7 @@ module.exports = class PivotReversalStrategy {
   }
 
   buildIndicator(indicatorBuilder, options) {
-    indicatorBuilder.add('candles_1m', 'candles', '1m');
+    indicatorBuilder.add('candles', 'candles', '1m');
     indicatorBuilder.add('pivot_points', 'pivot_points_high_low', '15m', {
       left: options.left || 4,
       right: options.right || 2
@@ -28,7 +28,7 @@ module.exports = class PivotReversalStrategy {
       return;
     }
 
-    const candles1m = indicatorPeriod.getIndicator('candles_1m');
+    const candles1m = indicatorPeriod.getIndicator('candles');
     if (candles1m) {
       debug.candles = candles1m
         .slice(-3)
@@ -65,7 +65,7 @@ module.exports = class PivotReversalStrategy {
   getPivotSignal(long, indicatorPeriod) {
     for (const value of indicatorPeriod.visitLatestIndicators(3)) {
       if (!long && value.pivot_points && value.pivot_points.low && value.pivot_points.low.low) {
-        const candles1m = indicatorPeriod.getIndicator('candles_1m');
+        const candles1m = indicatorPeriod.getIndicator('candles');
         const mins = candles1m.slice(-7);
 
         const closes =
@@ -83,7 +83,7 @@ module.exports = class PivotReversalStrategy {
       }
 
       if (long && value.pivot_points && value.pivot_points.high && value.pivot_points.high.high) {
-        const candles1m = indicatorPeriod.getIndicator('candles_1m');
+        const candles1m = indicatorPeriod.getIndicator('candles');
         const mins = candles1m.slice(-7);
 
         const closes =
@@ -123,8 +123,8 @@ module.exports = class PivotReversalStrategy {
         value: 'pivot_points'
       },
       {
-        label: 'candles_1m',
-        value: 'candles_1m.close'
+        label: 'candles',
+        value: 'candles.close'
       },
       {
         label: 'candles',

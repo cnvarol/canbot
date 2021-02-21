@@ -84,7 +84,7 @@ module.exports = class BinanceFutures {
           let ohlcvs;
 
           try {
-            ohlcvs = await ccxtClient.fetchOHLCV(symbol.symbol.replace('USDT', '/USDT'), period, undefined, 500);
+            ohlcvs = await ccxtClient.fetchOHLCV(symbol.symbol.replace('USDT', '/USDT'), period, undefined, 1000);
           } catch (e) {
             me.logger.info(
               `Binance Futures: candles fetch error: ${JSON.stringify([symbol.symbol, period, String(e)])}`

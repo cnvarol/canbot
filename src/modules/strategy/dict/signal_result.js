@@ -37,9 +37,17 @@ module.exports = class SignalResult {
     return this._signal;
   }
 
-  placeBuyOrder(amountCurrency, price) {
+  placeLongOrder(amountCurrency, price) {
     this.placeOrders.push({
       side: Order.SIDE_LONG,
+      amount_currency: amountCurrency,
+      price: price
+    });
+  }
+
+  placeShortOrder(amountCurrency, price) {
+    this.placeOrders.push({
+      side: Order.SIDE_SHORT,
       amount_currency: amountCurrency,
       price: price
     });

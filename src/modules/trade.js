@@ -56,9 +56,7 @@ module.exports = class Trade {
       return `${symbol.exchange}.${symbol.symbol}`;
     });
 
-    const message = `Start: ${instanceId} - ${os.hostname()} - ${os.platform()} - ${moment().format()} - ${notifyActivePairs.join(
-      ', '
-    )}`;
+    const message = `Start: ${instanceId} - ${os.hostname()} - ${os.platform()} - ${moment().format()}`;
 
     this.notify.send(message);
 

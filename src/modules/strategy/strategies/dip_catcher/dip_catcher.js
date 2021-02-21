@@ -38,15 +38,25 @@ module.exports = class DipCatcher {
   period(indicatorPeriod) {
     const currentValues = indicatorPeriod.getLatestIndicators();
 
-    const hma = indicatorPeriod.getIndicator('hma').slice(-2);
-    const hmaLow = indicatorPeriod.getIndicator('hma_low').slice(-2);
-    const hmaHigh = indicatorPeriod.getIndicator('hma_high').slice(-2);
-    const bb = indicatorPeriod.getIndicator('bb').slice(-2);
-    const cloud = indicatorPeriod.getIndicator('cloud').slice(-1);
+    const hmaFull = indicatorPeriod.getIndicator('hma');
+    const hmaLowFull = indicatorPeriod.getIndicator('hma_low');
+    const hmaHighFull = indicatorPeriod.getIndicator('hma_high');
+    const bbFull = indicatorPeriod.getIndicator('bb');
+    const cloudFull = indicatorPeriod.getIndicator('cloud');
 
     const emptySignal = SignalResult.createEmptySignal(currentValues);
 
-    if (!cloud[0] || !hma[0]) {
+    if (!cloudFull || !hmaFull || !hmaHighFull || !bbFull || !hmaLowFull) {
+      return emptySignal;
+    }
+
+    const hma = hmaFull.slice(-2);
+    const hmaLow = hmaLowFull.slice(-2);
+    const hmaHigh = hmaHighFull.slice(-2);
+    const bb = bbFull.slice(-2);
+    const cloud = cloudFull.slice(-1);
+
+    if (!cloud[0] || !bb || !hmaHigh || !hmaLow || !hma) {
       return emptySignal;
     }
 

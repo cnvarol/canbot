@@ -213,6 +213,7 @@ module.exports = class ExchangeOrderWatchdogListener {
             )
           );
         } catch (e) {
+          await exchange.cancelOrder(orderChange.id);
           logger.error(
             `Risk Reward: order update error: ${JSON.stringify({
               orderChange: orderChange,

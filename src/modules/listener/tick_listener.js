@@ -178,7 +178,7 @@ module.exports = class TickListener {
         OrderCapital.createCurrency(order.amount_currency)
       );
 
-      const exchangeOrder = Order.createLimitPostOnlyOrder(symbol.symbol, Order.SIDE_LONG, order.price, amount);
+      const exchangeOrder = Order.createLimitPostOnlyOrder(symbol.symbol, order.side, order.price, amount);
 
       await this.orderExecutor.executeOrderWithAmountAndPrice(symbol.exchange, exchangeOrder);
     }

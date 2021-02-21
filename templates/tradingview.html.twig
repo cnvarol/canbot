@@ -26,9 +26,6 @@
                     <div class="col-sm">
                         <div id="tradingview" style="width: 100%; height: 600px"></div>
                     </div>
-                    <div class="col-sm">
-                        <div id="tradingview_2" style="width: 100%; height: 600px"></div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -53,30 +50,6 @@
             "enable_publishing": false,
             "allow_symbol_change": true,
             "container_id": "tradingview",
-            "timezone": Intl.DateTimeFormat().resolvedOptions().timeZone,
-            "studies": [
-                "BB@tv-basicstudies",
-                "CCI@tv-basicstudies",
-                "MACD@tv-basicstudies",
-                "MAExp@tv-basicstudies",
-                "RSI@tv-basicstudies",
-                "StochasticRSI@tv-basicstudies"
-            ],
-        }
-    );
-
-    new TradingView.widget(
-        {
-            "autosize": true,
-            "symbol": "{{ symbol }}",
-            "interval": "60",
-            "theme": "Light",
-            "style": "1",
-            "locale": "en",
-            "toolbar_bg": "#f1f3f6",
-            "enable_publishing": false,
-            "allow_symbol_change": true,
-            "container_id": "tradingview_2",
             "timezone": Intl.DateTimeFormat().resolvedOptions().timeZone,
             "studies": [
                 "BB@tv-basicstudies",

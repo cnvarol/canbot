@@ -19,6 +19,7 @@ module.exports = class Backfill {
 
     do {
       console.log(`Since: ${new Date(start).toISOString()}`);
+
       candles = await exchange.backfill(symbol, period, start);
 
       const exchangeCandlesticks = candles.map(candle => {

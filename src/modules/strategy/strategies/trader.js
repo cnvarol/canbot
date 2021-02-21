@@ -15,7 +15,7 @@ module.exports = class {
   }
 
   buildIndicator(indicatorBuilder, options) {
-    indicatorBuilder.add('candles_1m', 'candles', '1m');
+    indicatorBuilder.add('candles', 'candles', '1m');
     indicatorBuilder.add('bb', 'bb', '15m', {
       length: 40
     });
@@ -26,7 +26,7 @@ module.exports = class {
 
     const result = SignalResult.createEmptySignal(currentValues);
 
-    const candles1m = indicatorPeriod.getIndicator('candles_1m');
+    const candles1m = indicatorPeriod.getIndicator('candles');
     if (!candles1m) {
       return result;
     }
