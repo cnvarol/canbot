@@ -78,7 +78,7 @@ module.exports = class {
       return SignalResult.createSignal('close', debug);
     }
 
-    if (lastSignal && (long || short) && indicatorPeriod.getProfit() < 0) {
+    if (lastSignal && (long || short) && indicatorPeriod.getProfit() <= 2) {
       const context = indicatorPeriod.getStrategyContext();
       const price = indicatorPeriod.getPrice();
       const emptySignal = SignalResult.createEmptySignal(debug);
