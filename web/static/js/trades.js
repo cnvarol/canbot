@@ -1,9 +1,9 @@
 Vue.filter('filter_price', function(value) {
-  if (parseFloat(value) < 1) {
+  if (parseFloat(value) > 0 && parseFloat(value) < 10) {
     return Intl.NumberFormat('en-US', {
       useGrouping: false,
       minimumFractionDigits: 2,
-      maximumFractionDigits: 6
+      maximumFractionDigits: 5
     }).format(value);
   }
 
