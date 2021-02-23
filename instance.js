@@ -71,7 +71,15 @@ let z = [
     'ZILUSDT',
     'COMPUSDT',
     'BLZUSDT',
-    'SRMUSDT'
+    'SRMUSDT',
+    'SANUSDT',
+    'CHZUSDT',
+    'AKROUSDT',
+    'ANKRUSDT',
+    'UNFIUSDT',
+    'DODOUSDT',
+    'REEFUSDT',
+    'RVNUSDT'
 ]
 
 z.forEach((pair) => {
