@@ -3,7 +3,7 @@
     <template v-if="!!balances.info">
       <div class="row">
         <div class="col-md-4">
-          <div class="card card-warning">
+          <div class="card card-success">
             <div class="card-header"><h3 class="card-title">Margin Risk Ratio</h3></div>
             <div class="card-body">
               <div class="row">
@@ -15,7 +15,7 @@
           </div>
         </div>
         <div class="col-md-4">
-          <div class="card card-warning">
+          <div class="card card-success">
             <div class="card-header"><h3 class="card-title">Margin Status</h3></div>
             <div class="card-body">
               <div class="row justify-content-md-center">
@@ -36,7 +36,7 @@
           </div>
         </div>
         <div class="col-md-4">
-          <div class="card card-warning">
+          <div class="card card-success">
             <div class="card-header"><h3 class="card-title">Assets</h3></div>
             <div class="card-body" id="memory">
               <div class="row justify-content-md-center">
