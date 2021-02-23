@@ -72,7 +72,7 @@ let z = [
     'COMPUSDT',
     'BLZUSDT',
     'SRMUSDT',
-    'SANUSDT',
+    'SANDUSDT',
     'CHZUSDT',
     'AKROUSDT',
     'ANKRUSDT',
