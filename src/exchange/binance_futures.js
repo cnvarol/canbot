@@ -66,7 +66,7 @@ module.exports = class BinanceFutures {
 
       setInterval(async () => {
         me.throttler.addTask('binance_futures_sync_balances', me.syncBalancesViaRestApi.bind(me));
-      }, 1000 * 100);
+      }, 1000 * 10);
 
       setTimeout(async () => {
         await ccxtClient.fetchMarkets();
