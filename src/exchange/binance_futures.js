@@ -30,6 +30,7 @@ module.exports = class BinanceFutures {
     this.tickers = {};
     this.symbols = [];
     this.intervals = [];
+    this.balances = {};
     this.ccxtClient = undefined;
   }
 
@@ -63,12 +64,17 @@ module.exports = class BinanceFutures {
         me.throttler.addTask('binance_futures_sync_positions', me.syncPositionViaRestApi.bind(me));
       }, 1000 * 36);
 
+      setInterval(async () => {
+        me.throttler.addTask('binance_futures_sync_balances', me.syncBalancesViaRestApi.bind(me));
+      }, 1000 * 100);
+
       setTimeout(async () => {
         await ccxtClient.fetchMarkets();
         me.throttler.addTask('binance_futures_sync_orders', async () => {
           await me.ccxtExchangeOrder.syncOrders();
         });
         me.throttler.addTask('binance_futures_sync_positions', me.syncPositionViaRestApi.bind(me));
+        me.throttler.addTask('binance_futures_sync_balances', me.syncBalancesViaRestApi.bind(me));
       }, 1000);
 
       setTimeout(async () => {
@@ -143,6 +149,10 @@ module.exports = class BinanceFutures {
 
   async getOrdersForSymbol(symbol) {
     return this.ccxtExchangeOrder.getOrdersForSymbol(symbol);
+  }
+
+  async getBalances() {
+    return this.balances;
   }
 
   async getPositions() {
@@ -301,6 +311,21 @@ module.exports = class BinanceFutures {
         }
       }, this);
     }
+  }
+
+  async syncBalancesViaRestApi() {
+    let response;
+    try {
+      response = await this.ccxtClient.fetchBalance();
+    } catch (e) {
+      this.logger.error(`Binance Futures: error getting balances:${e}`);
+      return;
+    }
+
+    delete response.info.positions;
+    this.balances = response;
+
+    this.logger.debug(`Binance Futures: balances updates`);
   }
 
   /**
@@ -491,6 +516,7 @@ module.exports = class BinanceFutures {
           me.accountUpdate(message);
 
           me.throttler.addTask('binance_futures_sync_positions', me.syncPositionViaRestApi.bind(me), 3000);
+          me.throttler.addTask('binance_futures_sync_balances', me.syncBalancesViaRestApi.bind(me), 5000);
         }
       }
     };

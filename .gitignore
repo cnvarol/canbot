@@ -240,3 +240,5 @@ Temporary Items
 /bot.db
 /bot.db-shm
 /bot.db-wal
+/instance.js
+/conf.json

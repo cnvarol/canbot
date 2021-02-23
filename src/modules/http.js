@@ -380,13 +380,17 @@ module.exports = class Http {
     app.get('/trades.json', async (req, res) => {
       const positions = [];
       const orders = [];
+      let balances = {};
 
       const exchanges = exchangeManager.all();
       for (const key in exchanges) {
         const exchange = exchanges[key];
-
         const exchangeName = exchange.getName();
 
+        if (exchangeName.includes('binance_futures')) {
+          balances = await exchange.getBalances();
+        }
+        
         const myPositions = await exchange.getPositions();
         myPositions.forEach(position => {
           // simply converting of asset to currency value
@@ -430,6 +434,7 @@ module.exports = class Http {
       }
 
       res.json({
+        balances: balances,
         orders: orders.sort((a, b) => a.order.symbol.localeCompare(b.order.symbol)),
         positions: positions.sort((a, b) => a.position.symbol.localeCompare(b.position.symbol))
       });

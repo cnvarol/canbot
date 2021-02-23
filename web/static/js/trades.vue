@@ -1,5 +1,63 @@
 <template>
   <div class="vue-root">
+    <template v-if="!!balances.info">
+      <div class="row">
+        <div class="col-md-4">
+          <div class="card card-warning">
+            <div class="card-header"><h3 class="card-title">Margin Risk Ratio</h3></div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-12">
+                  <h1 class="text-success" style="font-size:50px">%{{ Math.round((balances.info.totalMaintMargin/balances.info.totalMarginBalance) * 100 * 100)/100 }}</h1>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card card-warning">
+            <div class="card-header"><h3 class="card-title">Margin Status</h3></div>
+            <div class="card-body">
+              <div class="row justify-content-md-center">
+                <div class="col-md-4 border-right text-center">
+                  <h4 class="text-success">Maint.</h4>
+                  <h5>{{ balances.info.totalMaintMargin|filter_price }} <small>USDT</small></h5>
+                </div>
+                <div class="col-md-4 border-right text-center">
+                  <h4 class="text-success">Balance</h4>
+                  <h5>{{ balances.info.totalMarginBalance|filter_price }} <small>USDT</small></h5>
+                </div>
+                <div class="col-md-4 text-center">
+                  <h4 class="text-success">Initial</h4>
+                  <h5>{{ balances.info.totalOpenOrderInitialMargin|filter_price }} <small>USDT</small></h5>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card card-warning">
+            <div class="card-header"><h3 class="card-title">Assets</h3></div>
+            <div class="card-body" id="memory">
+              <div class="row justify-content-md-center">
+                <div class="col-md-4 border-right text-center">
+                  <h4 class="text-success">Wallet</h4>
+                  <h5>{{ balances.info.totalWalletBalance|filter_price }} <small>USDT</small></h5>
+                </div>
+                <div class="col-md-4 border-right text-center">
+                  <h4 class="text-success">Curr PNL</h4>
+                  <h5>{{ balances.info.totalUnrealizedProfit|filter_price }} <small>USDT</small></h5>
+                </div>
+                <div class="col-md-4 text-center">
+                  <h4 class="text-success">BNB</h4>
+                  <h5>{{ balances.BNB.total|filter_price }} <small>BNB</small><br></h5>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </template>
     <div class="card">
       <div class="card-header">
         <h3 class="card-title">Positions ({{ positions.length }})</h3> <span class="text-muted float-right"><transition name="slide-fade" mode="out-in"><div :key="positionsUpdatedAt">{{ positionsUpdatedAt }}</div></transition></span>
@@ -129,6 +187,7 @@ module.exports = {
     return {
       positions: [],
       orders: [],
+      balances: {},
       positionsUpdatedAt: '',
       ordersUpdatedAt: ''
     }
@@ -148,6 +207,7 @@ module.exports = {
 
       this.positions = data.positions || [];
       this.orders = data.orders || [];
+      this.balances = data.balances || {};
 
       this.positionsUpdatedAt = new Date().toLocaleTimeString();
       this.ordersUpdatedAt = new Date().toLocaleTimeString();
