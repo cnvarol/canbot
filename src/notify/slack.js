@@ -5,6 +5,10 @@ module.exports = class Slack {
     this.config = config;
   }
 
+  name() {
+    return 'slack';
+  }
+
   send(message) {
     const postOptions = {
       uri: this.config.webhook,

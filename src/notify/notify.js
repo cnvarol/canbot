@@ -6,4 +6,16 @@ module.exports = class Notify {
   send(message) {
     this.notifier.forEach(notify => notify.send(message));
   }
+
+  get(notifier) {
+    let notifyType;
+
+    this.notifier.forEach(notify => {
+      if (notify.name() === notifier) {
+        notifyType = notify;
+      }
+    });
+
+    return notifyType;
+  }
 };

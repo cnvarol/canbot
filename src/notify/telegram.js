@@ -5,6 +5,10 @@ module.exports = class Telegram {
     this.logger = logger;
   }
 
+  name() {
+    return 'telegram';
+  }
+
   send(message) {
     const chatId = this.config.chat_id;
     if (!chatId) {

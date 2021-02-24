@@ -98,6 +98,44 @@ module.exports = class TickListener {
     }
   }
 
+  async botTelegramCommands() {
+    const telegram = this.notifier.get('telegram');
+
+    if (telegram) {
+      const bot = telegram.telegraf;
+
+      bot.start(ctx => ctx.reply(`Welcome ${ctx.from.first_name} 😜 I'm ready for your commands.`));
+      bot.command('balances', ctx => this.getBalances(ctx));
+
+      bot.command('positions', ctx => {
+        ctx.reply('Positions will be send soon.');
+      });
+
+      await bot.launch();
+    }
+  }
+
+  async getBalances(ctx) {
+    const binanceFutures = this.exchangeManager.get('binance_futures');
+    if (!binanceFutures) {
+      ctx.reply('Balances not found');
+      return;
+    }
+
+    const balances = await binanceFutures.getBalances();
+    if (balances.info) {
+      const riskRatio = (balances.info.totalMaintMargin / balances.info.totalMarginBalance) * 100;
+
+      ctx.reply(`Wallet Balance: ${parseFloat(balances.info.totalWalletBalance).toFixed(2)} USDT
+Maintenance Margin: ${parseFloat(balances.info.totalMaintMargin).toFixed(2)} USDT
+Margin Balance: ${parseFloat(balances.info.totalMarginBalance).toFixed(2)} USDT
+Unrealized PNL: ${parseFloat(balances.info.totalUnrealizedProfit).toFixed(2)}%
+Margin Risk Ratio: ${riskRatio.toFixed(2)}`);
+    } else {
+      ctx.reply('Balances not found');
+    }
+  }
+
   async visitTradeStrategy(strategy, symbol) {
     const ticker = this.tickers.get(symbol.exchange, symbol.symbol);
 
@@ -190,6 +228,8 @@ module.exports = class TickListener {
 
   async warnCheckInterval() {
     const binanceFutures = this.exchangeManager.get('binance_futures');
+    if (!binanceFutures) return;
+
     const balances = await binanceFutures.getBalances();
     if (balances.info) {
       const riskRatio = Math.round((balances.info.totalMaintMargin/balances.info.totalMarginBalance) * 100 * 100)/100;

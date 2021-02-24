@@ -73,6 +73,10 @@ module.exports = class Trade {
     const me = this;
     const { eventEmitter } = this;
 
+    setTimeout(async () => {
+      await me.tickListener.botTelegramCommands();
+    }, 1000);
+
     // let the system bootup; eg let the candle be filled by exchanges
     setTimeout(() => {
       console.log('Trade module: warmup done; starting ticks');

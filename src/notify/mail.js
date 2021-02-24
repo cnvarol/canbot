@@ -5,6 +5,10 @@ module.exports = class Mail {
     this.logger = logger;
   }
 
+  name() {
+    return 'mail';
+  }
+
   send(message) {
     const to = this.systemUtil.getConfig('notify.mail.to');
     if (!to) {

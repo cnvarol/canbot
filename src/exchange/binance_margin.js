@@ -172,6 +172,8 @@ module.exports = class BinanceMargin {
     let result;
 
     try {
+      payload.isIsolated = true;
+
       result = await this.client.marginOrder(payload);
     } catch (e) {
       this.logger.error(`Binance Margin: order create error: ${JSON.stringify([e.code, e.message, order, payload])}`);
