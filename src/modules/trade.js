@@ -82,6 +82,11 @@ module.exports = class Trade {
         await me.tickListener.startStrategyIntervals();
       }, 1000);
 
+      setInterval(async () => {
+        eventEmitter.emit('warncheck_tick', {});
+        await me.tickListener.warnCheckInterval();
+      }, 10000);
+
       // order create tick
       setInterval(() => {
         eventEmitter.emit('signal_tick', {});

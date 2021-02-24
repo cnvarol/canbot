@@ -31,6 +31,7 @@ module.exports = class TickListener {
     this.orderCalculator = orderCalculator;
 
     this.notified = {};
+    this.warnNotified = false;
   }
 
   async visitStrategy(strategy, symbol) {
@@ -184,6 +185,25 @@ module.exports = class TickListener {
 
       this.notified[symbol.exchange + symbol.symbol + order.side] = new Date();
       this.notifier.send(`[update - ${order.side}` + `] ${symbol.exchange}:${symbol.symbol} - ${order.price} - ${amount}`);
+    }
+  }
+
+  async warnCheckInterval() {
+    const binanceFutures = this.exchangeManager.get('binance_futures');
+    const balances = await binanceFutures.getBalances();
+    if (balances.info) {
+      const riskRatio = Math.round((balances.info.totalMaintMargin/balances.info.totalMarginBalance) * 100 * 100)/100;
+      if (riskRatio % 5 > 0) {
+        if (!this.warnNotified) {
+          this.notifier.send(
+            `Binance futures margin risk ratio high now. Please await from significant losses.\n\nMargin Risk Ratio: ${riskRatio}%\nUnrealized PNL: ${parseFloat(balances.info.totalUnrealizedProfit).toFixed(2)} USDT`
+          );
+          this.warnNotified = true;
+          setTimeout(async () => {
+            this.warnNotified = false;
+          }, 300000);
+        }
+      }
     }
   }
 
