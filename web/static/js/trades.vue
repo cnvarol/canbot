@@ -182,6 +182,8 @@
 </template>
 
 <script>
+var title = document.title;
+
 module.exports = {
   data: function() {
     return {
@@ -208,6 +210,9 @@ module.exports = {
       this.positions = data.positions || [];
       this.orders = data.orders || [];
       this.balances = data.balances || {};
+      if (this.balances.info) {
+        document.title = `PNL ${parseFloat(this.balances.info.totalUnrealizedProfit).toFixed(2)} USDT | ${title}`;
+      }
 
       this.positionsUpdatedAt = new Date().toLocaleTimeString();
       this.ordersUpdatedAt = new Date().toLocaleTimeString();

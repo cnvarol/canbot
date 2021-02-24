@@ -678,7 +678,7 @@ module.exports = {
       this.getLogsRepository(),
       this.getTickerLogRepository(),
       this.getExchangePositionWatcher(),
-      this.getPairStateManager(),
+      this.getPairStateManager()
     );
   },
 

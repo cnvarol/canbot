@@ -62,6 +62,10 @@ module.exports = class Trade {
       this.notify.send(message);
     });
 
+    /*this.logger.on('error', async err => {
+      this.notify.send(err);
+    });*/
+
     const message = `Start: ${instanceId} - ${os.hostname()} - ${os.platform()} - ${moment().format()}`;
 
     this.notify.send(message);
