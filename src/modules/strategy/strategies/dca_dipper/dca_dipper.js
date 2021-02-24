@@ -59,7 +59,7 @@ module.exports = class DcaDipper {
         emptySignal.setSignal('long');
       }
 
-      emptySignal.placeBuyOrder(options.amount_currency, orderPrice);
+      emptySignal.placeLongOrder(options.amount_currency, orderPrice);
     }
 
     return emptySignal;
