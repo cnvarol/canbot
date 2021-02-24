@@ -187,7 +187,44 @@ module.exports = class BinanceFutures {
   }
 
   async order(order) {
+    await this.updateLeverage(order.getSymbol());
+
     return this.ccxtExchangeOrder.createOrder(order);
+  }
+
+  async updateLeverage(symbol) {
+    const config = this.symbols.find(cSymbol => cSymbol.symbol === symbol);
+    if (!config) {
+      this.logger.error(`Binance Futures: Invalid leverage config for:${symbol}`);
+      return;
+    }
+
+    // use default leverage to "3"
+    const leverageSize = _.get(config, 'extra.binance_futures_leverage', 10);
+    if (leverageSize < 0 || leverageSize > 125) {
+      throw Error(`Invalid leverage size for: ${leverageSize} ${symbol}`);
+    }
+
+    // we dont get the selected leverage value in websocket or api endpoints
+    // so we update them only in a given time window; system overload is often blocked
+    if (symbol in this.leverageUpdated && this.leverageUpdated[symbol] > moment().subtract(45, 'minutes')) {
+      this.logger.debug(`Binance Futures: leverage update not needed: ${symbol}`);
+      return;
+    }
+
+    if (await this.getPositionForSymbol(symbol)) {
+      this.logger.debug(`Binance Futures: leverage update with open position not needed: ${symbol}`);
+      return;
+    }
+
+    try {
+      await this.ccxtClient.fapiPrivatePostLeverage(symbol, leverageSize);
+    } catch (e) {
+      this.logger.error(`Binance Futures: error set leverage:${e}`);
+      return;
+    }
+
+    this.logger.error(`Binance Futures: Leverage update error`);
   }
 
   async cancelOrder(id) {
