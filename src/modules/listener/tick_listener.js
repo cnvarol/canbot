@@ -129,8 +129,8 @@ module.exports = class TickListener {
       ctx.reply(`Wallet Balance: ${parseFloat(balances.info.totalWalletBalance).toFixed(2)} USDT
 Maintenance Margin: ${parseFloat(balances.info.totalMaintMargin).toFixed(2)} USDT
 Margin Balance: ${parseFloat(balances.info.totalMarginBalance).toFixed(2)} USDT
-Unrealized PNL: ${parseFloat(balances.info.totalUnrealizedProfit).toFixed(2)}%
-Margin Risk Ratio: ${riskRatio.toFixed(2)}`);
+Unrealized PNL: ${parseFloat(balances.info.totalUnrealizedProfit).toFixed(2)} USDT
+Margin Risk Ratio: ${riskRatio.toFixed(2)}%`);
     } else {
       ctx.reply('Balances not found');
     }
