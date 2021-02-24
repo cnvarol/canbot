@@ -46,7 +46,7 @@ module.exports = class {
     const rsiP = 0.1 * (rsi - 50);
     const fisher_rsi = (Math.exp(2 * rsiP) - 1) / (Math.exp(2 * rsiP) + 1);
 
-    const long = rsi < 25 && rsi > 0 && fastd > 0 && candle.close < sma && fisher_rsi <= -0.96 && mfi < 27;
+    const long = rsi < 25 && rsi > 0 && fastd > 0 && candle.close < sma && fisher_rsi <= -0.98 && mfi < 27;
     const short =
       (fastd > 70 || fastk > 70) && fisher_rsi >= 0.89 && sar > candle.close && decline && adx > 30 && mfi > 67;
 
