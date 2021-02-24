@@ -172,7 +172,7 @@ module.exports = class BinanceMargin {
     let result;
 
     try {
-      payload.isIsolated = true;
+      // payload.isIsolated = true;
 
       result = await this.client.marginOrder(payload);
     } catch (e) {
