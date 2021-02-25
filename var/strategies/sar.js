@@ -40,7 +40,7 @@ module.exports = class {
       }
     }
 
-    const changePercent = 100 - (lastCandles[3].close / candle.close) * 100;
+    const changePercent = 100 - (lastCandles[2].close / candle.close) * 100;
 
     const fastd = stoch.stoch_d;
     const fastk = stoch.stoch_k;
