@@ -58,7 +58,7 @@ module.exports = class {
 
     const short =
       (fastd > 70 || fastk > 70) &&
-      fisher_rsi >= 0.92 &&
+      fisher_rsi >= 0.86 &&
       sar * profit > candle.close &&
       decline &&
       adx > 30 &&
