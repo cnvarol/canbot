@@ -48,7 +48,7 @@ module.exports = class {
 
     const lastSignal = indicatorPeriod.getLastSignal();
     let profit = indicatorPeriod.getProfit();
-    if (lastSignal && profit < -2) {
+    if (lastSignal && profit < -5) {
       profit = Math.abs(profit);
     } else {
       profit = 1;
