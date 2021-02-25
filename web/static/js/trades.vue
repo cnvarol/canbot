@@ -73,7 +73,7 @@
             <th scope="col">Entry Price</th>
             <th scope="col">Mark Price</th>
             <th scope="col">Margin</th>
-            <th scope="col">PNL(ROE %)</th>
+            <th scope="col" style="width:15%">PNL(ROE %)</th>
             <th scope="col" title="Close">Close</th>
           </tr>
 
