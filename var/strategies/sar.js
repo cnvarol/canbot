@@ -40,6 +40,8 @@ module.exports = class {
       }
     }
 
+    const changePercent = 100 - (lastCandles[3].close / candle.close) * 100;
+
     const fastd = stoch.stoch_d;
     const fastk = stoch.stoch_k;
 
@@ -47,19 +49,18 @@ module.exports = class {
     const fisher_rsi = (Math.exp(2 * rsiP) - 1) / (Math.exp(2 * rsiP) + 1);
 
     const lastSignal = indicatorPeriod.getLastSignal();
-    let profit = indicatorPeriod.getProfit();
-    if (lastSignal && profit < -5) {
-      profit = Math.abs(profit);
-    } else {
-      profit = 1;
+    let multiplier = 1;
+    if (lastSignal && indicatorPeriod.getProfit() < -5) {
+      multiplier = Math.abs(indicatorPeriod.getProfit()) / 2;
     }
 
-    const long = rsi < 25 && fastd > 0 && sma * profit > candle.close && fisher_rsi <= -0.94 && mfi < 33 && adx > 20;
+    const long =
+      rsi < 25 && fastd > 0 && sma * multiplier > candle.close && fisher_rsi <= -0.94 && mfi < 33 && adx > 20;
 
     const short =
       (fastd > 70 || fastk > 70) &&
       fisher_rsi >= 0.86 &&
-      sar * profit > candle.close &&
+      sar * multiplier > candle.close &&
       decline &&
       adx > 30 &&
       mfi > 67;
@@ -100,7 +101,7 @@ module.exports = class {
         throw new Error('Strategy (sar) place order parameter error!');
       }
 
-      if (lastSignal === 'long' && long) {
+      if (lastSignal === 'long' && long && changePercent <= -2) {
         emptySignal.addDebug('long', price);
 
         if (context.isBacktest()) {
@@ -110,7 +111,7 @@ module.exports = class {
         emptySignal.placeLongOrder(options.amount_currency, price);
       }
 
-      if (lastSignal === 'short' && short) {
+      if (lastSignal === 'short' && short && changePercent >= 2) {
         emptySignal.addDebug('short', price);
 
         if (context.isBacktest()) {
