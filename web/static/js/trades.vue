@@ -67,7 +67,7 @@
         <table class="table table-bordered table-sm table-hover">
           <thead>
           <tr>
-            <th scope="col" title="Exchange">Ex</th>
+            <th scope="col" title="Exchange" style="width:30px">Ex</th>
             <th scope="col">Symbol</th>
             <th scope="col">Size</th>
             <th scope="col">Entry Price</th>
@@ -140,7 +140,7 @@
           <table class="table table-bordered table-sm table-hover">
             <thead>
             <tr>
-              <th scope="col" title="Exchange">Ex</th>
+              <th scope="col" title="Exchange" style="width:30px">Ex</th>
               <th scope="col">Symbol</th>
               <th scope="col">Type</th>
               <th scope="col">Price</th>
