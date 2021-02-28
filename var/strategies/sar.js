@@ -51,7 +51,7 @@ module.exports = class {
     const lastSignal = indicatorPeriod.getLastSignal();
     let multiplier = 1;
     if (lastSignal && indicatorPeriod.getProfit() < -5) {
-      multiplier = Math.abs(indicatorPeriod.getProfit()) / 2;
+      multiplier = 1 - Math.abs(indicatorPeriod.getProfit()) / 2 / 100;
     }
 
     const long =
