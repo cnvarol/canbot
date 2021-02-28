@@ -55,7 +55,7 @@ module.exports = class {
     }
 
     const long =
-      rsi < 25 && fastd > 0 && sma * multiplier > candle.close && fisher_rsi <= -0.94 && mfi < 33 && adx > 20;
+      rsi < 25 && fastd > 0 && sma * multiplier > candle.close && fisher_rsi <= -0.98 && mfi < 27 && adx > 20;
 
     const short =
       (fastd > 70 || fastk > 70) &&
