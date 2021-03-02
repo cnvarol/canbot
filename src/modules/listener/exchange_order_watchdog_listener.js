@@ -7,6 +7,7 @@ module.exports = class ExchangeOrderWatchdogListener {
     instances,
     stopLossCalculator,
     riskRewardRatioCalculator,
+    gridTradingCalculator,
     orderExecutor,
     pairStateManager,
     logger,
@@ -16,6 +17,7 @@ module.exports = class ExchangeOrderWatchdogListener {
     this.instances = instances;
     this.stopLossCalculator = stopLossCalculator;
     this.riskRewardRatioCalculator = riskRewardRatioCalculator;
+    this.gridTradingCalculator = gridTradingCalculator;
     this.orderExecutor = orderExecutor;
     this.pairStateManager = pairStateManager;
     this.logger = logger;
@@ -55,6 +57,11 @@ module.exports = class ExchangeOrderWatchdogListener {
         const stopLoss = pair.watchdogs.find(watchdog => watchdog.name === 'stoploss');
         if (stopLoss) {
           await this.stopLossWatchdog(exchange, position, stopLoss);
+        }
+
+        const gridTrading = pair.watchdogs.find(watchdog => watchdog.name === 'grid_trading');
+        if (gridTrading) {
+          await this.gridTradingWatchdog(exchange, position, gridTrading);
         }
 
         const riskRewardRatio = pair.watchdogs.find(watchdog => watchdog.name === 'risk_reward_ratio');
@@ -171,6 +178,16 @@ module.exports = class ExchangeOrderWatchdogListener {
         );
       }
     });
+  }
+
+  async gridTradingWatchdog(exchange, position, gridTradingOptions) {
+    const { logger } = this;
+    console.log(position, gridTradingOptions);
+
+    const symbol = position.getSymbol();
+    const orders = await exchange.getOrdersForSymbol(symbol);
+
+    const orderChanges = await this.gridTradingCalculator.createGridTradingOrders(position, orders, gridTradingOptions);
   }
 
   async riskRewardRatioWatchdog(exchange, position, riskRewardRatioOptions) {

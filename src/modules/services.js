@@ -34,6 +34,7 @@ const Backfill = require('../modules/backfill');
 
 const StopLossCalculator = require('../modules/order/stop_loss_calculator');
 const RiskRewardRatioCalculator = require('../modules/order/risk_reward_ratio_calculator');
+const GridTradingCalculator = require('../modules/order/grid_trading_calculator');
 const PairsHttp = require('../modules/pairs/pairs_http');
 const OrderExecutor = require('../modules/order/order_executor');
 const OrderCalculator = require('../modules/order/order_calculator');
@@ -100,6 +101,7 @@ let strategyManager;
 
 let stopLossCalculator;
 let riskRewardRatioCalculator;
+let gridTradingCalculator;
 let pairsHttp;
 let orderExecutor;
 let orderCalculator;
@@ -183,6 +185,14 @@ module.exports = {
     return (stopLossCalculator = new StopLossCalculator(this.getTickers(), this.getLogger()));
   },
 
+  getGridTradingCalculator: function() {
+    if (gridTradingCalculator) {
+      return gridTradingCalculator;
+    }
+
+    return (gridTradingCalculator = new GridTradingCalculator(this.getLogger()));
+  },
+
   getRiskRewardRatioCalculator: function() {
     if (riskRewardRatioCalculator) {
       return riskRewardRatioCalculator;
@@ -237,6 +247,7 @@ module.exports = {
       this.getInstances(),
       this.getStopLossCalculator(),
       this.getRiskRewardRatioCalculator(),
+      this.getGridTradingCalculator(),
       this.getOrderExecutor(),
       this.getPairStateManager(),
       this.getLogger(),
