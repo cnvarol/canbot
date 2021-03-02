@@ -58,7 +58,7 @@
                                             <th scope="col">Strategies Trade</th>
                                             <th scope="col">Options</th>
                                             <th scope="col">Process</th>
-                                            <th scope="col">Action</th>
+                                            <!-- th scope="col">Action</th -->
                                         </tr>
 
                                         </thead>
@@ -79,7 +79,7 @@
                             </span>
                                                 </td>
                                                 <td style="white-space: nowrap">{{ pair.process }}</td>
-                                                <td class="text-right"  style="white-space: nowrap">
+                                                <!-- td class="text-right"  style="white-space: nowrap">
                                                     {% if pair.trade_capital > 0 or pair.trade_currency_capital > 0 %}
                                                         <form action="/pairs/{{ pair.exchange }}-{{ pair.symbol }}" method="post" style="margin:0; padding:0">
                                                             <div class="btn-group btn-group-sm">
@@ -103,7 +103,7 @@
                                                             </div>
                                                         </form>
                                                     {% endif %}
-                                                </td>
+                                                </td -->
                                             </tr>
                                         {% endfor %}
                                         </tbody>

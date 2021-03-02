@@ -274,7 +274,7 @@ module.exports = class Http {
       // exchange-ETCFOO
       const symbol = req.params.pair.substring(pair[0].length + 1);
 
-      await this.pairsHttp.triggerOrder(pair[0], symbol, body.action);
+      await this.pairsHttp.triggerOrder(pair[0], symbol, body.positionSide, body.action);
 
       // simple sleep for async ui blocking for exchange communication
       setTimeout(() => {
@@ -310,11 +310,20 @@ module.exports = class Http {
 
       const ticker = this.ordersHttp.getTicker(pair);
 
+      let positions = [];
+
+      const position = await this.exchangeManager.getPosition(tradingview[0], tradingview[1]);
+      if (Array.isArray(position)) {
+        positions = position;
+      } else {
+        positions.push(position);
+      }
+
       res.render('../templates/orders/orders.html.twig', {
         pair: pair,
         pairs: this.ordersHttp.getPairs(),
         orders: await this.ordersHttp.getOrders(pair),
-        position: await this.exchangeManager.getPosition(tradingview[0], tradingview[1]),
+        positions: positions,
         ticker: ticker,
         tradingview: this.buildTradingViewSymbol(`${tradingview[0]}:${tradingview[1]}`),
         form: {
@@ -347,12 +356,21 @@ module.exports = class Http {
         message = String(e);
       }
 
+      let positions = [];
+
+      const position = await this.exchangeManager.getPosition(tradingview[0], tradingview[1]);
+      if (Array.isArray(position)) {
+        positions = position;
+      } else {
+        positions.push(position);
+      }
+
       res.render('../templates/orders/orders.html.twig', {
         pair: pair,
         pairs: this.ordersHttp.getPairs(),
         orders: await this.ordersHttp.getOrders(pair),
         ticker: ticker,
-        position: await this.exchangeManager.getPosition(tradingview[0], tradingview[1]),
+        positions: positions,
         form: form,
         tradingview: this.buildTradingViewSymbol(`${tradingview[0]}:${tradingview[1]}`),
         alert: {

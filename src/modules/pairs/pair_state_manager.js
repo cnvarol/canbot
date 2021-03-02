@@ -13,7 +13,8 @@ module.exports = class PairStateManager {
     this.pairInterval = pairInterval || new PairInterval();
   }
 
-  update(exchange, symbol, state, options = {}) {
+  update(exchange, symbol, state, side, options = {}) {
+    console.log('UPDATE', exchange, symbol, side, state);
     if (!['long', 'close', 'short', 'cancel'].includes(state)) {
       this.logger.error(`Invalidate state: ${state}`);
       throw new Error(`Invalidate state: ${state}`);
@@ -21,14 +22,14 @@ module.exports = class PairStateManager {
 
     const clearCallback = () => {
       this.logger.info(`State cleared: ${exchange} - ${symbol} - ${state}`);
-      this.clear(exchange, symbol);
+      this.clear(exchange, symbol, side);
     };
 
     let pairState;
     if (state === 'long') {
       const capital = this.pairConfig.getSymbolCapital(exchange, symbol);
       if (!(capital instanceof OrderCapital)) {
-        this.logger.error(`Invalidate OrderCapital: ${exchange} - ${symbol} - ${state}`);
+        this.logger.error(`Invalidate OrderCapital: ${exchange} - ${symbol} - ${state} - ${side}`);
         return;
       }
 
@@ -36,16 +37,16 @@ module.exports = class PairStateManager {
     } else if (state === 'short') {
       const capital = this.pairConfig.getSymbolCapital(exchange, symbol);
       if (!(capital instanceof OrderCapital)) {
-        this.logger.error(`Invalidate OrderCapital: ${exchange} - ${symbol} - ${state}`);
+        this.logger.error(`Invalidate OrderCapital: ${exchange} - ${symbol} - ${state} - ${side}`);
         return;
       }
 
       pairState = PairState.createShort(exchange, symbol, capital, options || {}, true, clearCallback);
     } else {
-      pairState = new PairState(exchange, symbol, state, options || {}, true, clearCallback);
+      pairState = new PairState(exchange, symbol, side, state, options || {}, true, clearCallback);
     }
 
-    const stateKey = exchange + symbol;
+    const stateKey = exchange + symbol + side;
     this.logger.info(
       `Pair state changed: ${JSON.stringify({
         new: JSON.stringify(pairState),
@@ -74,9 +75,9 @@ module.exports = class PairStateManager {
    * @param symbol
    * @returns {undefined|PairState}
    */
-  get(exchange, symbol) {
-    if (exchange + symbol in this.stats) {
-      return this.stats[exchange + symbol];
+  get(exchange, symbol, side) {
+    if (exchange + symbol + side in this.stats) {
+      return this.stats[exchange + symbol + side];
     }
 
     return undefined;
@@ -92,13 +93,13 @@ module.exports = class PairStateManager {
     return stats;
   }
 
-  clear(exchange, symbol) {
-    if (exchange + symbol in this.stats) {
-      this.logger.debug(`Pair state cleared: ${JSON.stringify(this.stats[exchange + symbol])}`);
-      delete this.stats[exchange + symbol];
+  clear(exchange, symbol, side) {
+    if (exchange + symbol + side in this.stats) {
+      this.logger.debug(`Pair state cleared: ${JSON.stringify(this.stats[exchange + symbol + side])}`);
+      delete this.stats[exchange + symbol + side];
     }
 
-    this.pairInterval.clearInterval(exchange + symbol);
+    this.pairInterval.clearInterval(exchange + symbol + side);
   }
 
   getSellingPairs() {
@@ -149,8 +150,8 @@ module.exports = class PairStateManager {
     return pairs;
   }
 
-  isNeutral(exchange, symbol) {
-    return !(exchange + symbol in this.stats);
+  isNeutral(exchange, symbol, side) {
+    return !(exchange + symbol + side in this.stats);
   }
 
   async onTerminate() {

@@ -47,6 +47,14 @@ module.exports = class ExchangeOrder {
     return 'long';
   }
 
+  static get POSITION_SIDE_LONG() {
+    return 'LONG';
+  }
+
+  static get POSITION_SIDE_SHORT() {
+    return 'SHORT';
+  }
+
   static get TYPE_TRAILING_STOP() {
     return 'trailing_stop';
   }
@@ -95,7 +103,12 @@ module.exports = class ExchangeOrder {
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
     this.raw = raw;
+    this.positionSide = undefined;
     this.options = options;
+
+    if (this.raw && this.raw.info) {
+      this.positionSide = this.raw.info.positionSide;
+    }
   }
 
   getType() {
@@ -123,6 +136,10 @@ module.exports = class ExchangeOrder {
   }
 
   getLongOrShortSide() {
+    if (this.positionSide && this.positionSide !== 'BOTH') {
+      return this.positionSide.toLowerCase();
+    }
+
     switch (this.side) {
       case 'buy':
         return 'long';
@@ -131,6 +148,10 @@ module.exports = class ExchangeOrder {
     }
 
     throw `Invalid side:${this.side}`;
+  }
+
+  getPositionSide() {
+    return this.positionSide;
   }
 
   shouldCancelOrderProcess() {

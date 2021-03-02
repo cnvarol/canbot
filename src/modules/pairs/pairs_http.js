@@ -12,7 +12,9 @@ module.exports = class PairsHttp {
     const pairs = await Promise.all(
       this.instances.symbols.map(async symbol => {
         const position = await this.exchangeManager.getPosition(symbol.exchange, symbol.symbol);
-        const state = await this.pairStateManager.get(symbol.exchange, symbol.symbol);
+
+        const state_long = await this.pairStateManager.get(symbol.exchange, symbol.symbol, 'long');
+        const state_short = await this.pairStateManager.get(symbol.exchange, symbol.symbol, 'short');
 
         const strategiesTrade = symbol.trade && symbol.trade.strategies ? symbol.trade.strategies : [];
         const strategies = symbol.strategies || [];
@@ -39,9 +41,20 @@ module.exports = class PairsHttp {
           item.weight += 1;
         }
 
+        // console.log('STATE:', state_long, state_short);
+
+        item.process = '';
+
         // processing items must win
-        if (state && state.state) {
-          item.process = state.state;
+        if (state_long && state_long.state) {
+          item.process = `[${state_long.side}:${state_long.state}]`;
+          item.weight += 2;
+        }
+
+        item.process += ' ';
+
+        if (state_short && state_short.state) {
+          item.process += `[${state_short.side}:${state_short.state}]`;
           item.weight += 2;
         }
 
@@ -54,15 +67,15 @@ module.exports = class PairsHttp {
       .sort((a, b) => b.weight - a.weight);
   }
 
-  async triggerOrder(exchangeName, symbol, action) {
-    let side = action;
+  async triggerOrder(exchangeName, symbol, positionSide, action) {
+    let state = action;
     const options = {};
     if (['long_market', 'short_market', 'close_market'].includes(action)) {
       options.market = true;
-      side = side.replace('_market', '');
+      state = state.replace('_market', '');
     }
 
-    this.pairStateManager.update(exchangeName, symbol, side, options);
+    this.pairStateManager.update(exchangeName, symbol, state, positionSide, options);
 
     this.eventEmitter.emit('tick_ordering');
   }

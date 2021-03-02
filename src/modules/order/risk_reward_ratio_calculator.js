@@ -37,7 +37,15 @@ module.exports = class RiskRewardRatioCalculator {
 
     const riskRewardRatio = this.calculateForOpenPosition(position, options);
 
-    const stopOrders = orders.filter(order => order.type === ExchangeOrder.TYPE_STOP);
+    let stopOrders;
+    if (position.raw && position.raw.positionSide !== 'BOTH') {
+      stopOrders = orders.filter(
+        order => order.type === ExchangeOrder.TYPE_STOP && order.positionSide === position.raw.positionSide
+      );
+    } else {
+      stopOrders = orders.filter(order => order.type === ExchangeOrder.TYPE_STOP);
+    }
+
     if (stopOrders.length === 0) {
       newOrders.stop = {
         amount: Math.abs(position.amount),
@@ -66,7 +74,15 @@ module.exports = class RiskRewardRatioCalculator {
       }
     }
 
-    const targetOrders = orders.filter(order => order.type === ExchangeOrder.TYPE_LIMIT);
+    let targetOrders;
+    if (position.raw && position.raw.positionSide !== 'BOTH') {
+      targetOrders = orders.filter(
+        order => order.type === ExchangeOrder.TYPE_LIMIT && order.positionSide === position.raw.positionSide
+      );
+    } else {
+      targetOrders = orders.filter(order => order.type === ExchangeOrder.TYPE_LIMIT);
+    }
+
     if (targetOrders.length === 0) {
       newOrders.target = {
         amount: Math.abs(position.amount),

@@ -50,7 +50,8 @@ module.exports = class OrderExecutor {
           `OrderAdjust: already running: ${JSON.stringify([
             exchangeOrder.id,
             pairState.getExchange(),
-            pairState.getSymbol()
+            pairState.getSymbol(),
+            pairState.getSide()
           ])}`
         );
         return;
@@ -61,6 +62,7 @@ module.exports = class OrderExecutor {
       const price = await this.getCurrentPrice(
         pairState.getExchange(),
         pairState.getSymbol(),
+        pairState.getSide(),
         exchangeOrder.getLongOrShortSide()
       );
       if (!price) {
@@ -69,6 +71,7 @@ module.exports = class OrderExecutor {
             exchangeOrder.id,
             pairState.getExchange(),
             pairState.getSymbol(),
+            pairState.getSide(),
             exchangeOrder.getLongOrShortSide()
           ])}`
         );
@@ -86,6 +89,7 @@ module.exports = class OrderExecutor {
             exchangeOrder.id,
             pairState.getExchange(),
             pairState.getSymbol(),
+            pairState.getSide(),
             lastExchangeOrder
           ])}`
         );
@@ -105,7 +109,8 @@ module.exports = class OrderExecutor {
             Math.abs(lastExchangeOrder.price),
             Math.abs(price),
             pairState.getExchange(),
-            pairState.getSymbol()
+            pairState.getSymbol(),
+            pairState.getSide()
           ])}`
         );
         delete this.runningOrders[exchangeOrder.id];
@@ -124,6 +129,7 @@ module.exports = class OrderExecutor {
               Math.abs(price),
               pairState.getExchange(),
               pairState.getSymbol(),
+              pairState.getSide(),
               updatedOrder
             ])}`
           );
@@ -155,7 +161,7 @@ module.exports = class OrderExecutor {
           const exchangeOrder = await this.executeOrder(pairState.getOrder(), retryOrder);
           pairState.setExchangeOrder(exchangeOrder);
         } else {
-          this.logger.error(`OrderAdjust: Unknown order state: ${JSON.stringify([pairState, updatedOrder])}`);
+          this.logger.info(`OrderAdjust: Unknown order state: ${JSON.stringify([pairState, updatedOrder])}`);
         }
       } catch (err) {
         this.logger.error(`OrderAdjust: adjusted failed: ${JSON.stringify([String(err), pairState, orderUpdate])}`);
@@ -311,6 +317,7 @@ module.exports = class OrderExecutor {
    * @returns {Promise<*>}
    */
   createAdjustmentOrder(exchangeName, order) {
+    console.log('createAdjustmentOrder');
     return new Promise(async resolve => {
       const price = await this.getCurrentPrice(exchangeName, order.symbol, order.side);
       if (!price) {

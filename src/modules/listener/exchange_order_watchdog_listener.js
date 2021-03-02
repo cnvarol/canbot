@@ -214,7 +214,7 @@ module.exports = class ExchangeOrderWatchdogListener {
           );
         } catch (e) {
           await exchange.cancelOrder(orderChange.id);
-          logger.error(
+          logger.info(
             `Risk Reward: order update error: ${JSON.stringify({
               orderChange: orderChange,
               symbol: symbol,
@@ -307,7 +307,7 @@ module.exports = class ExchangeOrderWatchdogListener {
           profit.toFixed(2)
         ])}`
       );
-      this.pairStateManager.update(exchange.getName(), position.symbol, 'close');
+      this.pairStateManager.update(exchange.getName(), position.symbol, position.side, 'close');
     }
   }
 

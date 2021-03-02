@@ -119,10 +119,13 @@
               {{ position.position.raw.unRealizedProfit|filter_price }}({{ position.position.profit|round(2) }}%)
             </span>
             </td>
-            <td>
+            <td style="width:200px">
               <form :action="'/pairs/' + position.exchange + '-' + position.position.symbol" method="post">
+                <input type="hidden" name="positionSide" :value="position.position.side">
                 <button name="action" value="close" data-toggle="tooltip"
-                        title="Limit" class="btn btn-outline-primary btn-xs"><i class="fa fa-times"></i> Limit Close</button>
+                        title="Limit Close" class="btn btn-outline-primary btn-xs"><i class="fa fa-times"></i> Limit Close</button>
+                <button name="action" value="close_market" data-toggle="tooltip" 
+                        title="Market Close" class="btn btn-outline-danger btn-xs"><i class="fa fa-times"></i> Market Close</button>
               </form>
             </td>
           </tr>

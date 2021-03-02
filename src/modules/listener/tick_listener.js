@@ -45,7 +45,16 @@ module.exports = class TickListener {
     const strategyKey = strategy.strategy;
 
     let context = StrategyContext.create(strategy.options, ticker, true);
-    const position = await this.exchangeManager.getPosition(symbol.exchange, symbol.symbol);
+    const positions = await this.exchangeManager.getPosition(symbol.exchange, symbol.symbol);
+
+    let position = positions;
+    if (Array.isArray(positions)) {
+      position = positions.find(p => p.symbol === symbol.symbol && p.side === 'long');
+      if (!position) {
+        position = positions.find(p => p.symbol === symbol.symbol && p.side === 'short');
+      }
+    }
+
     if (position) {
       context = StrategyContext.createFromPosition(strategy.options, ticker, position, true);
     }
@@ -66,7 +75,7 @@ module.exports = class TickListener {
       return;
     }
 
-    if (!['close', 'short', 'long'].includes(signal)) {
+    if (!['close_short', 'close_long', 'close', 'short', 'long'].includes(signal)) {
       throw Error(`Invalid signal: ${JSON.stringify(signal, strategy)}`);
     }
 
@@ -147,7 +156,16 @@ Margin Risk Ratio: ${riskRatio.toFixed(2)}%`);
     const strategyKey = strategy.strategy;
 
     let context = StrategyContext.create(strategy.options, ticker);
-    const position = await this.exchangeManager.getPosition(symbol.exchange, symbol.symbol);
+    const positions = await this.exchangeManager.getPosition(symbol.exchange, symbol.symbol);
+
+    let position = positions;
+    if (Array.isArray(positions)) {
+      position = positions.find(p => p.symbol === symbol.symbol && p.side === 'long');
+      if (!position) {
+        position = positions.find(p => p.symbol === symbol.symbol && p.side === 'short');
+      }
+    }
+
     if (position) {
       context = StrategyContext.createFromPosition(strategy.options, ticker, position);
     }
@@ -170,22 +188,24 @@ Margin Risk Ratio: ${riskRatio.toFixed(2)}%`);
       await this.placeStrategyOrders(placedOrder, symbol);
     }
 
-    const signal = result.getSignal();
+    let signal = result.getSignal();
+
     if (!signal || typeof signal === 'undefined') {
       return;
     }
 
-    if (!['close', 'short', 'long'].includes(signal)) {
+    if (!['close', 'close_short', 'close_long', 'short', 'long'].includes(signal)) {
       throw Error(`Invalid signal: ${JSON.stringify(signal, strategy)}`);
     }
 
     const signalWindow = moment()
-      .subtract(_.get(symbol, 'trade.signal_slowdown_minutes', 15), 'minutes')
+      .subtract(_.get(symbol, 'trade.signal_slowdown_minutes', 1), 'minutes')
       .toDate();
 
+    // TODO(semihalev): We really need this block?
     const noteKey = symbol.exchange + symbol.symbol;
     if (noteKey in this.notified && this.notified[noteKey] >= signalWindow) {
-      return;
+      // return;
     }
 
     // log signal
@@ -206,7 +226,14 @@ Margin Risk Ratio: ${riskRatio.toFixed(2)}%`);
     );
     this.notified[noteKey] = new Date();
 
-    await this.pairStateManager.update(symbol.exchange, symbol.symbol, signal);
+    let side = signal;
+    if (signal === 'close_long' || signal === 'close_short') {
+      const split = _.split(signal, '_', 2);
+      signal = split[0];
+      side = split[1];
+    }
+
+    await this.pairStateManager.update(symbol.exchange, symbol.symbol, signal, side);
   }
 
   async placeStrategyOrders(placedOrder, symbol) {

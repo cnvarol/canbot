@@ -56,11 +56,11 @@ module.exports = class Trade {
       // process.exit();
     });
 
-    process.on('uncaughtException', (err, origin) => {
+    /* process.on('uncaughtException', (err, origin) => {
       const message = `UncaughtException (${origin}): ${instanceId} - ${os.hostname()} - ${os.platform()} - ${moment().format()} ${err}`;
 
       this.notify.send(message);
-    });
+    }); */
 
     /*this.logger.on('error', async err => {
       this.notify.send(err);

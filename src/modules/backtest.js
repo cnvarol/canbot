@@ -124,7 +124,7 @@ module.exports = class Backtest {
 
           lastSignalClosed.signal = undefined;
           lastSignalClosed.price = undefined;
-        } else if (currentSignal === 'close') {
+        } else if (currentSignal === 'close' || currentSignal === 'close_long' || currentSignal === 'close_short') {
           lastSignalClosed.signal = lastSignal.signal;
           lastSignalClosed.price = lastSignal.price;
 
@@ -230,7 +230,7 @@ module.exports = class Backtest {
         const signalType = signalObject.result._signal; // Can be long,short,close
 
         // When a trade is closed
-        if (signalType == 'close') {
+        if (signalType === 'close' || signalType === 'close_long' || signalType === 'close_short') {
           // Increment the total trades counter
           trades.total += 1;
 

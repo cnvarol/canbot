@@ -6,23 +6,24 @@ module.exports = class ExchangePosition {
       throw 'TypeError: invalid position';
     }
 
-    this._exchange = exchange;
-    this._position = position;
+    this.exchange = exchange;
+    this.position = position;
   }
 
+  // TODO(semih): it may need or not check later :${this.position.side}
   getKey() {
-    return this._exchange + this._position.symbol;
+    return `${this.exchange + this.position.symbol}:${this.position.side}`;
   }
 
   getExchange() {
-    return this._exchange;
+    return this.exchange;
   }
 
   getPosition() {
-    return this._position;
+    return this.position;
   }
 
   getSymbol() {
-    return this._position.symbol;
+    return this.position.symbol;
   }
 };

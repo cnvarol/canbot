@@ -133,7 +133,7 @@ module.exports = class BinanceFutures {
     const currentPositions = {};
 
     positions.forEach(position => {
-      currentPositions[position.symbol] = position;
+      currentPositions[`${position.symbol}:${position.side}`] = position;
     });
 
     this.positions = currentPositions;
@@ -171,7 +171,7 @@ module.exports = class BinanceFutures {
   }
 
   async getPositionForSymbol(symbol) {
-    return (await this.getPositions()).find(position => position.symbol === symbol);
+    return (await this.getPositions()).filter(position => position.symbol === symbol);
   }
 
   calculatePrice(price, symbol) {
@@ -222,9 +222,9 @@ module.exports = class BinanceFutures {
       throw new Error('Invalid amount / price for update');
     }
 
-    const result = this.ccxtExchangeOrder.updateOrder(id, order);
+    // const result = this.ccxtExchangeOrder.updateOrder(id, order);
     await this.ccxtExchangeOrder.syncOrders();
-    return result;
+    return undefined;
   }
 
   /**
@@ -584,12 +584,26 @@ module.exports = class BinanceFutures {
           args: {}
         };
 
+        request.args.positionSide = order.side.toUpperCase();
+        request.args.side = order.side === Order.SIDE_SHORT ? 'SELL' : 'BUY';
+
         if (order.isReduceOnly()) {
-          request.args.reduceOnly = true;
+          order.side = order.side === Order.SIDE_SHORT ? 'long' : 'short';
+          request.args.positionSide = order.side.toUpperCase();
+          request.args.side = order.side === Order.SIDE_SHORT ? 'BUY' : 'SELL';
         }
 
         if (order.getType() === Order.TYPE_STOP) {
           request.args.stopPrice = order.getPrice();
+          request.args.side = order.side === Order.SIDE_SHORT ? 'BUY' : 'SELL';
+        }
+
+        if (order.getType() === Order.TYPE_MARKET) {
+          // request.args.side = order.side === Order.SIDE_SHORT ? 'BUY' : 'SELL';
+        }
+
+        if (order.options && order.options.close) {
+          request.args.side = order.side === Order.SIDE_SHORT ? 'BUY' : 'SELL';
         }
 
         return request;
