@@ -81,15 +81,20 @@ module.exports = class {
       candle: candle
     };
 
-    if ((lastSignal === 'long' && short) || (lastSignal === 'short' && long)) {
-      return SignalResult.createSignal('close', debug);
+    if (lastSignal === 'long' && short) {
+      return SignalResult.createSignal('close_long', debug);
     }
 
-    if (
-      (lastSignal === 'long' && longClose && indicatorPeriod.getProfit() > 0) ||
-      (lastSignal === 'short' && shortClose && indicatorPeriod.getProfit() > 0)
-    ) {
-      return SignalResult.createSignal('close', debug);
+    if (lastSignal === 'short' && long) {
+      return SignalResult.createSignal('close_short', debug);
+    }
+
+    if (lastSignal === 'long' && longClose && indicatorPeriod.getProfit() > 0) {
+      return SignalResult.createSignal('close_long', debug);
+    }
+
+    if (lastSignal === 'short' && shortClose && indicatorPeriod.getProfit() > 0) {
+      return SignalResult.createSignal('close_short', debug);
     }
 
     if (lastSignal && (long || short) && indicatorPeriod.getProfit() <= -2) {
