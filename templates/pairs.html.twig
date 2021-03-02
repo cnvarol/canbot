@@ -80,10 +80,12 @@
                                                 </td>
                                                 <td style="white-space: nowrap">{{ pair.process }}</td>
                                                 <td class="text-right"  style="white-space: nowrap">
-                                                    {% if pair.has_position|default(false) == true and not pair.process %}
+                                                    {% if pair.has_position == true %}
                                                     <span class="badge badge-success">Active</span>
+                                                    {% else if pair.process %}
+                                                    <span class="badge badge-warning">In Process</span>
                                                     {% else %}
-                                                    <span class="badge badge-warning">Waiting</span>
+                                                    <span class="badge badge-danger">Waiting</span>
                                                     {% endif %}
                                                 </td>
                                             </tr>
