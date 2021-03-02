@@ -11,7 +11,7 @@ module.exports = class PairsHttp {
   async getTradePairs() {
     const pairs = await Promise.all(
       this.instances.symbols.map(async symbol => {
-        const position = await this.exchangeManager.getPosition(symbol.exchange, symbol.symbol);
+        let position = await this.exchangeManager.getPosition(symbol.exchange, symbol.symbol);
 
         const state_long = await this.pairStateManager.get(symbol.exchange, symbol.symbol, 'long');
         const state_short = await this.pairStateManager.get(symbol.exchange, symbol.symbol, 'short');
@@ -21,6 +21,10 @@ module.exports = class PairsHttp {
 
         const tradeCapital = _.get(symbol, 'trade.capital', 0);
         const tradeCurrencyCapital = _.get(symbol, 'trade.currency_capital', 0);
+
+        if (Array.isArray(position) && position.length === 0) {
+          position = undefined;
+        }
 
         const item = {
           exchange: symbol.exchange,
