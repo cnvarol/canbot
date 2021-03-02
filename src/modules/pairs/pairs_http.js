@@ -45,20 +45,14 @@ module.exports = class PairsHttp {
           item.weight += 1;
         }
 
-        // console.log('STATE:', state_long, state_short);
-
-        item.process = '';
-
         // processing items must win
         if (state_long && state_long.state) {
           item.process = `[${state_long.side}:${state_long.state}]`;
           item.weight += 2;
         }
 
-        item.process += ' ';
-
         if (state_short && state_short.state) {
-          item.process += `[${state_short.side}:${state_short.state}]`;
+          item.process = `[${state_short.side}:${state_short.state}]`;
           item.weight += 2;
         }
 

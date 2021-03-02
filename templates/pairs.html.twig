@@ -82,7 +82,7 @@
                                                 <td class="text-right"  style="white-space: nowrap">
                                                     {% if pair.has_position == true %}
                                                     <span class="badge badge-success">Active</span>
-                                                    {% else if pair.process %}
+                                                    {% elseif pair.process %}
                                                     <span class="badge badge-warning">In Process</span>
                                                     {% else %}
                                                     <span class="badge badge-danger">Waiting</span>
