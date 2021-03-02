@@ -20,9 +20,7 @@ module.exports = class {
       profit: indicatorPeriod.getProfit()
     };
 
-    if (lastSignal === 'long') {
-      // return SignalResult.createSignal('close_long', debug);
-
+    if (lastSignal === 'long' && long) {
       const context = indicatorPeriod.getStrategyContext();
       const price = indicatorPeriod.getPrice();
       const emptySignal = SignalResult.createEmptySignal(debug);
@@ -42,9 +40,7 @@ module.exports = class {
       return emptySignal;
     }
 
-    if (lastSignal === 'short') {
-      // return SignalResult.createSignal('close_short', debug);
-
+    if (lastSignal === 'short' && short) {
       const context = indicatorPeriod.getStrategyContext();
       const price = indicatorPeriod.getPrice();
       const emptySignal = SignalResult.createEmptySignal(debug);
@@ -62,6 +58,14 @@ module.exports = class {
       emptySignal.placeShortOrder(options.amount_currency, price);
 
       return emptySignal;
+    }
+
+    if (lastSignal === 'long' && short) {
+      return SignalResult.createSignal('close_long', debug);
+    }
+
+    if (lastSignal === 'short' && long) {
+      return SignalResult.createSignal('close_short', debug);
     }
 
     if (long) {

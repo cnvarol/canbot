@@ -117,7 +117,7 @@ module.exports = class PairStateExecution {
       const state = pairState.getExchangeOrder();
       if (state) {
         newOrders
-          .filter(o => state.id !== o.id && state.id != o.id)
+          .filter(o => state.id !== o.id && state.id !== o.id)
           .forEach(async order => {
             this.logger.error(`Pair State: Clear invalid orders:${JSON.stringify([order])}`);
             try {
@@ -385,8 +385,7 @@ module.exports = class PairStateExecution {
   }
 
   async managedPairStateOrder(pairState) {
-    //const exchangeOrderStored = pairState.getExchangeOrder();
-    let exchangeOrderStored;
+    const exchangeOrderStored = pairState.getExchangeOrder();
     console.log('managedPairStateOrder:', exchangeOrderStored);
     if (!exchangeOrderStored) {
       const m = await this.extractManagedPairStateOrderFromOrders(pairState);
