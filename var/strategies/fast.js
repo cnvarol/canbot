@@ -9,13 +9,11 @@ module.exports = class {
     indicatorBuilder.add('candles', 'candles', options.period);
   }
 
-  async period(indicatorPeriod) {
+  async period(indicatorPeriod, options) {
     const long = Math.floor(Math.random() * 10) < 6;
     const short = !long;
 
     const lastSignal = indicatorPeriod.getLastSignal();
-
-    console.log(long, short, lastSignal);
 
     const debug = {
       last_signal: lastSignal,
@@ -23,11 +21,47 @@ module.exports = class {
     };
 
     if (lastSignal === 'long') {
-      return SignalResult.createSignal('close_long', debug);
+      // return SignalResult.createSignal('close_long', debug);
+
+      const context = indicatorPeriod.getStrategyContext();
+      const price = indicatorPeriod.getPrice();
+      const emptySignal = SignalResult.createEmptySignal(debug);
+
+      if (!price || !options.amount_currency) {
+        throw new Error('Strategy (sar) place order parameter error!');
+      }
+
+      emptySignal.addDebug('long', price);
+
+      if (context.isBacktest()) {
+        emptySignal.setSignal('long');
+      }
+
+      emptySignal.placeLongOrder(options.amount_currency, price);
+
+      return emptySignal;
     }
 
     if (lastSignal === 'short') {
-      return SignalResult.createSignal('close_short', debug);
+      // return SignalResult.createSignal('close_short', debug);
+
+      const context = indicatorPeriod.getStrategyContext();
+      const price = indicatorPeriod.getPrice();
+      const emptySignal = SignalResult.createEmptySignal(debug);
+
+      if (!price || !options.amount_currency) {
+        throw new Error('Strategy (fast) place order parameter error!');
+      }
+
+      emptySignal.addDebug('short', price);
+
+      if (context.isBacktest()) {
+        emptySignal.setSignal('short');
+      }
+
+      emptySignal.placeShortOrder(options.amount_currency, price);
+
+      return emptySignal;
     }
 
     if (long) {
@@ -47,7 +81,8 @@ module.exports = class {
 
   getOptions() {
     return {
-      period: '1m'
+      period: '1m',
+      amount_currency: 100
     };
   }
 
