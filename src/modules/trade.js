@@ -99,7 +99,7 @@ module.exports = class Trade {
 
       setInterval(() => {
         eventEmitter.emit('watchdog', {});
-      }, this.systemUtil.getConfig('tick.watchdog', 7800));
+      }, this.systemUtil.getConfig('tick.watchdog', 15800));
 
       setInterval(() => {
         eventEmitter.emit('tick_ordering', {});
