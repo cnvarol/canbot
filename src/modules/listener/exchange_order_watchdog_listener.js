@@ -195,7 +195,8 @@ module.exports = class ExchangeOrderWatchdogListener {
         if (position.side === 'long') {
           amount *= -1;
         }
-        const hedgeOrder = Order.createLimitPostOnlyOrderAutoAdjustedPriceOrder(symbol, amount);
+        const side = position.side === Order.SIDE_LONG ? Order.SIDE_SHORT : Order.SIDE_LONG;
+        const hedgeOrder = Order.createMarketOrder(symbol, amount, side);
         await this.orderExecutor.executeOrder(exchange.getName(), hedgeOrder);
 
         logger.info(
