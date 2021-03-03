@@ -7,28 +7,24 @@ module.exports = class {
 
   buildIndicator(indicatorBuilder, options) {
     indicatorBuilder.add('candles', 'candles', options.period);
-    indicatorBuilder.add('rsi', 'rsi', options.period);
+    indicatorBuilder.add('ao', 'ao', options.period);
   }
 
   async period(indicatorPeriod) {
-    const rsi = indicatorPeriod.getLatestIndicator('rsi');
+    const ao = indicatorPeriod.getLatestIndicator('ao');
 
-    if (!rsi) {
+    if (!ao) {
       return undefined;
     }
 
-    const rsiP = 0.1 * (rsi - 50);
-    const fisher_rsi = (Math.exp(2 * rsiP) - 1) / (Math.exp(2 * rsiP) + 1);
-
-    const long = fisher_rsi <= 0;
+    const long = ao > 0;
     const short = !long;
 
     const lastSignal = indicatorPeriod.getLastSignal();
 
     const debug = {
       last_signal: lastSignal,
-      rsi: rsi,
-      fisher_rsi: fisher_rsi,
+      ao: ao,
       profit: indicatorPeriod.getProfit()
     };
 
