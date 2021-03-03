@@ -212,12 +212,22 @@ module.exports = class ExchangeOrderWatchdogListener {
     let { profit } = position;
     if (Array.isArray(currentPositions)) {
       profit = 0;
+      let pnl = 0;
+      let amount = 0;
+
       currentPositions.forEach(p => {
-        profit += p.profit;
+        amount += Math.abs(p.amount * p.entry);
+        if (p.raw && p.raw.unRealizedProfit) {
+          pnl += p.raw.unRealizedProfit;
+        }
       });
+
+      profit = (pnl / amount) * 100;
     }
 
     if (profit >= options.take_profit) {
+      console.log('Closing positions:', symbol, profit);
+
       // close position/s with market order
       if (Array.isArray(currentPositions)) {
         currentPositions.forEach(async p => {
