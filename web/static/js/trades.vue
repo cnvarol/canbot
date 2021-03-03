@@ -21,15 +21,15 @@
               <div class="row justify-content-md-center">
                 <div class="col-md-4 border-right text-center">
                   <h4 class="text-success">Maint.</h4>
-                  <h5>{{ balances.info.totalMaintMargin|filter_price }} <small>USDT</small></h5>
+                  <h5>{{ balances.info.totalMaintMargin|round }} <small>USDT</small></h5>
                 </div>
                 <div class="col-md-4 border-right text-center">
                   <h4 class="text-success">Balance</h4>
-                  <h5>{{ balances.info.totalMarginBalance|filter_price }} <small>USDT</small></h5>
+                  <h5>{{ balances.info.totalMarginBalance|round }} <small>USDT</small></h5>
                 </div>
                 <div class="col-md-4 text-center">
                   <h4 class="text-success">Initial</h4>
-                  <h5>{{ balances.info.totalOpenOrderInitialMargin|filter_price }} <small>USDT</small></h5>
+                  <h5>{{ balances.info.totalOpenOrderInitialMargin|round }} <small>USDT</small></h5>
                 </div>
               </div>
             </div>
@@ -42,11 +42,11 @@
               <div class="row justify-content-md-center">
                 <div class="col-md-4 border-right text-center">
                   <h4 class="text-success">Wallet</h4>
-                  <h5>{{ balances.info.totalWalletBalance|filter_price }} <small>USDT</small></h5>
+                  <h5>{{ balances.info.totalWalletBalance|round }} <small>USDT</small></h5>
                 </div>
                 <div class="col-md-4 border-right text-center">
                   <h4 class="text-success">Curr PNL</h4>
-                  <h5>{{ balances.info.totalUnrealizedProfit|filter_price }} <small>USDT</small></h5>
+                  <h5>{{ balances.info.totalUnrealizedProfit|round }} <small>USDT</small></h5>
                 </div>
                 <div class="col-md-4 text-center">
                   <h4 class="text-success">BNB</h4>
