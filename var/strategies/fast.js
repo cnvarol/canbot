@@ -7,66 +7,30 @@ module.exports = class {
 
   buildIndicator(indicatorBuilder, options) {
     indicatorBuilder.add('candles', 'candles', options.period);
+    indicatorBuilder.add('rsi', 'rsi', options.period);
   }
 
-  async period(indicatorPeriod, options) {
-    const long = Math.floor(Math.random() * 10) < 6;
+  async period(indicatorPeriod) {
+    const rsi = indicatorPeriod.getLatestIndicator('rsi');
+
+    if (!rsi) {
+      return undefined;
+    }
+
+    const rsiP = 0.1 * (rsi - 50);
+    const fisher_rsi = (Math.exp(2 * rsiP) - 1) / (Math.exp(2 * rsiP) + 1);
+
+    const long = fisher_rsi <= 0;
     const short = !long;
 
     const lastSignal = indicatorPeriod.getLastSignal();
 
     const debug = {
       last_signal: lastSignal,
+      rsi: rsi,
+      fisher_rsi: fisher_rsi,
       profit: indicatorPeriod.getProfit()
     };
-
-    /* if (lastSignal === 'long' && long) {
-      const context = indicatorPeriod.getStrategyContext();
-      const price = indicatorPeriod.getPrice();
-      const emptySignal = SignalResult.createEmptySignal(debug);
-
-      if (!price || !options.amount_currency) {
-        throw new Error('Strategy (sar) place order parameter error!');
-      }
-
-      emptySignal.addDebug('long', price);
-
-      if (context.isBacktest()) {
-        emptySignal.setSignal('long');
-      }
-
-      emptySignal.placeLongOrder(options.amount_currency, price);
-
-      return emptySignal;
-    }
-
-    if (lastSignal === 'short' && short) {
-      const context = indicatorPeriod.getStrategyContext();
-      const price = indicatorPeriod.getPrice();
-      const emptySignal = SignalResult.createEmptySignal(debug);
-
-      if (!price || !options.amount_currency) {
-        throw new Error('Strategy (fast) place order parameter error!');
-      }
-
-      emptySignal.addDebug('short', price);
-
-      if (context.isBacktest()) {
-        emptySignal.setSignal('short');
-      }
-
-      emptySignal.placeShortOrder(options.amount_currency, price);
-
-      return emptySignal;
-    }
-
-    if (lastSignal === 'long' && short) {
-      return SignalResult.createSignal('close_long', debug);
-    }
-
-    if (lastSignal === 'short' && long) {
-      return SignalResult.createSignal('close_short', debug);
-    } */
 
     if (!lastSignal && long) {
       return SignalResult.createSignal('long', debug);
@@ -85,8 +49,7 @@ module.exports = class {
 
   getOptions() {
     return {
-      period: '1m',
-      amount_currency: 100
+      period: '1m'
     };
   }
 
