@@ -119,8 +119,7 @@ module.exports = class {
 
   getOptions() {
     return {
-      period: '15m',
-      amount_currency: 2500
+      period: '15m'
     };
   }
 
