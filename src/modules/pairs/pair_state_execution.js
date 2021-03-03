@@ -314,7 +314,7 @@ module.exports = class PairStateExecution {
 
     const order =
       options && options.market === true
-        ? Order.createMarketOrder(symbol, exchangeOrderSize, side)
+        ? Order.createMarketOrder(symbol, exchangeOrderSize, side, { close: true })
         : Order.createCloseOrderWithPriceAdjustment(symbol, exchangeOrderSize);
 
     return this.orderExecutor.executeOrder(exchangeName, order);

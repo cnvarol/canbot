@@ -86,16 +86,21 @@ module.exports = class Order {
     return this.options && this.options.close === true;
   }
 
-  static createMarketOrder(symbol, amount, side) {
-    console.log('createMarketOrder', symbol, amount, side);
+  static createMarketOrder(symbol, amount, side, options = {}) {
+    console.log('createMarketOrder');
+    let marketSide = side;
+    if (options.close) {
+      marketSide = side === this.SIDE_LONG ? this.SIDE_SHORT : this.SIDE_LONG;
+    }
+
     return new Order(
       Math.round(new Date().getTime().toString() * Math.random()),
       symbol,
-      side === this.SIDE_LONG ? this.SIDE_SHORT : this.SIDE_LONG,
+      marketSide,
       amount > 0 ? 0.000001 : -0.000001, // fake prices
       amount,
       this.TYPE_MARKET,
-      { close: true }
+      options
     );
   }
 

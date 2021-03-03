@@ -65,8 +65,10 @@ module.exports = class OrdersHttp {
     let ourOrder;
     if (order.type && order.type === 'stop') {
       ourOrder = Order.createStopOrder(res[1], order.side, orderPrice, orderAmount);
-    } else {
+    } else if (order.type && order.type === 'limit') {
       ourOrder = Order.createLimitPostOnlyOrder(res[1], order.side, orderPrice, orderAmount);
+    } else {
+      ourOrder = Order.createMarketOrder(res[1], orderAmount, order.side);
     }
 
     return this.orderExecutor.executeOrder(res[0], ourOrder);
