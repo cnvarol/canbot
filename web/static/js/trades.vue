@@ -79,7 +79,7 @@
 
           </thead>
           <tbody>
-          <tr v-for='position in positions' :key="`${position.exchange}-${position.position.symbol}`">
+          <tr v-for='position in positions' :key="`${position.exchange}-${position.position.symbol}-${position.position.side}`">
             <td><img :src="`/img/exchanges/${position.exchange}.png`" :alt="position.exchange" :title="position.exchange" width="16px" height="16px"></td>
             <td>
               <span v-if="position.position.side === 'short'" class="badge badge-danger">short</span>
