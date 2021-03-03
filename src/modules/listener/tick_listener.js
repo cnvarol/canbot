@@ -198,7 +198,7 @@ Margin Risk Ratio: ${riskRatio.toFixed(2)}%`);
       throw Error(`Invalid signal: ${JSON.stringify(signal, strategy)}`);
     }
 
-    const signalWindow = moment()
+    /* const signalWindow = moment()
       .subtract(_.get(symbol, 'trade.signal_slowdown_minutes', 1), 'minutes')
       .toDate();
 
@@ -224,7 +224,7 @@ Margin Risk Ratio: ${riskRatio.toFixed(2)}%`);
       signal,
       strategyKey
     );
-    this.notified[noteKey] = new Date();
+    this.notified[noteKey] = new Date(); */
 
     let side = signal;
     if (signal === 'close_long' || signal === 'close_short') {
