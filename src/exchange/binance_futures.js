@@ -606,7 +606,6 @@ module.exports = class BinanceFutures {
           request.args.side = order.side === Order.SIDE_SHORT ? 'BUY' : 'SELL';
         }
 
-        console.log(order);
         return request;
       }
     });

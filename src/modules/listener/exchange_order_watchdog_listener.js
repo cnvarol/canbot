@@ -216,9 +216,9 @@ module.exports = class ExchangeOrderWatchdogListener {
       let amount = 0;
 
       currentPositions.forEach(p => {
-        amount += Math.abs(p.amount * p.entry);
+        amount += Math.abs(p.amount) * p.entry;
         if (p.raw && p.raw.unRealizedProfit) {
-          pnl += p.raw.unRealizedProfit;
+          pnl += parseFloat(p.raw.unRealizedProfit);
         }
       });
 
