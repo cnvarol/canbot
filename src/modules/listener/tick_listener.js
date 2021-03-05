@@ -206,13 +206,13 @@ Margin Risk Ratio: ${riskRatio.toFixed(2)}%`);
     const noteKey = symbol.exchange + symbol.symbol;
     if (noteKey in this.notified && this.notified[noteKey] >= signalWindow) {
       // return;
-    }
+    } */
 
     // log signal
     this.logger.info(
       [new Date().toISOString(), signal, strategyKey, symbol.exchange, symbol.symbol, ticker.ask].join(' ')
     );
-    this.notifier.send(`[${signal} (${strategyKey})] ${symbol.exchange}:${symbol.symbol} - ${ticker.ask}`);
+    // this.notifier.send(`[${signal} (${strategyKey})] ${symbol.exchange}:${symbol.symbol} - ${ticker.ask}`);
     this.signalLogger.signal(
       symbol.exchange,
       symbol.symbol,
@@ -224,7 +224,7 @@ Margin Risk Ratio: ${riskRatio.toFixed(2)}%`);
       signal,
       strategyKey
     );
-    this.notified[noteKey] = new Date(); */
+    // this.notified[noteKey] = new Date();
 
     let side = signal;
     if (signal === 'close_long' || signal === 'close_short') {
