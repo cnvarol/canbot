@@ -68,14 +68,14 @@
           <table class="table table-bordered table-sm table-hover" id="positionsTable">
             <thead>
             <tr>
-              <th scope="col" title="Exchange" style="width:30px">Ex</th>
+              <th scope="col no-sort" title="Exchange" style="width:30px">Ex</th>
               <th scope="col">Symbol</th>
               <th scope="col">Size</th>
               <th scope="col">Entry Price</th>
               <th scope="col">Mark Price</th>
               <th scope="col">Margin</th>
               <th scope="col" style="width:15%">PNL(ROE %)</th>
-              <th scope="col" title="Close">Close</th>
+              <th scope="col no-sort" title="Close">Close</th>
             </tr>
 
             </thead>
@@ -210,9 +210,10 @@ module.exports = {
     async fillDataTable() {
       $(function () {
         $('#positionsTable').DataTable({
-          "paging": false,
-          "lengthChange": false,
-          "searching": false,
+          "paging": true,
+          "pageLength": 25,
+          "lengthChange": true,
+          "searching": true,
           "ordering": true,
           "info": true,
           "autoWidth": false,
