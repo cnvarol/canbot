@@ -233,7 +233,7 @@ Margin Risk Ratio: ${riskRatio.toFixed(2)}%`);
       side = split[1];
     }
 
-    await this.pairStateManager.update(symbol.exchange, symbol.symbol, signal, side);
+    await this.pairStateManager.update(symbol.exchange, symbol.symbol, signal, side, { market: true });
   }
 
   async placeStrategyOrders(placedOrder, symbol) {
