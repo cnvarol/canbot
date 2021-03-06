@@ -60,12 +60,12 @@
     </template>
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Positions ({{ positions.length }}) - <span class="text-success">Long: {{ totalLongPosition }} <small>USDT</small></span> <span class="text-danger">Short {{ totalShortPosition }} <small>USDT</small></span></h3> <span class="text-muted float-right"><transition name="slide-fade" mode="out-in"><div :key="positionsUpdatedAt">{{ positionsUpdatedAt }}</div></transition></span>
+        <h3 class="card-title">Positions ({{ positions.length }}) - <span class="text-success">Open Long: {{ totalLongPosition.toFixed(0) }} <small>USDT</small></span> - <span class="text-danger">Open Short: {{ totalShortPosition.toFixed(0) }} <small>USDT</small></span></h3> <span class="text-muted float-right"><transition name="slide-fade" mode="out-in"><div :key="positionsUpdatedAt">{{ positionsUpdatedAt }}</div></transition></span>
       </div>
       <!-- /.card-header -->
       <div class="card-body">
         <div class="table-responsive">
-          <table class="table table-bordered table-sm table-hover">
+          <table class="table table-bordered table-sm table-hover" id="positionsTable">
             <thead>
             <tr>
               <th scope="col" title="Exchange" style="width:30px">Ex</th>
@@ -195,8 +195,8 @@ module.exports = {
       positions: [],
       orders: [],
       balances: {},
-      totalLongPosition: 0,
-      totalShortPosition: 0,
+      totalLongPosition: 0.00,
+      totalShortPosition: 0.00,
       positionsUpdatedAt: '',
       ordersUpdatedAt: ''
     }
@@ -204,8 +204,22 @@ module.exports = {
   created: function() {
     this.fetchPageAsJson();
     this.timer = setInterval(this.fetchPageAsJson, 3000);
+    this.dataTable = setTimeout(this.fillDataTable, 5000);
   },
   methods: {
+    async fillDataTable() {
+      $(function () {
+        $('#positionsTable').DataTable({
+          "paging": false,
+          "lengthChange": false,
+          "searching": false,
+          "ordering": true,
+          "info": true,
+          "autoWidth": false,
+          "responsive": true,
+        });
+     });
+    },
     async fetchPageAsJson() {
       const res = await fetch('/trades.json');
       const data = await res.json();
@@ -221,17 +235,20 @@ module.exports = {
         document.title = `PNL ${parseFloat(this.balances.info.totalUnrealizedProfit).toFixed(2)} USDT | ${title}`;
       }
 
+      this.totalLongPosition = 0;
+      this.totalShortPosition = 0;
 
-      this.positions.forEach( function(p) {
+      this.positions.forEach(p => {
         if (p.position.side === 'long') {
-          this.totalLongPosition += p.position.currency;
-        } else if (p.side === 'short') {
-          this.totalShortPosition += p.position.currency;
+          this.totalLongPosition += parseFloat(p.currency);
+        } else if (p.position.side === 'short') {
+          this.totalShortPosition += parseFloat(p.currency);
         }
       });
 
       this.positionsUpdatedAt = new Date().toLocaleTimeString();
       this.ordersUpdatedAt = new Date().toLocaleTimeString();
+
     },
     cancelAutoUpdate() {
       clearInterval(this.timer);
@@ -241,6 +258,7 @@ module.exports = {
     clearInterval(this.timer);
   },
 }
+
 </script>
 
 <style>
