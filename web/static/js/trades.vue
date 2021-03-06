@@ -60,77 +60,79 @@
     </template>
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Positions ({{ positions.length }})</h3> <span class="text-muted float-right"><transition name="slide-fade" mode="out-in"><div :key="positionsUpdatedAt">{{ positionsUpdatedAt }}</div></transition></span>
+        <h3 class="card-title">Positions ({{ positions.length }}) - Total Positions Size <span class="text-success">Long: {{ totalLongPosition }} <small>USDT</small></span><span class="text-danger">Short {{ totalShortPosition }} <small>USDT</small></span></h3> <span class="text-muted float-right"><transition name="slide-fade" mode="out-in"><div :key="positionsUpdatedAt">{{ positionsUpdatedAt }}</div></transition></span>
       </div>
       <!-- /.card-header -->
       <div class="card-body">
-        <table class="table table-bordered table-sm table-hover">
-          <thead>
-          <tr>
-            <th scope="col" title="Exchange" style="width:30px">Ex</th>
-            <th scope="col">Symbol</th>
-            <th scope="col">Size</th>
-            <th scope="col">Entry Price</th>
-            <th scope="col">Mark Price</th>
-            <th scope="col">Margin</th>
-            <th scope="col" style="width:15%">PNL(ROE %)</th>
-            <th scope="col" title="Close">Close</th>
-          </tr>
+        <div class="table-responsive">
+          <table class="table table-bordered table-sm table-hover">
+            <thead>
+            <tr>
+              <th scope="col" title="Exchange" style="width:30px">Ex</th>
+              <th scope="col">Symbol</th>
+              <th scope="col">Size</th>
+              <th scope="col">Entry Price</th>
+              <th scope="col">Mark Price</th>
+              <th scope="col">Margin</th>
+              <th scope="col" style="width:15%">PNL(ROE %)</th>
+              <th scope="col" title="Close">Close</th>
+            </tr>
 
-          </thead>
-          <tbody>
-          <tr v-for='position in positions' :key="`${position.exchange}-${position.position.symbol}-${position.position.side}`">
-            <td><img :src="`/img/exchanges/${position.exchange}.png`" :alt="position.exchange" :title="position.exchange" width="16px" height="16px"></td>
-            <td>
-              <span v-if="position.position.side === 'short'" class="badge badge-danger">short</span>
-              <span v-if="position.position.side === 'long'" class="badge badge-success">long</span>
-              <a target="blank" :href="'/tradingview/' + position.exchange + ':' + position.position.symbol">{{ position.position.symbol }}</a> 
-              <small class="text-warning">[{{ position.position.raw.leverage }}x]</small>
-            </td>
-            <!-- td v-bind:class="{ 'text-success': position.position.amount > 0, 'text-danger': position.position.amount < 0 }">
-              {{ position.position.amount }}
-            </td -->
-            <td>
-              <template v-if="!!position.currency">
-                {{ position.currency|filter_price }}
-              </template>
-              <small>USDT</small>
-            </td>
-            <td>
-              <template v-if="!!position.position.entry">
-                {{ position.position.entry|filter_price }}
-              </template>
-              <small>USDT</small>
-            </td>
-            <td>
-              <template v-if="!!position.position.raw.markPrice">
-                {{ position.position.raw.markPrice|filter_price }}
-              </template>
-              <small>USDT</small>
-            </td>
-            <td>
-              <template v-if="!!position.position.raw.unRealizedProfit">
-                {{ (position.currency / position.position.raw.leverage) + (position.position.raw.unRealizedProfit / position.position.raw.leverage)|filter_price }}
-                (<small>{{ position.position.raw.marginType }}</small>)
-              </template>           
-            </td>            
-            <td>
-            <span v-if="typeof position.position.profit !== 'undefined'" v-bind:class="{ 'text-success': position.position.profit >= 0, 'text-danger': position.position.profit < 0 }">
-              {{ position.position.raw.unRealizedProfit|filter_price }}({{ position.position.profit|round(2) }}%)
-            </span>
-            </td>
-            <td style="width:200px">
-              <form :action="'/pairs/' + position.exchange + '-' + position.position.symbol" method="post">
-                <input type="hidden" name="positionSide" :value="position.position.side">
-                <button name="action" value="close" data-toggle="tooltip"
-                        title="Limit Close" class="btn btn-outline-primary btn-xs"><i class="fa fa-times"></i> Limit Close</button>
-                <button name="action" value="close_market" data-toggle="tooltip" 
-                        title="Market Close" class="btn btn-outline-danger btn-xs"><i class="fa fa-times"></i> Market Close</button>
-              </form>
-            </td>
-          </tr>
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+            <tr v-for='position in positions' :key="`${position.exchange}-${position.position.symbol}-${position.position.side}`">
+              <td><img :src="`/img/exchanges/${position.exchange}.png`" :alt="position.exchange" :title="position.exchange" width="16px" height="16px"></td>
+              <td>
+                <span v-if="position.position.side === 'short'" class="badge badge-danger">short</span>
+                <span v-if="position.position.side === 'long'" class="badge badge-success">long</span>
+                <a target="blank" :href="'/tradingview/' + position.exchange + ':' + position.position.symbol">{{ position.position.symbol }}</a> 
+                <small class="text-warning">[{{ position.position.raw.leverage }}x]</small>
+              </td>
+              <!-- td v-bind:class="{ 'text-success': position.position.amount > 0, 'text-danger': position.position.amount < 0 }">
+                {{ position.position.amount }}
+              </td -->
+              <td>
+                <template v-if="!!position.currency">
+                  {{ position.currency|filter_price }}
+                </template>
+                <small>USDT</small>
+              </td>
+              <td>
+                <template v-if="!!position.position.entry">
+                  {{ position.position.entry|filter_price }}
+                </template>
+                <small>USDT</small>
+              </td>
+              <td>
+                <template v-if="!!position.position.raw.markPrice">
+                  {{ position.position.raw.markPrice|filter_price }}
+                </template>
+                <small>USDT</small>
+              </td>
+              <td>
+                <template v-if="!!position.position.raw.unRealizedProfit">
+                  {{ (position.currency / position.position.raw.leverage) + (position.position.raw.unRealizedProfit / position.position.raw.leverage)|filter_price }}
+                  (<small>{{ position.position.raw.marginType }}</small>)
+                </template>           
+              </td>            
+              <td>
+              <span v-if="typeof position.position.profit !== 'undefined'" v-bind:class="{ 'text-success': position.position.profit >= 0, 'text-danger': position.position.profit < 0 }">
+                {{ position.position.raw.unRealizedProfit|filter_price }}({{ position.position.profit|round(2) }}%)
+              </span>
+              </td>
+              <td style="width:200px">
+                <form :action="'/pairs/' + position.exchange + '-' + position.position.symbol" method="post">
+                  <input type="hidden" name="positionSide" :value="position.position.side">
+                  <button name="action" value="close" data-toggle="tooltip"
+                          title="Limit Close" class="btn btn-outline-primary btn-xs"><i class="fa fa-times"></i> Limit Close</button>
+                  <button name="action" value="close_market" data-toggle="tooltip" 
+                          title="Market Close" class="btn btn-outline-danger btn-xs"><i class="fa fa-times"></i> Market Close</button>
+                </form>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
 
@@ -193,6 +195,8 @@ module.exports = {
       positions: [],
       orders: [],
       balances: {},
+      totalLongPosition: 0,
+      totalShortPosition: 0,
       positionsUpdatedAt: '',
       ordersUpdatedAt: ''
     }
@@ -216,6 +220,15 @@ module.exports = {
       if (this.balances.info) {
         document.title = `PNL ${parseFloat(this.balances.info.totalUnrealizedProfit).toFixed(2)} USDT | ${title}`;
       }
+
+
+      this.positions.forEach( function(p) {
+        if (p.side === 'long') {
+          this.totalLongPosition += p.currency;
+        } else if (p.side === 'short') {
+          this.totalShortPosition += p.currency;
+        }
+      });
 
       this.positionsUpdatedAt = new Date().toLocaleTimeString();
       this.ordersUpdatedAt = new Date().toLocaleTimeString();
