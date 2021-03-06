@@ -60,7 +60,7 @@
     </template>
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Positions ({{ positions.length }}) - Total Positions Size <span class="text-success">Long: {{ totalLongPosition }} <small>USDT</small></span><span class="text-danger">Short {{ totalShortPosition }} <small>USDT</small></span></h3> <span class="text-muted float-right"><transition name="slide-fade" mode="out-in"><div :key="positionsUpdatedAt">{{ positionsUpdatedAt }}</div></transition></span>
+        <h3 class="card-title">Positions ({{ positions.length }}) - <span class="text-success">Long: {{ totalLongPosition }} <small>USDT</small></span> <span class="text-danger">Short {{ totalShortPosition }} <small>USDT</small></span></h3> <span class="text-muted float-right"><transition name="slide-fade" mode="out-in"><div :key="positionsUpdatedAt">{{ positionsUpdatedAt }}</div></transition></span>
       </div>
       <!-- /.card-header -->
       <div class="card-body">
@@ -223,10 +223,10 @@ module.exports = {
 
 
       this.positions.forEach( function(p) {
-        if (p.side === 'long') {
-          this.totalLongPosition += p.currency;
+        if (p.position.side === 'long') {
+          this.totalLongPosition += p.position.currency;
         } else if (p.side === 'short') {
-          this.totalShortPosition += p.currency;
+          this.totalShortPosition += p.position.currency;
         }
       });
 
