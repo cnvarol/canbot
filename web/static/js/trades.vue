@@ -204,8 +204,22 @@ module.exports = {
   created: function() {
     this.fetchPageAsJson();
     this.timer = setInterval(this.fetchPageAsJson, 3000);
+    this.dataTable = setTimeout(this.fillDataTable, 5000);
   },
   methods: {
+    async fillDataTable() {
+      $(function () {
+        $('#positionsTable').DataTable({
+          "paging": false,
+          "lengthChange": false,
+          "searching": false,
+          "ordering": true,
+          "info": true,
+          "autoWidth": false,
+          "responsive": true,
+        });
+     });
+    },
     async fetchPageAsJson() {
       const res = await fetch('/trades.json');
       const data = await res.json();
