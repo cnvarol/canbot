@@ -263,7 +263,7 @@ module.exports = class ExchangeOrderWatchdogListener {
       const noteKey = position.exchange + position.symbol + position.side;
       if (!(noteKey in this.notified) || (noteKey in this.notified && this.notified[noteKey] < warnWindow)) {
         this.notifier.send(
-          `Position size of ${position.symbol} too large.\nPlease await from significant losses.\n\nCurrent Size: ${position.currency}`
+          `Position size of ${position.symbol} too large.\nPlease await from significant losses.\n\nCurrent Size: ${size} USDT`
         );
 
         this.notified[noteKey] = new Date();
