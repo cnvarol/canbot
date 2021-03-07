@@ -254,7 +254,8 @@ module.exports = class ExchangeOrderWatchdogListener {
       return;
     }
 
-    if (options.risk_notify && position.currency > options.risk_warn_size) {
+    const size = Math.abs(position.amount * position.entry);
+    if (options.risk_notify && size > options.risk_warn_size) {
       const warnWindow = moment()
         .subtract(15, 'minutes')
         .toDate();
