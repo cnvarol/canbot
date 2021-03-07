@@ -1,5 +1,7 @@
 const orderUtil = require('../../utils/order_util');
 const Order = require('../../dict/order');
+const moment = require('moment');
+const _ = require('lodash');
 
 module.exports = class ExchangeOrderWatchdogListener {
   constructor(
@@ -11,7 +13,8 @@ module.exports = class ExchangeOrderWatchdogListener {
     orderExecutor,
     pairStateManager,
     logger,
-    tickers
+    tickers,
+    notifier
   ) {
     this.exchangeManager = exchangeManager;
     this.instances = instances;
@@ -22,6 +25,8 @@ module.exports = class ExchangeOrderWatchdogListener {
     this.pairStateManager = pairStateManager;
     this.logger = logger;
     this.tickers = tickers;
+    this.notifier = notifier;
+    this.notified = {};
   }
 
   onTick() {
@@ -247,6 +252,21 @@ module.exports = class ExchangeOrderWatchdogListener {
       );
 
       return;
+    }
+
+    if (options.risk_notify && position.currency > options.risk_warn_size) {
+      const warnWindow = moment()
+        .subtract(15, 'minutes')
+        .toDate();
+
+      const noteKey = position.exchange + position.symbol + position.side;
+      if (!(noteKey in this.notified) || (noteKey in this.notified && this.notified[noteKey] < warnWindow)) {
+        this.notifier.send(
+          `Position size of ${position.symbol} too large.\nPlease await from significant losses.\n\nCurrent Size: ${position.currency}`
+        );
+
+        this.notified[noteKey] = new Date();
+      }
     }
 
     const orderChanges = await this.gridTradingCalculator.createGridTradingOrders(position, orders, options);

@@ -251,7 +251,8 @@ module.exports = {
       this.getOrderExecutor(),
       this.getPairStateManager(),
       this.getLogger(),
-      this.getTickers()
+      this.getTickers(),
+      this.getNotifier()
     ));
   },
 

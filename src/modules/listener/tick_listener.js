@@ -203,7 +203,7 @@ Margin Risk Ratio: ${riskRatio.toFixed(2)}%`);
       .toDate();
 
     // TODO(semihalev): We really need this block?
-    const noteKey = symbol.exchange + symbol.symbol;
+    const noteKey = symbol.exchange + symbol.symbol + signal;
     if (noteKey in this.notified && this.notified[noteKey] >= signalWindow) {
       // return;
     } */
