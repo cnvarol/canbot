@@ -254,7 +254,7 @@ module.exports = class ExchangeOrderWatchdogListener {
       return;
     }
 
-    const size = Math.abs(position.amount * position.entry);
+    const size = Math.abs(position.amount * position.entry).toFixed(2);
     if (options.risk_notify && size > options.risk_warn_size) {
       const warnWindow = moment()
         .subtract(15, 'minutes')
