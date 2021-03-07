@@ -25,6 +25,7 @@ Vue.filter('date', function(value) {
 new Vue({
   el: '#vue-trades',
   components: {
-    'trades': httpVueLoader('js/trades.vue')
+    'trades': httpVueLoader('js/trades.vue'),
+    VueBootstrap4Table
   }
 });
