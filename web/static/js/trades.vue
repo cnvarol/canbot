@@ -255,7 +255,7 @@ module.exports = {
           rows_selectable: false,
           show_refresh_button: false,
           show_reset_button: false,
-          preservePageOnDataChange: true,
+          preservePageOnDataChange: false,
       }
     }
   },
