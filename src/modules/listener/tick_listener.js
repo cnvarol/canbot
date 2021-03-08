@@ -114,16 +114,12 @@ module.exports = class TickListener {
     if (telegram) {
       const bot = telegram.telegraf;
 
-      bot.on('text', async ({ reply }) => {
-        const keyboard = Keyboard.make([
-          ['Start', 'Stop'], // First row
-          ['Balances', 'Positions'] // Second row
-        ]);
+      const keyboard = Keyboard.make([
+        ['/start', '/stop'], // First row
+        ['/balances', '/positions'] // Second row
+      ]).reply();
 
-        await reply('Commands', keyboard.reply());
-      });
-
-      bot.start(ctx => ctx.reply(`Welcome ${ctx.from.first_name} 😜 I'm ready for your commands.`));
+      bot.start(ctx => ctx.reply(`Welcome ${ctx.from.first_name} 😜 I'm ready for your commands.`, keyboard));
       bot.command('balances', ctx => this.getBalances(ctx));
 
       bot.command('positions', ctx => {
