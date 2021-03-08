@@ -109,9 +109,19 @@ module.exports = class TickListener {
 
   async botTelegramCommands() {
     const telegram = this.notifier.get('telegram');
+    const { Keyboard } = require('telegram-keyboard');
 
     if (telegram) {
       const bot = telegram.telegraf;
+
+      bot.on('text', async ({ reply }) => {
+        const keyboard = Keyboard.make([
+          ['Start', 'Stop'], // First row
+          ['Balances', 'Positions'] // Second row
+        ]);
+
+        await reply('Commands', keyboard.reply());
+      });
 
       bot.start(ctx => ctx.reply(`Welcome ${ctx.from.first_name} 😜 I'm ready for your commands.`));
       bot.command('balances', ctx => this.getBalances(ctx));
