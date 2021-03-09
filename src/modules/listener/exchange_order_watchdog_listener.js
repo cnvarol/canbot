@@ -330,13 +330,13 @@ module.exports = class ExchangeOrderWatchdogListener {
       }
 
       const orderKey = position.exchange + position.symbol + position.side;
-      if (orderKey in this.orders && this.orders[orderKey] === price) {
+      if (orderKey in this.orders && this.orders[orderKey].price === orderChange.price) {
         // lets check the order changing in next tick.
-        this.orders[orderKey] = 0;
+        this.orders[orderKey].price = 0;
         return;
       }
 
-      this.orders[orderKey] = price;
+      this.orders[orderKey].price = orderChange.price;
 
       // we need to normalize the price here: more general solution?
       logger.info(
