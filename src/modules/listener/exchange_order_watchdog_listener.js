@@ -336,7 +336,7 @@ module.exports = class ExchangeOrderWatchdogListener {
         return;
       }
 
-      this.orders[orderKey].price = orderChange.price;
+      this.orders[orderKey] = { price: orderChange.price };
 
       // we need to normalize the price here: more general solution?
       logger.info(
