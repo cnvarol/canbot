@@ -27,6 +27,7 @@ module.exports = class ExchangeOrderWatchdogListener {
     this.tickers = tickers;
     this.notifier = notifier;
     this.notified = {};
+    this.orders = {};
   }
 
   onTick() {
@@ -327,6 +328,15 @@ module.exports = class ExchangeOrderWatchdogListener {
 
         return;
       }
+
+      const orderKey = position.exchange + position.symbol + position.side;
+      if (orderKey in this.orders && this.orders[orderKey].price === price) {
+        // lets check the order changing in next tick.
+        this.orders[orderKey].price = 0;
+        return;
+      }
+
+      this.orders[orderKey].price = price;
 
       // we need to normalize the price here: more general solution?
       logger.info(
