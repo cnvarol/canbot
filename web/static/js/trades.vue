@@ -3,7 +3,7 @@
     <template v-if="!!balances.info">
       <div class="row">
         <div class="col-md-4">
-          <div class="card card-success">
+          <div class="card card-outline card-success">
             <div class="card-header"><h3 class="card-title">Margin Risk Ratio</h3></div>
             <div class="card-body">
               <div class="row">
@@ -15,7 +15,7 @@
           </div>
         </div>
         <div class="col-md-4">
-          <div class="card card-success">
+          <div class="card card-outline card-success">
             <div class="card-header"><h3 class="card-title">Margin Status</h3></div>
             <div class="card-body">
               <div class="row justify-content-md-center">
@@ -36,7 +36,7 @@
           </div>
         </div>
         <div class="col-md-4">
-          <div class="card card-success">
+          <div class="card card-outline card-success">
             <div class="card-header"><h3 class="card-title">Assets</h3></div>
             <div class="card-body" id="memory">
               <div class="row justify-content-md-center">
@@ -59,7 +59,7 @@
       </div>
     </template>
     <template>
-      <div class="card">
+      <div class="card card-outline card-success">
       <div class="card-header">
         <h3 class="card-title">Positions ({{ positions.length }}) - <span class="text-success">Open Long: {{ totalLongPosition.toFixed(0) }} <small>USDT</small></span> - <span class="text-danger">Open Short: {{ totalShortPosition.toFixed(0) }} <small>USDT</small></span></h3> <span class="text-muted float-right"><transition name="slide-fade" mode="out-in"><div :key="positionsUpdatedAt">{{ positionsUpdatedAt }}</div></transition></span>
       </div>
@@ -104,7 +104,7 @@
       </div>
     </template>
 
-    <div class="card">
+    <div class="card card-outline card-success">
       <div class="card-header">
         <h3 class="card-title">Orders ({{ orders.length }})</h3> <span class="text-muted float-right"><transition name="slide-fade" mode="out-in"><div :key="positionsUpdatedAt">{{ ordersUpdatedAt }}</div></transition></span>
       </div>
