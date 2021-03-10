@@ -269,14 +269,14 @@ module.exports = class OrderExecutor {
     try {
       exchangeOrder = await exchange.order(order);
     } catch (err) {
-      this.logger.error(`Order create canceled:${JSON.stringify(order)} - ${JSON.stringify(String(err))}`);
+      this.logger.info(`Order create canceled:${JSON.stringify(order)} - ${JSON.stringify(String(err))}`);
 
       resolve();
       return;
     }
 
     if (!exchangeOrder) {
-      this.logger.error('Order create canceled no exchange return');
+      this.logger.info('Order create canceled no exchange return');
 
       resolve();
       return;

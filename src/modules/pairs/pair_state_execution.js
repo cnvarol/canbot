@@ -119,7 +119,7 @@ module.exports = class PairStateExecution {
         newOrders
           .filter(o => state.id !== o.id && state.id !== o.id)
           .forEach(async order => {
-            this.logger.error(`Pair State: Clear invalid orders:${JSON.stringify([order])}`);
+            this.logger.info(`Pair State: Clear invalid orders:${JSON.stringify([order])}`);
             try {
               await this.orderExecutor.cancelOrder(pairState.exchange, order.id);
             } catch (e) {
