@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 const _ = require('lodash');
 
 /**
@@ -266,9 +267,9 @@ module.exports = class Order {
         (exchangeOrder.positionSide === exchangeOrder.POSITION_SIDE_LONG && exchangeOrder.side === 'sell') ||
         (exchangeOrder.positionSide === exchangeOrder.POSITION_SIDE_SHORT && exchangeOrder.side === 'buy')
       ) {
-        exchangeOrder.options = {close: true, adjust_price: true, post_only: true};
+        exchangeOrder.options = { close: true, adjust_price: true, post_only: true };
       } else {
-        exchangeOrder.options = {adjust_price: true, post_only: true};
+        exchangeOrder.options = { adjust_price: true, post_only: true };
       }
     }
 

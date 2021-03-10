@@ -1,4 +1,3 @@
-const Order = require('../../dict/order');
 const ExchangeOrder = require('../../dict/exchange_order');
 const OrderUtil = require('../../utils/order_util');
 
@@ -48,6 +47,7 @@ module.exports = class GridTradingCalculator {
       };
 
       if (position.side === 'short') {
+        // eslint-disable-next-line operator-assignment
         newOrders.target.price = newOrders.target.price * -1;
       }
     } else {

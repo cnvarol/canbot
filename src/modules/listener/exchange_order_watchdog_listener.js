@@ -1,7 +1,6 @@
+const moment = require('moment');
 const orderUtil = require('../../utils/order_util');
 const Order = require('../../dict/order');
-const moment = require('moment');
-const _ = require('lodash');
 
 module.exports = class ExchangeOrderWatchdogListener {
   constructor(

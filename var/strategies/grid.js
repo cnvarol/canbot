@@ -16,7 +16,7 @@ module.exports = class {
     indicatorBuilder.add('adx', 'adx', options.period);
   }
 
-  async period(indicatorPeriod, options) {
+  async period(indicatorPeriod) {
     const bb = indicatorPeriod.getLatestIndicator('bb');
     const adx = indicatorPeriod.getLatestIndicator('adx');
     const rsi = indicatorPeriod.getLatestIndicator('rsi');
