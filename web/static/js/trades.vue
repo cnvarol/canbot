@@ -143,7 +143,7 @@
                 <i v-if="order.order.side === 'buy'" class="fas fa-chevron-circle-up text-success" title="long"></i>
               </td>
               <td>
-                <a title="cancel" :href="'/order/' + order.exchange + '/' + order.order.id"><i class="fas fa-window-close text-dark"></i></a>
+                <a title="cancel" :href="'/order/' + order.exchange + '/' + order.order.id"><i class="fas fa-window-close"></i></a>
               </td>
             </tr>
             </tbody>
