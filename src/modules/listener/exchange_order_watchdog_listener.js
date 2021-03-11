@@ -198,11 +198,10 @@ module.exports = class ExchangeOrderWatchdogListener {
       if (currentPositions.length < 2) {
         let amount = Math.abs(position.amount);
         if (position.side === 'long') {
-          amount *= -1;
+          amount *= -4;
+        } else {
+          amount *= 4;
         }
-
-        // for safe its better
-        amount *= 4;
 
         const side = position.side === Order.SIDE_LONG ? Order.SIDE_SHORT : Order.SIDE_LONG;
         const hedgeOrder = Order.createMarketOrder(symbol, amount, side);
