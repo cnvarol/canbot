@@ -1,3 +1,8 @@
+<style>
+  .table th, .table td {
+    border-top: 0 !important;
+  }
+</style>
 <template>
   <div class="vue-root">
     <template v-if="!!balances.info">
@@ -235,8 +240,8 @@ module.exports = {
       ],
       classes: {
           table : {
-              "table table-sm table-hover" : true,
-              "table table-sm table-hover" : function(rows) {
+              "table-sm table-hover" : true,
+              "table-sm table-hover" : function(rows) {
                   return true
               }
           },
