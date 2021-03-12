@@ -11581,8 +11581,7 @@ body.sidebar-collapse:not(.sidebar-mini-md):not(.sidebar-mini) .main-header::bef
 }
 
 .dark-mode .content-wrapper {
-  /* background-color: #454d55; */
-  background-image: linear-gradient(rgb(34, 37, 49) 0%, rgba(34, 37, 49, 0) 413px);
+  background-color: #454d55;
   color: #fff;
 }
 

@@ -10,6 +10,12 @@ nav {
     padding: 0;
 }
 
+.dark-mode .content-wrapper {
+    /* background-color: #454d55; */
+    background-image: linear-gradient(rgb(34, 37, 49) 0%, rgba(34, 37, 49, 0) 413px) !important;
+    color: #fff;
+}
+
 /* Medium devices (tablets, 768px and up) */
 @media (min-width: 768px) {
     .span-md {
