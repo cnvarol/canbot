@@ -255,7 +255,7 @@ module.exports = {
           server_mode: false,
           per_page: 25,
           num_of_visibile_pagination_buttons: 5,
-          per_page_options: [25, 50, 100],
+          per_page_options: [25, 50, 100, 150, 200],
           checkbox_rows: false,
           rows_selectable: false,
           show_refresh_button: false,
