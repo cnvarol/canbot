@@ -20,8 +20,8 @@ module.exports = class {
     const rsiP = 0.1 * (rsi - 50);
     const fisher_rsi = (Math.exp(2 * rsiP) - 1) / (Math.exp(2 * rsiP) + 1);
 
-    let short = fisher_rsi < -0.7; // Direction may long but we can open short
-    let long = fisher_rsi > 0.7;
+    let long = fisher_rsi < -0.7;
+    let short = fisher_rsi > 0.7;
 
     if (!long && !short) {
       long = Math.floor(Math.random() * 10) < 5;
