@@ -3,7 +3,7 @@
 {% block page_content %}
 <div class="row">
     <div class="col-md-12">
-        <div class="small-box bg-yellow">
+        <div class="small-box">
             <div class="inner">
                 <h3>{% if ticker is defined %}{{ ticker.ask|price_format }} / {{ ticker.bid|price_format }}{% else %}{% endif %}</h3>
                 <p>Price{% if ticker is defined %} - {{ ticker.createdAt|date('y-m-d H:i:s') }}{% endif %}</p>
@@ -76,9 +76,9 @@
                 </div>
 
                 <div class="card-footer">
-                    <button type="submit" class="btn btn-success" name="side" value="long"><i class="fas fa-shopping-cart"></i> Long</button>
+                    <button type="submit" class="btn btn-success" name="side" value="long">Open Long</button>
                     &nbsp;
-                    <button type="submit" class="btn btn-danger" name="side" value="short"><i class="far fa-trash-alt"></i> Short</button>
+                    <button type="submit" class="btn btn-danger" name="side" value="short">Open Short</button>
                 </div>
             </form>
         </div>
