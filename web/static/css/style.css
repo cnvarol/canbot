@@ -29,7 +29,7 @@ nav {
 
 @media (max-width: 768px) {
     .border-right {
-        border-right: 0;
+        border-right: 0 !important;
     }
 }
 
