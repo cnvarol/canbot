@@ -18,6 +18,7 @@ nav {
 
 .dark-mode .card {
     background-color: transparent !important;
+    background-attachment: fixed !important;
 }
 
 /* Medium devices (tablets, 768px and up) */
