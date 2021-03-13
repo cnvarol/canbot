@@ -14,11 +14,11 @@ nav {
     /* background-color: #454d55; */
     background-image: linear-gradient(rgb(34, 37, 49) 0%, rgba(34, 37, 49, 0) 413px) !important;
     color: #fff;
+    background-attachment: fixed !important;
 }
 
 .dark-mode .card {
     background-color: transparent !important;
-    background-attachment: fixed !important;
 }
 
 /* Medium devices (tablets, 768px and up) */
