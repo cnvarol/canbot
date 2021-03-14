@@ -218,10 +218,12 @@ module.exports = class ExchangeOrderWatchdogListener {
     }
 
     let { profit } = position;
+    let amount = Math.abs(position.amount);
+
     if (Array.isArray(currentPositions)) {
       profit = 0;
+      amount = 0;
       let pnl = 0;
-      let amount = 0;
 
       currentPositions.forEach(p => {
         amount += Math.abs(p.amount) * p.entry;
@@ -233,7 +235,7 @@ module.exports = class ExchangeOrderWatchdogListener {
       profit = (pnl / amount) * 100;
     }
 
-    if (profit >= options.take_profit) {
+    if (profit >= options.take_profit || (amount >= options.risk_size && profit >= options.risk_profit)) {
       console.log('Closing positions:', symbol, profit);
 
       // close position/s with market order
@@ -258,7 +260,7 @@ module.exports = class ExchangeOrderWatchdogListener {
     }
 
     const size = Math.abs(position.amount * position.entry).toFixed(2);
-    if (options.risk_notify && size > options.risk_warn_size) {
+    if (options.risk_notify && size > options.risk_size) {
       const warnWindow = moment()
         .subtract(15, 'minutes')
         .toDate();

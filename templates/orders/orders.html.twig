@@ -3,7 +3,7 @@
 {% block page_content %}
 <div class="row">
     <div class="col-md-12">
-        <div class="small-box">
+        <div class="small-box bg-info">
             <div class="inner">
                 <h3>{% if ticker is defined %}{{ ticker.ask|price_format }} / {{ ticker.bid|price_format }}{% else %}{% endif %}</h3>
                 <p>Price{% if ticker is defined %} - {{ ticker.createdAt|date('y-m-d H:i:s') }}{% endif %}</p>
@@ -15,7 +15,7 @@
     </div>
     <div class="col-md-12">
         <div class="card card-primary">
-            <div class="card-body">
+            <div class="card-body p-0">
                 <div id="tradingview" style="width: 100%; height: 400px"></div>
             </div>
         </div>

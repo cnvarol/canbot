@@ -278,7 +278,7 @@ module.exports = class Http {
 
       // simple sleep for async ui blocking for exchange communication
       setTimeout(() => {
-        res.redirect('/pairs');
+        res.redirect('/trades');
       }, 800);
     });
 
