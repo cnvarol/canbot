@@ -484,7 +484,7 @@ module.exports = class BinanceFutures {
             )
           );
         } else if (body.stream && body.stream.toLowerCase().includes('@markprice')) {
-          await this.positionMarkPriceUpdate(body.data.s, parseFloat(body.data.p));
+          await me.positionMarkPriceUpdate(body.data.s, parseFloat(body.data.p));
         } else if (body.stream && body.stream.toLowerCase().includes('@kline')) {
           await me.candleImporter.insertThrottledCandles([
             new ExchangeCandlestick(
