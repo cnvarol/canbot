@@ -384,6 +384,8 @@ module.exports = class BinanceFutures {
 
   async positionMarkPriceUpdate(symbol, markPrice) {
     try {
+      let totalUnrealizedProfit = 0;
+
       Object.values(this.positions).forEach(position => {
         if (position.symbol === symbol && position.raw) {
           position.markPrice = markPrice;
@@ -398,9 +400,14 @@ module.exports = class BinanceFutures {
           position.raw.unRealizedProfit = pnl;
           position.profit = profit;
         }
+
+        totalUnrealizedProfit += parseFloat(position.raw.unRealizedProfit);
       });
+
+      this.balances.info.totalMarginBalance = parseFloat(this.balances.info.totalWalletBalance) - totalUnrealizedProfit;
+      this.balances.info.totalUnrealizedProfit = totalUnrealizedProfit;
     } catch (e) {
-      this.logger.error(`Binance Futures: error update mark price positions:${e}`);
+      this.logger.error(`Binance Futures: error update mark price:${e}`);
     }
   }
 
