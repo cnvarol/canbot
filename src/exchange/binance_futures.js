@@ -158,7 +158,7 @@ module.exports = class BinanceFutures {
   async getPositions() {
     return Object.values(this.positions).map(position => {
       // overwrite profits by ticker price from position; ticker prices are more fresh
-      if (position.raw && position.raw.unRealizedProfit) {
+      /* if (position.raw && position.raw.unRealizedProfit) {
         const pnl = parseFloat(position.raw.unRealizedProfit);
         const amount = Math.abs(position.amount) * position.entry;
         const profit = (pnl / amount) * 100;
@@ -172,7 +172,7 @@ module.exports = class BinanceFutures {
           : (position.entry / this.tickers[position.symbol].ask - 1) * 100; // short profit
 
         return Position.createProfitUpdate(position, profit);
-      }
+      } */
 
       return position;
     });
@@ -393,11 +393,13 @@ module.exports = class BinanceFutures {
 
           const profit =
             position.amount < 0
-              ? (position.entryPrice / position.markPrice - 1) * 100 // short
-              : (position.markPrice / position.entryPrice - 1) * 100; // long
+              ? (position.entry / position.markPrice - 1) * 100 // short
+              : (position.markPrice / position.entry - 1) * 100; // long
 
-          position.raw.unRealizedProfit = parseFloat(Math.abs(position.amount * position.entryPrice)) * profit;
-          position.profit = profit.toFixed(2);
+          const pnl = (Math.abs(position.amount) * position.entry * profit) / 100;
+          position.raw.unRealizedProfit = pnl;
+
+          return Position.createProfitUpdate(position, profit);
         }
 
         return position;
