@@ -320,7 +320,7 @@ module.exports = class BinanceFutures {
         }
 
         // position open
-        if (
+        /* if (
           !(position.s in this.positions) &&
           position.pa !== '0' &&
           (parseFloat(position.ep) > 0.00001 || parseFloat(position.ep) < -0.00001) // prevent float point issues
@@ -342,7 +342,7 @@ module.exports = class BinanceFutures {
               this.positions[position.s].getAmount()
             ])}`
           );
-        }
+        } */
       }, this);
     }
   }
