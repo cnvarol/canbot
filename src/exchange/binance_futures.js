@@ -385,20 +385,24 @@ module.exports = class BinanceFutures {
   }
 
   async positionMarkPriceUpdate(symbol, markPrice) {
-    this.positions.forEach(position => {
-      if (position.symbol === symbol && position.raw) {
-        position.markPrice = markPrice;
-        position.raw.markPrice = markPrice;
+    try {
+      this.positions.forEach(position => {
+        if (position.symbol === symbol && position.raw) {
+          position.markPrice = markPrice;
+          position.raw.markPrice = markPrice;
 
-        const profit =
-          position.amount < 0
-            ? (position.entryPrice / position.markPrice - 1) * 100 // short
-            : (position.markPrice / position.entryPrice - 1) * 100; // long
+          const profit =
+            position.amount < 0
+              ? (position.entryPrice / position.markPrice - 1) * 100 // short
+              : (position.markPrice / position.entryPrice - 1) * 100; // long
 
-        position.profit = profit.toFixed(2);
-        position.raw.unRealizedProfit = Math.abs(position.amount) * profit;
-      }
-    });
+          position.profit = profit.toFixed(2);
+          position.raw.unRealizedProfit = Math.abs(position.amount) * profit;
+        }
+      });
+    } catch (e) {
+      this.logger.error(`Binance Futures: error update mark price positions:${e}`);
+    }
   }
 
   async initPublicWebsocket(symbols) {
