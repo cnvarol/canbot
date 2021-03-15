@@ -6,6 +6,36 @@ module.exports = class GridTradingCalculator {
     this.logger = logger;
   }
 
+  checkDuplicateOrders(position, orders) {
+    let ordersCheck;
+    if (position.raw && position.raw.positionSide !== 'BOTH') {
+      ordersCheck = orders.filter(
+        order => order.type === ExchangeOrder.TYPE_LIMIT && order.positionSide === position.raw.positionSide
+      );
+    } else {
+      ordersCheck = orders.filter(order => order.type === ExchangeOrder.TYPE_LIMIT);
+    }
+
+    const orderAmounts = new Set();
+    const orderPrices = new Set();
+    const duplicateOrders = [];
+
+    ordersCheck.forEach(order => {
+      const duplicateAmount = orderAmounts.has(order.amount);
+      const duplicatePrice = orderPrices.has(order.price);
+
+      if (duplicateAmount && duplicatePrice) {
+        duplicateOrders.push(order);
+        return;
+      }
+
+      orderAmounts.add(order.amount);
+      orderPrices.add(order.price);
+    });
+
+    return duplicateOrders;
+  }
+
   calculateForOpenPosition(position, options = { step_percent: 5 }) {
     let entryPrice = position.entry;
     const size = Math.abs(position.amount * position.entry);

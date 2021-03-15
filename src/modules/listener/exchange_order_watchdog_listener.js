@@ -1,4 +1,5 @@
 const moment = require('moment');
+const ExchangeOrder = require('../../dict/exchange_order');
 const orderUtil = require('../../utils/order_util');
 const Order = require('../../dict/order');
 
@@ -274,6 +275,13 @@ module.exports = class ExchangeOrderWatchdogListener {
         this.notified[noteKey] = new Date();
       }
     }
+
+    // check duplicate orders
+    const duplicateOrders = this.gridTradingCalculator.checkDuplicateOrders(position, orders);
+
+    duplicateOrders.forEach(async order => {
+      await exchange.cancelOrder(order.id);
+    });
 
     const orderChanges = await this.gridTradingCalculator.createGridTradingOrders(position, orders, options);
 
