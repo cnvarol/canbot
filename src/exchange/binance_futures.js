@@ -62,7 +62,7 @@ module.exports = class BinanceFutures {
 
       setInterval(async () => {
         me.throttler.addTask('binance_futures_sync_positions', me.syncPositionViaRestApi.bind(me));
-      }, 1000 * 36);
+      }, 1000 * 7);
 
       setInterval(async () => {
         me.throttler.addTask('binance_futures_sync_balances', me.syncBalancesViaRestApi.bind(me));
@@ -275,12 +275,13 @@ module.exports = class BinanceFutures {
   static createPositionFromWebsocket(position) {
     const positionAmt = parseFloat(position.pa);
     const entryPrice = parseFloat(position.ep);
+    const profit = (parseFloat(position.up) / Math.abs(positionAmt)) * 100;
 
     return new Position(
       position.s,
       positionAmt < 0 ? 'short' : 'long',
       positionAmt,
-      undefined,
+      profit,
       new Date(),
       entryPrice,
       undefined,
