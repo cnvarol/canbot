@@ -292,15 +292,24 @@ module.exports = class BinanceFutures {
    * Websocket position updates
    */
   accountUpdate(message) {
+    if (message.a && message.a.B) {
+      message.a.B.forEach(asset => {
+        if (asset.a === 'USDT') {
+          this.balances.info.totalWalletBalance = asset.wb;
+        }
+      });
+    }
+
     if (message.a && message.a.P) {
       message.a.P.forEach(position => {
-        if (!position.s || !position.ps || position.ps.toLowerCase() !== 'both') {
+        if (!position.s || !position.ps) {
           return;
         }
 
         // position closed
         if (position.s in this.positions && position.pa === '0') {
-          delete this.positions[position.s];
+          const side = position.ps.toLowerCase();
+          delete this.positions[`${position.s}:${side}`];
 
           this.logger.info(
             `Binance Futures: Websocket position closed/removed: ${JSON.stringify([position.s, position])}`
@@ -315,7 +324,8 @@ module.exports = class BinanceFutures {
           position.pa !== '0' &&
           (parseFloat(position.ep) > 0.00001 || parseFloat(position.ep) < -0.00001) // prevent float point issues
         ) {
-          this.positions[position.s] = BinanceFutures.createPositionFromWebsocket(position);
+          const side = position.ps.toLowerCase();
+          this.positions[`${position.s}:${side}`] = BinanceFutures.createPositionFromWebsocket(position);
 
           this.logger.info(`Binance Futures: Websocket position new found: ${JSON.stringify([position.s, position])}`);
 
