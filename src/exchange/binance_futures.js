@@ -396,7 +396,7 @@ module.exports = class BinanceFutures {
               ? (position.entryPrice / position.markPrice - 1) * 100 // short
               : (position.markPrice / position.entryPrice - 1) * 100; // long
 
-          position.raw.unRealizedProfit = Math.abs(position.amount * position.entryPrice) * profit;
+          position.raw.unRealizedProfit = parseFloat(Math.abs(position.amount * position.entryPrice)) * profit;
           position.profit = profit.toFixed(2);
         }
 
