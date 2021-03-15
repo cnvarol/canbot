@@ -14,11 +14,19 @@ nav {
     /* background-color: #454d55; */
     background-image: linear-gradient(rgb(34, 37, 49) 0%, rgba(34, 37, 49, 0) 413px) !important;
     color: #fff;
-    background-attachment: fixed !important;
+    /* background-attachment: fixed !important; */
 }
 
-.dark-mode .card {
+/* .dark-mode .card {
     background-color: transparent !important;
+} */
+
+.dark-mode a {
+    color: #f1f1f1 !important;
+}
+
+.dark-mode a:hover {
+    color: #ffffff !important;
 }
 
 /* Medium devices (tablets, 768px and up) */

@@ -66,7 +66,7 @@
     <template>
       <div class="card card-outline card-success">
       <div class="card-header border-bottom-0">
-        <h3 class="card-title">Positions ({{ positions.length }}) - <span class="text-success">Open Long: {{ totalLongPosition.toFixed(0) }} <small>USDT</small></span> - <span class="text-danger">Open Short: {{ totalShortPosition.toFixed(0) }} <small>USDT</small></span></h3> <span class="text-muted float-right"><transition name="slide-fade" mode="out-in"><div :key="positionsUpdatedAt">{{ positionsUpdatedAt }}</div></transition></span>
+        <h3 class="card-title">Positions ({{ positions.length }}) - <span class="text-success">Open long: {{ totalLongPosition.toFixed(0) }} <small>USDT</small></span> - <span class="text-danger">Open short: {{ totalShortPosition.toFixed(0) }} <small>USDT</small></span></h3> <span class="text-muted float-right"><transition name="slide-fade" mode="out-in"><div :key="positionsUpdatedAt">{{ positionsUpdatedAt }}</div></transition></span>
       </div>
       <div class="card-body">
       <div class="table-responsive">
