@@ -404,7 +404,7 @@ module.exports = class BinanceFutures {
         totalUnrealizedProfit += parseFloat(position.raw.unRealizedProfit);
       });
 
-      this.balances.info.totalMarginBalance = parseFloat(this.balances.info.totalWalletBalance) - totalUnrealizedProfit;
+      this.balances.info.totalMarginBalance = parseFloat(this.balances.info.totalWalletBalance) + totalUnrealizedProfit;
       this.balances.info.totalUnrealizedProfit = totalUnrealizedProfit;
     } catch (e) {
       this.logger.error(`Binance Futures: error update mark price:${e}`);
