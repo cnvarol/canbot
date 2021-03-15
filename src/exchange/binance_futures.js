@@ -157,19 +157,17 @@ module.exports = class BinanceFutures {
 
   async getPositions() {
     return Object.values(this.positions).map(position => {
+      // we are updating fresh profit from websocket with markprice
       // overwrite profits by ticker price from position; ticker prices are more fresh
-      /* if (position.raw && position.raw.unRealizedProfit) {
-        const pnl = parseFloat(position.raw.unRealizedProfit);
-        const amount = Math.abs(position.amount) * position.entry;
-        const profit = (pnl / amount) * 100;
-
-        return Position.createProfitUpdate(position, profit);
-      }
-
-      if (position.getEntry() && this.tickers[position.getSymbol()]) {
+      /* if (position.getEntry() && this.tickers[position.getSymbol()]) {
         const profit = position.isLong()
           ? (this.tickers[position.symbol].bid / position.entry - 1) * 100 // long profit
           : (position.entry / this.tickers[position.symbol].ask - 1) * 100; // short profit
+
+        if (position.raw) {
+          const pnl = (Math.abs(position.amount) * position.entry * profit) / 100;
+          position.raw.unRealizedProfit = pnl;
+        }
 
         return Position.createProfitUpdate(position, profit);
       } */
@@ -308,7 +306,7 @@ module.exports = class BinanceFutures {
         }
 
         // position closed
-        if (position.s in this.positions && position.pa === '0') {
+        if (position.s in this.positions && position.pa === '0' && position.ps !== 'BOTH') {
           const side = position.ps.toLowerCase();
           delete this.positions[`${position.s}:${side}`];
 
