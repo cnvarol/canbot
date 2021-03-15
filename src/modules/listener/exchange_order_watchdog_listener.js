@@ -280,6 +280,13 @@ module.exports = class ExchangeOrderWatchdogListener {
     const duplicateOrders = this.gridTradingCalculator.checkDuplicateOrders(position, orders);
 
     duplicateOrders.forEach(async order => {
+      logger.error(
+        `Grid Trading: found duplicate order: ${JSON.stringify({
+          order: order,
+          symbol: symbol,
+          exchange: exchange.getName()
+        })}`
+      );
       await exchange.cancelOrder(order.id);
     });
 
