@@ -62,11 +62,11 @@ module.exports = class BinanceFutures {
 
       setInterval(async () => {
         me.throttler.addTask('binance_futures_sync_positions', me.syncPositionViaRestApi.bind(me));
-      }, 1000 * 7);
+      }, 1000 * 36);
 
       setInterval(async () => {
         me.throttler.addTask('binance_futures_sync_balances', me.syncBalancesViaRestApi.bind(me));
-      }, 1000 * 10);
+      }, 1000 * 60);
 
       setTimeout(async () => {
         await ccxtClient.fetchMarkets();
@@ -384,12 +384,30 @@ module.exports = class BinanceFutures {
     return false;
   }
 
+  async positionMarkPriceUpdate(symbol, markPrice) {
+    this.positions.forEach(position => {
+      if (position.symbol === symbol && position.raw) {
+        position.markPrice = markPrice;
+        position.raw.markPrice = markPrice;
+
+        const profit =
+          position.amount < 0
+            ? (position.entryPrice / position.markPrice - 1) * 100 // short
+            : (position.markPrice / position.entryPrice - 1) * 100; // long
+
+        position.profit = profit.toFixed(2);
+        position.raw.unRealizedProfit = Math.abs(position.amount) * profit;
+      }
+    });
+  }
+
   async initPublicWebsocket(symbols) {
     const me = this;
 
     const allSubscriptions = [];
     symbols.forEach(symbol => {
       allSubscriptions.push(`${symbol.symbol.toLowerCase()}@bookTicker`);
+      allSubscriptions.push(`${symbol.symbol.toLowerCase()}@markPrice`);
       allSubscriptions.push(...symbol.periods.map(p => `${symbol.symbol.toLowerCase()}@kline_${p}`));
     });
 
@@ -465,6 +483,8 @@ module.exports = class BinanceFutures {
               ))
             )
           );
+        } else if (body.stream && body.stream.toLowerCase().includes('@markprice')) {
+          await this.positionMarkPriceUpdate(body.data.s, parseFloat(body.data.p));
         } else if (body.stream && body.stream.toLowerCase().includes('@kline')) {
           await me.candleImporter.insertThrottledCandles([
             new ExchangeCandlestick(
