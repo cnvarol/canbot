@@ -235,7 +235,7 @@ module.exports = class ExchangeOrderWatchdogListener {
       profit = (pnl / amount) * 100;
     }
 
-    if (profit >= options.take_profit || (amount >= options.risk_size && profit >= options.risk_profit)) {
+    if (profit >= options.take_profit || (amount >= options.risk_size && profit >= options.risk_take_profit)) {
       console.log('Closing positions:', symbol, profit);
 
       // close position/s with market order
@@ -260,15 +260,15 @@ module.exports = class ExchangeOrderWatchdogListener {
     }
 
     const size = Math.abs(position.amount * position.entry).toFixed(2);
-    if (options.risk_notify && size > options.risk_size) {
+    if (options.risk_notify && size >= options.risk_size) {
       const warnWindow = moment()
         .subtract(15, 'minutes')
         .toDate();
 
-      const noteKey = position.exchange + position.symbol + position.side;
+      const noteKey = position.exchange + position.symbol + position.side + size;
       if (!(noteKey in this.notified) || (noteKey in this.notified && this.notified[noteKey] < warnWindow)) {
         this.notifier.send(
-          `Position size of ${position.symbol} too large.\nPlease await from significant losses.\n\nCurrent Size: ${size} USDT`
+          `Position size of ${position.symbol} too large.\nPlease await from significant losses.\nCurrent Size: ${size} USDT`
         );
 
         this.notified[noteKey] = new Date();

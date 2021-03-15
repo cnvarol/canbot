@@ -8,6 +8,7 @@ module.exports = class GridTradingCalculator {
 
   calculateForOpenPosition(position, options = { step_percent: 5 }) {
     let entryPrice = position.entry;
+    const size = Math.abs(position.amount * position.entry);
 
     if (!entryPrice) {
       this.logger.info(`Invalid entryPrice for grid trading:${JSON.stringify(position)}`);
@@ -17,6 +18,16 @@ module.exports = class GridTradingCalculator {
     let targetPrice;
 
     entryPrice = Math.abs(entryPrice);
+
+    if (size >= options.risk_size) {
+      if (position.side === 'long') {
+        targetPrice = entryPrice * (1 - options.risk_step_percent / 100);
+      } else {
+        targetPrice = entryPrice * (1 + options.risk_step_percent / 100);
+      }
+
+      return targetPrice;
+    }
 
     if (position.side === 'long') {
       targetPrice = entryPrice * (1 - options.step_percent / 100);
