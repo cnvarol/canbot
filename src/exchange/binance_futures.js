@@ -362,7 +362,7 @@ module.exports = class BinanceFutures {
 
         // position update
         if (posKey in this.positions) {
-          if (position.pa === this.positions[posKey].getAmount()) {
+          if (parseFloat(position.pa) === this.positions[posKey].getAmount()) {
             return;
           }
 
