@@ -1,5 +1,4 @@
 const moment = require('moment');
-const ExchangeOrder = require('../../dict/exchange_order');
 const orderUtil = require('../../utils/order_util');
 const Order = require('../../dict/order');
 

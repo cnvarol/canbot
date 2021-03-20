@@ -30,7 +30,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     {% block head %}
     {% endblock head %}
 </head>
-<body class="hold-transition layout-top-nav layout-navbar-fixed dark-mode">
+<body class="hold-transition layout-top-nav layout-navbar-fixed">
 <div class="wrapper">
     <!-- Navbar -->
     <nav class="main-header navbar navbar-expand-md navbar-dark navbar-green border-bottom-0">
@@ -87,6 +87,19 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     </li>
                 {% endif %}
             </ul>
+
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                    <label class="btn bg-olive">
+                        <input type="radio" name="options" id="lightTheme" autocomplete="off" checked=""><i class="far fa-sun"></i>
+                    </label>
+                    <label class="btn bg-olive">
+                        <input type="radio" name="options" id="darkTheme" autocomplete="off"><i class="far fa-moon"></i>
+                    </label>
+                    </div>
+                </li>
+            </ul>
         </div>
     </nav>
     <!-- /.navbar -->
@@ -123,6 +136,28 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 $(this).addClass('active');
             }
         });
+
+        $('#darkTheme').on('change', function() {
+            if (!$('body').hasClass('dark-mode')) {
+                localStorage.setItem('darkMode', 'enabled');
+                $('body').addClass('dark-mode');
+            }
+        });
+
+        $('#lightTheme').on('change', function() {
+            if ($('body').hasClass('dark-mode')) {
+                localStorage.setItem('darkMode', 'disabled');
+                $('body').removeClass('dark-mode');
+            }
+        });
+
+        if (localStorage.getItem('darkMode') === 'enabled') {
+            $('#darkTheme').click();
+        }
+
+        if (localStorage.getItem('darkMode') === 'disabled') {
+            $('#lightTheme').click();
+        }
     })
 </script>
 {% block javascript %}{% endblock javascript %}
