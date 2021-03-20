@@ -158,6 +158,10 @@ scratch. This page gets rid of all links and provides the needed markup only.
         if (localStorage.getItem('darkMode') === 'disabled') {
             $('#lightTheme').click();
         }
+
+        if (!localStorage.getItem('darkMode') {
+            $('#lightTheme').click();
+        }
     })
 </script>
 {% block javascript %}{% endblock javascript %}
