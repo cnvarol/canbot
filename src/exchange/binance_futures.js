@@ -287,7 +287,7 @@ module.exports = class BinanceFutures {
     );
   }
 
-  async positionUpdate(position) {
+  async positionUpdateFromWebSocket(position) {
     try {
       const amount = parseFloat(position.pa);
       const entryPrice = parseFloat(position.ep);
@@ -366,7 +366,7 @@ module.exports = class BinanceFutures {
             return;
           }
 
-          await this.positionUpdate(position);
+          await this.positionUpdateFromWebSocket(position);
 
           this.logger.info(`Binance Futures: Websocket position update: ${JSON.stringify([posKey, position])}`);
         }
