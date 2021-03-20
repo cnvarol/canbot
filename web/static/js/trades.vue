@@ -25,15 +25,15 @@
             <div class="card-body">
               <div class="row justify-content-md-center">
                 <div class="col-md-4 border-right text-center">
-                  <h4 class="text-success">Maint.</h4>
+                  <h5 class="text-success">Maint.</h5>
                   <h5>{{ balances.info.totalMaintMargin|round }} <small>USDT</small></h5>
                 </div>
                 <div class="col-md-4 border-right text-center">
-                  <h4 class="text-success">Balance</h4>
+                  <h5 class="text-success">Balance</h5>
                   <h5>{{ balances.info.totalMarginBalance|round }} <small>USDT</small></h5>
                 </div>
                 <div class="col-md-4 text-center">
-                  <h4 class="text-success">Initial</h4>
+                  <h5 class="text-success">Initial</h5>
                   <h5>{{ balances.info.totalOpenOrderInitialMargin|round }} <small>USDT</small></h5>
                 </div>
               </div>
@@ -46,15 +46,15 @@
             <div class="card-body" id="memory">
               <div class="row justify-content-md-center">
                 <div class="col-md-4 border-right text-center">
-                  <h4 class="text-success">Wallet</h4>
+                  <h5 class="text-success">Wallet</h5>
                   <h5>{{ balances.info.totalWalletBalance|round }} <small>USDT</small></h5>
                 </div>
                 <div class="col-md-4 border-right text-center">
-                  <h4 class="text-success">Curr PNL</h4>
+                  <h5 class="text-success">Curr PNL</h5>
                   <h5>{{ balances.info.totalUnrealizedProfit|round }} <small>USDT</small></h5>
                 </div>
                 <div class="col-md-4 text-center">
-                  <h4 class="text-success">BNB</h4>
+                  <h5 class="text-success">BNB</h5>
                   <h5>{{ balances.BNB.total|filter_price }} <small>BNB</small><br></h5>
                 </div>
               </div>
