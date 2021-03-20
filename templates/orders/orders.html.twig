@@ -182,17 +182,15 @@
 
 {{ parent() }}
 
-<script type="text/javascript" src="/js/orders.js"></script>
-  <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-
-
-  <script type="text/javascript">
+<script src="/js/orders.js"></script>
+<script src="https://s3.tradingview.com/tv.js"></script>
+<script>
   new TradingView.widget(
     {
       "autosize": true,
       "symbol": "{{ tradingview }}",
             "interval": "15",
-            "theme": "dark",
+            "theme": localStorage.getItem('darkMode') === 'enabled' ? "dark" : "light",
             "style": "60",
             "locale": "en",
             "toolbar_bg": "#f1f3f6",
