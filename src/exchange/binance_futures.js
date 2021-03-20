@@ -368,7 +368,7 @@ module.exports = class BinanceFutures {
             `Binance Futures: Websocket position update: ${JSON.stringify([
               posKey,
               position.pa,
-              this.positions[position.s].getAmount()
+              this.positions[posKey].getAmount()
             ])}`
           );
         }
