@@ -312,18 +312,10 @@ module.exports = class ExchangeOrderWatchdogListener {
         );
 
         try {
-          await exchange.updateOrder(
-            orderChange.id,
-            Order.createUpdateOrder(
-              orderChange.target.id,
-              orderChange.target.price || undefined,
-              orderChange.target.amount || undefined
-            )
-          );
-        } catch (e) {
           await exchange.cancelOrder(orderChange.id);
+        } catch (e) {
           logger.info(
-            `Grid Trading: order update error: ${JSON.stringify({
+            `Grid Trading: order cancel error: ${JSON.stringify({
               orderChange: orderChange,
               symbol: symbol,
               exchange: exchange.getName(),
