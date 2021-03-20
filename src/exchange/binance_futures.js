@@ -287,6 +287,36 @@ module.exports = class BinanceFutures {
     );
   }
 
+  async positionUpdate(position) {
+    try {
+      const amount = parseFloat(position.pa);
+      const entryPrice = parseFloat(position.ep);
+
+      const side = position.ps.toLowerCase();
+      const posKey = `${position.s}:${side}`;
+
+      const currentPosition = this.positions[posKey];
+      currentPosition.amount = amount;
+      currentPosition.entry = entryPrice;
+
+      const profit =
+        amount < 0
+          ? (position.entry / position.markPrice - 1) * 100 // short
+          : (position.markPrice / position.entry - 1) * 100; // long
+
+      const pnl = (Math.abs(position.amount) * position.entry * profit) / 100;
+      currentPosition.profit = profit;
+
+      if (currentPosition.raw) {
+        currentPosition.raw.unRealizedProfit = pnl;
+      }
+
+      this.positions[posKey] = currentPosition;
+    } catch (e) {
+      this.logger.error(`Binance Futures: error update position:${e}`);
+    }
+  }
+
   /**
    * Websocket position updates
    */
@@ -300,20 +330,19 @@ module.exports = class BinanceFutures {
     }
 
     if (message.a && message.a.P) {
-      message.a.P.forEach(position => {
+      message.a.P.forEach(async position => {
         if (!position.s || !position.ps) {
           return;
         }
 
+        const side = position.ps.toLowerCase();
+        const posKey = `${position.s}:${side}`;
+
         // position closed
-        if (position.s in this.positions && position.pa === '0' && position.ps !== 'BOTH') {
-          const side = position.ps.toLowerCase();
-          delete this.positions[`${position.s}:${side}`];
+        if (posKey in this.positions && position.pa === '0') {
+          delete this.positions[posKey];
 
-          this.logger.info(
-            `Binance Futures: Websocket position closed/removed: ${JSON.stringify([position.s, position])}`
-          );
-
+          this.logger.info(`Binance Futures: Websocket position closed/removed: ${JSON.stringify([posKey, position])}`);
           return;
         }
 
@@ -329,19 +358,21 @@ module.exports = class BinanceFutures {
           this.logger.info(`Binance Futures: Websocket position new found: ${JSON.stringify([position.s, position])}`);
 
           return;
-        }
+        } */
 
         // position update
-        if (position.s in this.positions) {
+        if (posKey in this.positions) {
+          await this.positionUpdate(position);
+
           this.logger.info(
             `Binance Futures: Websocket position update: ${JSON.stringify([
-              position.s,
+              posKey,
               position.pa,
               this.positions[position.s].getAmount()
             ])}`
           );
-        } */
-      }, this);
+        }
+      });
     }
   }
 
