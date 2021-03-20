@@ -362,15 +362,13 @@ module.exports = class BinanceFutures {
 
         // position update
         if (posKey in this.positions) {
+          if (position.pa === this.positions[posKey].getAmount()) {
+            return;
+          }
+
           await this.positionUpdate(position);
 
-          this.logger.info(
-            `Binance Futures: Websocket position update: ${JSON.stringify([
-              posKey,
-              position.pa,
-              this.positions[posKey].getAmount()
-            ])}`
-          );
+          this.logger.info(`Binance Futures: Websocket position update: ${JSON.stringify([posKey, position])}`);
         }
       });
     }
