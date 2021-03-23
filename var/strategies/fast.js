@@ -21,8 +21,8 @@ module.exports = class {
     const fisher_rsi = (Math.exp(2 * rsiP) - 1) / (Math.exp(2 * rsiP) + 1);
 
     // diverse signal
-    let short = fisher_rsi < -0.7;
-    let long = fisher_rsi > 0.7;
+    let long = fisher_rsi < -0.7;
+    let short = fisher_rsi > 0.7;
 
     if (!long && !short) {
       long = Math.floor(Math.random() * 10) < 5;
@@ -39,11 +39,11 @@ module.exports = class {
     };
 
     if (!lastSignal && long) {
-      // return SignalResult.createSignal('long', debug);
+      return SignalResult.createSignal('long', debug);
     }
 
     if (!lastSignal && short) {
-      // return SignalResult.createSignal('short', debug);
+      return SignalResult.createSignal('short', debug);
     }
 
     return SignalResult.createEmptySignal(debug);
