@@ -39,11 +39,11 @@ module.exports = class {
     };
 
     if (!lastSignal && long) {
-      return SignalResult.createSignal('long', debug);
+      // return SignalResult.createSignal('long', debug);
     }
 
     if (!lastSignal && short) {
-      return SignalResult.createSignal('short', debug);
+      // return SignalResult.createSignal('short', debug);
     }
 
     return SignalResult.createEmptySignal(debug);
