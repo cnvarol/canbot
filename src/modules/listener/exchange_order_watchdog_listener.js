@@ -198,9 +198,9 @@ module.exports = class ExchangeOrderWatchdogListener {
       if (currentPositions.length < 2) {
         let amount = Math.abs(position.amount);
         if (position.side === 'long') {
-          amount *= -4;
+          amount *= -2;
         } else {
-          amount *= 4;
+          amount *= 2;
         }
 
         const side = position.side === Order.SIDE_LONG ? Order.SIDE_SHORT : Order.SIDE_LONG;

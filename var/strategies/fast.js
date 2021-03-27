@@ -5,24 +5,29 @@ module.exports = class {
     return 'fast';
   }
 
-  buildIndicator(indicatorBuilder, options) {
-    indicatorBuilder.add('candles', 'candles', options.period);
-    indicatorBuilder.add('rsi', 'rsi', options.period);
+  buildIndicator(indicatorBuilder) {
+    indicatorBuilder.add('rsi', 'rsi', '15m');
+    indicatorBuilder.add('btc_macd', 'macd', '15m', { exchange: 'binance_futures', symbol: 'BTCUSDT' });
   }
 
   async period(indicatorPeriod) {
     const rsi = indicatorPeriod.getLatestIndicator('rsi');
+    const btcMACDFull = indicatorPeriod.getIndicator('btc_macd');
 
-    if (!rsi) {
+    if (!rsi || !btcMACDFull) {
       return undefined;
     }
+
+    const btcMACD = btcMACDFull.slice(-2);
+    const currentBTC = btcMACD[0].histogram;
+    const beforeBTC = btcMACD[1].histogram;
 
     const rsiP = 0.1 * (rsi - 50);
     const fisher_rsi = (Math.exp(2 * rsiP) - 1) / (Math.exp(2 * rsiP) + 1);
 
     // diverse signal
-    let long = fisher_rsi < -0.7;
-    let short = fisher_rsi > 0.7;
+    let long = fisher_rsi < -0.9 || (beforeBTC < 0 && currentBTC > 0);
+    let short = fisher_rsi > 0.9 || (beforeBTC > 0 && currentBTC < 0);
 
     if (!long && !short) {
       long = Math.floor(Math.random() * 10) < 5;
