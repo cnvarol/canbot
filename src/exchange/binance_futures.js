@@ -425,7 +425,13 @@ module.exports = class BinanceFutures {
               ? (position.entry / position.markPrice - 1) * 100 // short
               : (position.markPrice / position.entry - 1) * 100; // long
 
-          const pnl = (Math.abs(position.amount) * position.entry * profit) / 100;
+          const pnl =
+            position.amount < 0
+              ? (position.entry - position.markPrice) * Math.abs(position.amount)
+              : (position.markPrice - position.entry) * Math.abs(position.amount);
+
+          // (Math.abs(position.amount) * position.entry * profit) / 100;
+
           position.raw.unRealizedProfit = pnl;
           position.profit = profit;
         }
