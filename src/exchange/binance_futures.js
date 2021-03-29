@@ -679,7 +679,6 @@ module.exports = class BinanceFutures {
 
         if (order.getType() === Order.TYPE_STOP) {
           request.args.stopPrice = order.getPrice();
-          request.args.side = order.side === Order.SIDE_SHORT ? 'BUY' : 'SELL';
         }
 
         if (order.getType() === Order.TYPE_MARKET) {

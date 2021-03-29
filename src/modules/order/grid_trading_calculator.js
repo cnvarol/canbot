@@ -60,10 +60,10 @@ module.exports = class GridTradingCalculator {
     if (size >= options.risk_size) {
       if (position.side === 'long') {
         result.targetPrice = entryPrice * (1 - options.risk_step_percent / 100);
-        result.stopPrice = entryPrice * (1 + options.risk_step_percent / 100);
+        // result.stopPrice = entryPrice * (1 + options.risk_step_percent / 100);
       } else {
         result.targetPrice = entryPrice * (1 + options.risk_step_percent / 100);
-        result.stopPrice = entryPrice * (1 - options.risk_step_percent / 100);
+        // result.stopPrice = entryPrice * (1 - options.risk_step_percent / 100);
       }
 
       return result;
