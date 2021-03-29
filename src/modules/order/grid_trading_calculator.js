@@ -36,7 +36,7 @@ module.exports = class GridTradingCalculator {
     return duplicateOrders;
   }
 
-  calculateForOpenPosition(position, options = { step_percent: 5 }) {
+  calculateForOpenPosition(position, options = { step_percent: 5, risk_step_percent: 7.5 }) {
     let entryPrice = position.entry;
     const size = Math.abs(position.amount * position.entry);
 
@@ -45,32 +45,77 @@ module.exports = class GridTradingCalculator {
       return undefined;
     }
 
-    let targetPrice;
+    const result = {
+      stopPrice: undefined,
+      targetPrice: undefined
+    };
 
     entryPrice = Math.abs(entryPrice);
 
     if (size >= options.risk_size) {
       if (position.side === 'long') {
-        targetPrice = entryPrice * (1 - options.risk_step_percent / 100);
+        result.targetPrice = entryPrice * (1 - options.risk_step_percent / 100);
+        result.stopPrice = entryPrice * (1 + options.risk_step_percent / 100);
       } else {
-        targetPrice = entryPrice * (1 + options.risk_step_percent / 100);
+        result.targetPrice = entryPrice * (1 + options.risk_step_percent / 100);
+        result.stopPrice = entryPrice * (1 - options.risk_step_percent / 100);
       }
 
-      return targetPrice;
+      return result;
     }
 
     if (position.side === 'long') {
-      targetPrice = entryPrice * (1 - options.step_percent / 100);
+      result.targetPrice = entryPrice * (1 - options.step_percent / 100);
+      result.stopPrice = entryPrice * (1 + options.step_percent / 100);
     } else {
-      targetPrice = entryPrice * (1 + options.step_percent / 100);
+      result.targetPrice = entryPrice * (1 + options.step_percent / 100);
+      result.stopPrice = entryPrice * (1 - options.step_percent / 100);
     }
 
-    return targetPrice;
+    return result;
   }
 
   async syncGridTradingOrders(position, orders, options) {
     const newOrders = {};
-    const targetPrice = this.calculateForOpenPosition(position, options);
+    const result = this.calculateForOpenPosition(position, options);
+
+    let stopOrders;
+    if (position.raw && position.raw.positionSide !== 'BOTH') {
+      stopOrders = orders.filter(
+        order => order.type === ExchangeOrder.TYPE_STOP && order.positionSide === position.raw.positionSide
+      );
+    } else {
+      stopOrders = orders.filter(order => order.type === ExchangeOrder.TYPE_STOP);
+    }
+
+    if (stopOrders.length === 0) {
+      newOrders.stop = {
+        amount: Math.abs(position.amount),
+        price: result.stopPrice
+      };
+
+      // inverse price for lose long position via sell
+      if (position.side === 'short') {
+        // eslint-disable-next-line operator-assignment
+        newOrders.stop.price = newOrders.stop.price * -1;
+      }
+    } else {
+      // update order
+      const stopOrder = stopOrders[0];
+
+      // only +1% amount change is important for us
+      if (OrderUtil.isPercentDifferentGreaterThen(position.amount, stopOrder.amount, 1)) {
+        let amount = Math.abs(position.amount);
+        if (position.isShort()) {
+          amount *= -1;
+        }
+
+        newOrders.stop = {
+          id: stopOrder.id,
+          amount: amount
+        };
+      }
+    }
 
     let targetOrders;
     if (position.raw && position.raw.positionSide !== 'BOTH') {
@@ -84,7 +129,7 @@ module.exports = class GridTradingCalculator {
     if (targetOrders.length === 0) {
       newOrders.target = {
         amount: Math.abs(position.amount),
-        price: targetPrice
+        price: result.targetPrice
       };
 
       if (position.side === 'short') {
@@ -128,6 +173,22 @@ module.exports = class GridTradingCalculator {
           price: currentOrders.target.price || undefined,
           amount: currentOrders.target.amount || undefined,
           type: 'target'
+        });
+      }
+    }
+
+    if (currentOrders.stop) {
+      if (currentOrders.stop.id) {
+        newOrders.push({
+          id: currentOrders.stop.id,
+          price: currentOrders.stop.price,
+          amount: currentOrders.stop.amount
+        });
+      } else {
+        newOrders.push({
+          price: currentOrders.stop.price,
+          amount: currentOrders.stop.amount,
+          type: 'stop'
         });
       }
     }

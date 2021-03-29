@@ -198,9 +198,9 @@ module.exports = class ExchangeOrderWatchdogListener {
       if (currentPositions.length < 2) {
         let amount = Math.abs(position.amount);
         if (position.side === 'long') {
-          amount *= -2;
+          amount *= -1;
         } else {
-          amount *= 2;
+          amount *= 1;
         }
 
         const side = position.side === Order.SIDE_LONG ? Order.SIDE_SHORT : Order.SIDE_LONG;
@@ -357,7 +357,12 @@ module.exports = class ExchangeOrderWatchdogListener {
         })}`
       );
 
-      const ourOrder = Order.createLimitPostOnlyOrder(symbol, position.side, orderChange.price, orderChange.amount);
+      // const ourOrder = Order.createLimitPostOnlyOrder(symbol, position.side, orderChange.price, orderChange.amount);
+
+      const ourOrder =
+        orderChange.type === 'stop'
+          ? Order.createStopOrder(symbol, orderChange.price, orderChange.amount)
+          : Order.createLimitPostOnlyOrder(symbol, orderChange.price, orderChange.amount);
 
       ourOrder.price = price;
 
