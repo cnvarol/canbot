@@ -361,8 +361,8 @@ module.exports = class ExchangeOrderWatchdogListener {
 
       const ourOrder =
         orderChange.type === 'stop'
-          ? Order.createStopOrder(symbol, orderChange.price, orderChange.amount)
-          : Order.createLimitPostOnlyOrder(symbol, orderChange.price, orderChange.amount);
+          ? Order.createStopOrder(symbol, position.side, orderChange.price, orderChange.amount)
+          : Order.createLimitPostOnlyOrder(symbol, position.side, orderChange.price, orderChange.amount);
 
       ourOrder.price = price;
 
