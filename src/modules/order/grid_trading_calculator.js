@@ -1,3 +1,4 @@
+const { Exchange } = require('ccxt');
 const ExchangeOrder = require('../../dict/exchange_order');
 const OrderUtil = require('../../utils/order_util');
 
@@ -10,10 +11,14 @@ module.exports = class GridTradingCalculator {
     let ordersCheck;
     if (position.raw && position.raw.positionSide !== 'BOTH') {
       ordersCheck = orders.filter(
-        order => order.type === ExchangeOrder.TYPE_LIMIT && order.positionSide === position.raw.positionSide
+        order =>
+          (order.type === ExchangeOrder.TYPE_LIMIT || order.type === Exchange.TYPE_STOP) &&
+          order.positionSide === position.raw.positionSide
       );
     } else {
-      ordersCheck = orders.filter(order => order.type === ExchangeOrder.TYPE_LIMIT);
+      ordersCheck = orders.filter(
+        order => order.type === ExchangeOrder.TYPE_LIMIT || order.type === Exchange.TYPE_STOP
+      );
     }
 
     const orderAmounts = new Set();
@@ -166,7 +171,8 @@ module.exports = class GridTradingCalculator {
         newOrders.push({
           id: currentOrders.target.id,
           price: currentOrders.target.price,
-          amount: currentOrders.target.amount
+          amount: currentOrders.target.amount,
+          type: 'target'
         });
       } else {
         newOrders.push({
@@ -182,7 +188,8 @@ module.exports = class GridTradingCalculator {
         newOrders.push({
           id: currentOrders.stop.id,
           price: currentOrders.stop.price,
-          amount: currentOrders.stop.amount
+          amount: currentOrders.stop.amount,
+          type: 'stop'
         });
       } else {
         newOrders.push({
