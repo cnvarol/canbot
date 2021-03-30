@@ -1,8 +1,11 @@
+const extra = require('telegraf/extra')
+
 module.exports = class Telegram {
   constructor(telegraf, config, logger) {
     this.telegraf = telegraf;
     this.config = config;
     this.logger = logger;
+    this.markup = extra.markdown();
   }
 
   name() {
@@ -16,7 +19,7 @@ module.exports = class Telegram {
       this.logger.error('Telegram: No chat id given');
       return;
     }
-    this.telegraf.telegram.sendMessage(chatId, message).catch(err => {
+    this.telegraf.telegram.sendMessage(chatId, message, this.markup).catch(err => {
       this.logger.error(`Mailer: ${JSON.stringify(err)}`);
       console.log(err);
     });
