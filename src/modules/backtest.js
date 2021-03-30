@@ -113,11 +113,6 @@ module.exports = class Backtest {
           currentSignal = undefined;
         }
 
-        // position profit
-        if (lastSignal.price) {
-          item.profit = CommonUtil.getProfitAsPercent(lastSignal.signal, item.price, lastSignal.price);
-        }
-
         if (['long', 'short'].includes(currentSignal)) {
           lastSignal.signal = currentSignal;
           lastSignal.price = (item.price + lastSignal.price) / 2;
@@ -129,6 +124,11 @@ module.exports = class Backtest {
 
           lastSignal.signal = undefined;
           lastSignal.price = undefined;
+        }
+
+        // position profit
+        if (lastSignal.price) {
+          item.profit = CommonUtil.getProfitAsPercent(lastSignal.signal, item.price, lastSignal.price);
         }
 
         // calculate missing profits because of closed position until next event
