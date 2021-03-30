@@ -274,7 +274,7 @@ Margin Risk Ratio: ${riskRatio.toFixed(2)}%`);
           this.warnNotified = true;
           setTimeout(async () => {
             this.warnNotified = false;
-          }, 360 * 1000);
+          }, 360 * 10000);
         }
       }
     }
