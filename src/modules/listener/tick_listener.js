@@ -269,7 +269,7 @@ Margin Risk Ratio: ${riskRatio.toFixed(2)}%`);
       if (riskRatio >= 5 && riskRatio % 5 >= 0 && riskRatio % 5 < 1) {
         if (!this.warnNotified) {
           this.notifier.send(
-            `Binance futures margin risk ratio high now. Please await from significant losses.\n\nMargin Risk Ratio: **${riskRatio}**%\nUnrealized PNL: **${parseFloat(balances.info.totalUnrealizedProfit).toFixed(2)}** USDT`
+            `Binance futures margin risk ratio high now. Please await from significant losses.\n\nMargin Risk Ratio: *${riskRatio}*%\nUnrealized PNL: *${parseFloat(balances.info.totalUnrealizedProfit).toFixed(2)}* USDT`
           );
           this.warnNotified = true;
           setTimeout(async () => {
