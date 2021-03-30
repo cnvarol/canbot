@@ -103,19 +103,30 @@ module.exports = class Backtest {
           pair,
           options,
           lastSignal.signal,
-          lastSignal.price
+          lastSignal.price,
+          lastSignal.amount
         );
         item.time = current;
 
         // so change in signal
         let currentSignal = item.result ? item.result.getSignal() : undefined;
         if (currentSignal === lastSignal.signal) {
+          const amount = currentSignal === 'short' ? -1 : 1;
+          lastSignal.amount += amount;
+          lastSignal.price = (lastSignal.price + item.price) / 2;
           currentSignal = undefined;
         }
 
+        // position profit
+        if (lastSignal.price) {
+          item.profit = CommonUtil.getProfitAsPercent(lastSignal.signal, item.price, lastSignal.price);
+        }
+
         if (['long', 'short'].includes(currentSignal)) {
+          const amount = currentSignal === 'short' ? -1 : 1;
           lastSignal.signal = currentSignal;
-          lastSignal.price = (item.price + lastSignal.price) / 2;
+          lastSignal.price = item.price;
+          lastSignal.amount = amount;
           lastSignalClosed.signal = undefined;
           lastSignalClosed.price = undefined;
         } else if (currentSignal === 'close') {
@@ -124,11 +135,6 @@ module.exports = class Backtest {
 
           lastSignal.signal = undefined;
           lastSignal.price = undefined;
-        }
-
-        // position profit
-        if (lastSignal.price) {
-          item.profit = CommonUtil.getProfitAsPercent(lastSignal.signal, item.price, lastSignal.price);
         }
 
         // calculate missing profits because of closed position until next event
