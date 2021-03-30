@@ -304,7 +304,6 @@ module.exports = class OrderExecutor {
     this.logger.info(
       `Order created: ${JSON.stringify([exchangeOrder.id, exchangeName, exchangeOrder.symbol, order, exchangeOrder])}`
     );
-    console.log(`Order created: ${JSON.stringify([exchangeOrder.id, exchangeName, exchangeOrder.symbol])}`);
 
     resolve(exchangeOrder);
   }
@@ -317,7 +316,6 @@ module.exports = class OrderExecutor {
    * @returns {Promise<*>}
    */
   createAdjustmentOrder(exchangeName, order) {
-    console.log('createAdjustmentOrder');
     return new Promise(async resolve => {
       const price = await this.getCurrentPrice(exchangeName, order.symbol, order.side);
       if (!price) {

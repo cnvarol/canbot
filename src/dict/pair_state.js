@@ -44,7 +44,7 @@ module.exports = class PairState {
     );
     state.capital = capital;
     state.side = PairState.STATE_LONG;
-    console.log('LONG:', state);
+
     return state;
   }
 
@@ -73,12 +73,11 @@ module.exports = class PairState {
     );
     state.capital = capital;
     state.side = PairState.STATE_SHORT;
-    console.log('SHORT:', state);
+
     return state;
   }
 
   constructor(exchange, symbol, side, state, options, adjustedPrice, clearCallback) {
-    console.log('NEW STATE', exchange, symbol, side, state);
     if (![PairState.STATE_LONG, PairState.STATE_SHORT, PairState.STATE_CLOSE, PairState.STATE_CANCEL].includes(state)) {
       throw new Error(`Invalidate state: ${state}`);
     }
