@@ -60,10 +60,10 @@ module.exports = class GridTradingCalculator {
     if (size >= options.risk_size) {
       if (position.side === 'long') {
         result.targetPrice = entryPrice * (1 - options.risk_step_percent / 100);
-        // result.stopPrice = entryPrice * (1 + options.risk_step_percent / 100);
+        result.stopPrice = entryPrice * (1 + options.risk_step_percent / 100);
       } else {
         result.targetPrice = entryPrice * (1 + options.risk_step_percent / 100);
-        // result.stopPrice = entryPrice * (1 - options.risk_step_percent / 100);
+        result.stopPrice = entryPrice * (1 - options.risk_step_percent / 100);
       }
 
       return result;
@@ -93,7 +93,7 @@ module.exports = class GridTradingCalculator {
       stopOrders = orders.filter(order => order.type === ExchangeOrder.TYPE_STOP);
     }
 
-    if (stopOrders.length === 0 && result.stopPrice) {
+    if (stopOrders.length === 0) {
       newOrders.stop = {
         amount: Math.abs(position.amount),
         price: result.stopPrice
@@ -131,7 +131,7 @@ module.exports = class GridTradingCalculator {
       targetOrders = orders.filter(order => order.type === ExchangeOrder.TYPE_LIMIT);
     }
 
-    if (targetOrders.length === 0 && result.targetPrice) {
+    if (targetOrders.length === 0) {
       newOrders.target = {
         amount: Math.abs(position.amount),
         price: result.targetPrice
