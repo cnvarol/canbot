@@ -93,7 +93,7 @@ module.exports = class GridTradingCalculator {
       stopOrders = orders.filter(order => order.type === ExchangeOrder.TYPE_STOP);
     }
 
-    if (stopOrders.length === 0) {
+    if (stopOrders.length === 0 && result.stopPrice) {
       newOrders.stop = {
         amount: Math.abs(position.amount),
         price: result.stopPrice
@@ -131,7 +131,7 @@ module.exports = class GridTradingCalculator {
       targetOrders = orders.filter(order => order.type === ExchangeOrder.TYPE_LIMIT);
     }
 
-    if (targetOrders.length === 0) {
+    if (targetOrders.length === 0 && result.targetPrice) {
       newOrders.target = {
         amount: Math.abs(position.amount),
         price: result.targetPrice
