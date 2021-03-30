@@ -261,7 +261,7 @@ module.exports = class ExchangeOrderWatchdogListener {
     const size = Math.abs(position.amount * position.entry).toFixed(2);
     if (options.risk_notify && size >= options.risk_size) {
       const warnWindow = moment()
-        .subtract(15, 'minutes')
+        .subtract(180, 'minutes')
         .toDate();
 
       const noteKey = position.exchange + position.symbol + position.side + size;
