@@ -236,8 +236,6 @@ module.exports = class ExchangeOrderWatchdogListener {
     }
 
     if (profit >= options.take_profit || (amount >= options.risk_size && profit >= options.risk_take_profit)) {
-      console.log('Closing positions:', symbol, profit);
-
       // close position/s with market order
       if (Array.isArray(currentPositions)) {
         currentPositions.forEach(async p => {
@@ -252,7 +250,8 @@ module.exports = class ExchangeOrderWatchdogListener {
       logger.info(
         `Grid Trading: take profit closing: ${JSON.stringify({
           symbol: symbol,
-          exchange: exchange.getName()
+          exchange: exchange.getName(),
+          profit: profit.toFixed(2)
         })}`
       );
 

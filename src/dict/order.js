@@ -88,7 +88,6 @@ module.exports = class Order {
   }
 
   static createMarketOrder(symbol, amount, side, options = {}) {
-    console.log('createMarketOrder');
     let marketSide = side;
     if (options.close) {
       marketSide = side === this.SIDE_LONG ? this.SIDE_SHORT : this.SIDE_LONG;
@@ -106,7 +105,6 @@ module.exports = class Order {
   }
 
   static createLimitPostOnlyOrder(symbol, side, price, amount, options) {
-    console.log('createLimitPostOnlyOrder');
     if (![Order.SIDE_SHORT, Order.SIDE_LONG].includes(side)) {
       throw new Error(`Invalid order side:${side} - ${JSON.stringify([symbol, side, price, amount, options])}`);
     }
@@ -141,7 +139,6 @@ module.exports = class Order {
   }
 
   static createLimitPostOnlyOrderAutoSide(symbol, price, amount, options) {
-    console.log('createLimitPostOnlyOrderAutoSide');
     return new Order(
       Math.round(new Date().getTime().toString() * Math.random()),
       symbol,
@@ -156,7 +153,6 @@ module.exports = class Order {
   }
 
   static createCloseLimitPostOnlyReduceOrder(symbol, price, amount) {
-    console.log('createCloseLimitPostOnlyReduceOrder');
     return new Order(
       Math.round(new Date().getTime().toString() * Math.random()),
       symbol,
@@ -172,7 +168,6 @@ module.exports = class Order {
   }
 
   static createLimitPostOnlyOrderAutoAdjustedPriceOrder(symbol, amount, options = {}) {
-    console.log('createLimitPostOnlyOrderAutoAdjustedPriceOrder');
     return Order.createLimitPostOnlyOrder(
       symbol,
       amount < 0 ? Order.SIDE_SHORT : Order.SIDE_LONG,
@@ -214,7 +209,6 @@ module.exports = class Order {
   }
 
   static createRetryOrderWithPriceAdjustment(order, price) {
-    console.log('createRetryOrderWithPriceAdjustment');
     if (!(order instanceof Order)) {
       throw new Error('TypeError: no Order');
     }
@@ -251,17 +245,14 @@ module.exports = class Order {
   }
 
   static createUpdateOrder(id, price = undefined, amount = undefined) {
-    console.log('createUpdateOrder');
     return new Order(id, undefined, price < 0 || amount < 0 ? Order.SIDE_SHORT : Order.SIDE_LONG, price, amount);
   }
 
   static createCloseOrderWithPriceAdjustment(symbol, amount) {
-    console.log('createCloseOrderWithPriceAdjustment');
     return Order.createLimitPostOnlyOrderAutoAdjustedPriceOrder(symbol, amount, { close: true });
   }
 
   static createUpdateOrderOnCurrent(exchangeOrder, price = undefined, amount = undefined) {
-    console.log('createUpdateOrderOnCurrent', exchangeOrder.options);
     if (!exchangeOrder.options && exchangeOrder.positionSide && exchangeOrder.type === this.TYPE_LIMIT) {
       if (
         (exchangeOrder.positionSide === exchangeOrder.POSITION_SIDE_LONG && exchangeOrder.side === 'sell') ||

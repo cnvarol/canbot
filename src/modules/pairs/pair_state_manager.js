@@ -14,7 +14,6 @@ module.exports = class PairStateManager {
   }
 
   update(exchange, symbol, state, side, options = {}) {
-    console.log('UPDATE', exchange, symbol, side, state);
     if (!['long', 'close', 'short', 'cancel'].includes(state)) {
       this.logger.error(`Invalidate state: ${state}`);
       throw new Error(`Invalidate state: ${state}`);
@@ -95,7 +94,6 @@ module.exports = class PairStateManager {
 
   clear(exchange, symbol, side) {
     if (exchange + symbol + side in this.stats) {
-      this.logger.debug(`Pair state cleared: ${JSON.stringify(this.stats[exchange + symbol + side])}`);
       delete this.stats[exchange + symbol + side];
     }
 

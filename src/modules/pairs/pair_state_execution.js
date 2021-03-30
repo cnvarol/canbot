@@ -30,7 +30,6 @@ module.exports = class PairStateExecution {
    * @returns {Promise<void>}
    */
   async onCancelPair(pairState) {
-    console.log('onCancelPair');
     await this.orderExecutor.cancelAll(pairState.getExchange(), pairState.getSymbol(), pairState.getSide());
     pairState.clear();
   }
@@ -47,7 +46,6 @@ module.exports = class PairStateExecution {
       position = positions.find(p => p.symbol === pairState.symbol && p.side === pairState.side);
     }
 
-    console.log('onSellBuyPair');
     if (position) {
       pairState.clear();
       this.logger.debug(
@@ -132,8 +130,6 @@ module.exports = class PairStateExecution {
 
   async onClosePair(pairState) {
     const positions = await this.exchangeManager.getPosition(pairState.exchange, pairState.symbol);
-
-    console.log('onClosePair');
 
     let position = positions;
     if (Array.isArray(positions)) {
@@ -242,7 +238,6 @@ module.exports = class PairStateExecution {
   }
 
   async onPairStateExecutionTick(pairState) {
-    console.log('onPairStateExecutionTick');
     if (pairState.getRetries() > 10) {
       this.logger.error(`Pair execution max retries reached: ${JSON.stringify([pairState])}`);
       await this.onCancelPair(pairState);
@@ -276,7 +271,6 @@ module.exports = class PairStateExecution {
    * @param pair {PairState}
    */
   async pairStateExecuteOrder(pair) {
-    console.log('pairStateExecuteOrder');
     const exchangeName = pair.getExchange();
     const symbol = pair.getSymbol();
     const side = pair.getState();
@@ -304,7 +298,6 @@ module.exports = class PairStateExecution {
   }
 
   async executeCloseOrder(exchangeName, symbol, side, orderSize, options) {
-    console.log('executeCloseOrder');
     // round to nearest exchange amount size
     const exchangeOrderSize = this.exchangeManager.get(exchangeName).calculateAmount(orderSize, symbol);
     if (!exchangeOrderSize) {
@@ -321,7 +314,6 @@ module.exports = class PairStateExecution {
   }
 
   async extractManagedPairStateOrderFromOrders(pairState) {
-    console.log('extractManagedPairStateOrderFromOrders');
     const orders = await this.exchangeManager.getOrders(pairState.getExchange(), pairState.getSymbol());
     const positions = await this.exchangeManager.getPosition(pairState.getExchange(), pairState.getSymbol());
 
@@ -386,7 +378,6 @@ module.exports = class PairStateExecution {
 
   async managedPairStateOrder(pairState) {
     const exchangeOrderStored = pairState.getExchangeOrder();
-    console.log('managedPairStateOrder:', exchangeOrderStored);
     if (!exchangeOrderStored) {
       const m = await this.extractManagedPairStateOrderFromOrders(pairState);
       if (m) {
