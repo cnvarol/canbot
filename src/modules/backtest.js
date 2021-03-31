@@ -103,13 +103,17 @@ module.exports = class Backtest {
           pair,
           options,
           lastSignal.signal,
-          lastSignal.price
+          lastSignal.price,
+          lastSignal.amount
         );
         item.time = current;
 
         // so change in signal
         let currentSignal = item.result ? item.result.getSignal() : undefined;
         if (currentSignal === lastSignal.signal) {
+          const amount = currentSignal === 'short' ? -1 : 1;
+          lastSignal.amount += amount;
+          lastSignal.price = (lastSignal.price + item.price) / 2;
           currentSignal = undefined;
         }
 
@@ -119,12 +123,14 @@ module.exports = class Backtest {
         }
 
         if (['long', 'short'].includes(currentSignal)) {
+          const amount = currentSignal === 'short' ? -1 : 1;
           lastSignal.signal = currentSignal;
           lastSignal.price = item.price;
+          lastSignal.amount = amount;
 
           lastSignalClosed.signal = undefined;
           lastSignalClosed.price = undefined;
-        } else if (currentSignal === 'close' || currentSignal === 'close_long' || currentSignal === 'close_short') {
+        } else if (['close', 'close_short', 'close_long'].includes(currentSignal)) {
           lastSignalClosed.signal = lastSignal.signal;
           lastSignalClosed.price = lastSignal.price;
 
@@ -230,7 +236,7 @@ module.exports = class Backtest {
         const signalType = signalObject.result._signal; // Can be long,short,close
 
         // When a trade is closed
-        if (signalType === 'close' || signalType === 'close_long' || signalType === 'close_short') {
+        if (['close', 'close_short', 'close_long'].includes(signalType)) {
           // Increment the total trades counter
           trades.total += 1;
 

@@ -45,6 +45,8 @@ module.exports = class {
       last_signal: lastSignal,
       rsi: rsi,
       fisher_rsi: fisher_rsi,
+      macd_current: current,
+      macd_before: before,
       profit: indicatorPeriod.getProfit()
     };
 
@@ -56,11 +58,48 @@ module.exports = class {
       return SignalResult.createSignal('short', debug);
     }
 
+    const context = indicatorPeriod.getStrategyContext();
+    const profit = indicatorPeriod.getProfit();
+
+    if (context.isBacktest() && lastSignal === 'short' && long && profit >= 1) {
+      const emptySignal = SignalResult.createEmptySignal(debug);
+      emptySignal.setSignal('close_short');
+
+      return emptySignal;
+    }
+
+    if (context.isBacktest() && lastSignal === 'long' && short && profit >= 1) {
+      const emptySignal = SignalResult.createEmptySignal(debug);
+      emptySignal.setSignal('close_long');
+
+      return emptySignal;
+    }
+
+    if (context.isBacktest() && lastSignal === 'long' && long && profit <= -5) {
+      const emptySignal = SignalResult.createEmptySignal(debug);
+      emptySignal.setSignal('long');
+
+      return emptySignal;
+    }
+
+    if (context.isBacktest() && lastSignal === 'short' && short && profit <= -5) {
+      const emptySignal = SignalResult.createEmptySignal(debug);
+      emptySignal.setSignal('short');
+
+      return emptySignal;
+    }
+
     return SignalResult.createEmptySignal(debug);
   }
 
   getBacktestColumns() {
-    return [];
+    return [
+      {
+        label: 'macd',
+        value: 'macd_current',
+        type: 'histogram'
+      }
+    ];
   }
 
   getOptions() {

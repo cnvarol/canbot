@@ -41,7 +41,10 @@ module.exports = class GridTradingCalculator {
     return duplicateOrders;
   }
 
-  calculateForOpenPosition(position, options = { step_percent: 5, risk_step_percent: 7.5 }) {
+  calculateForOpenPosition(
+    position,
+    options = { risk_size: 7500, step_percent: 6, risk_step_percent: 12, hedge_percent: 4, risk_hedge_percent: 8 }
+  ) {
     let entryPrice = position.entry;
     const size = Math.abs(position.amount * position.entry);
 
@@ -60,10 +63,10 @@ module.exports = class GridTradingCalculator {
     if (size >= options.risk_size) {
       if (position.side === 'long') {
         result.targetPrice = entryPrice * (1 - options.risk_step_percent / 100);
-        result.stopPrice = entryPrice * (1 + options.risk_step_percent / 100);
+        result.stopPrice = entryPrice * (1 + options.risk_hedge_percent / 100);
       } else {
         result.targetPrice = entryPrice * (1 + options.risk_step_percent / 100);
-        result.stopPrice = entryPrice * (1 - options.risk_step_percent / 100);
+        result.stopPrice = entryPrice * (1 - options.risk_hedge_percent / 100);
       }
 
       return result;
@@ -71,10 +74,10 @@ module.exports = class GridTradingCalculator {
 
     if (position.side === 'long') {
       result.targetPrice = entryPrice * (1 - options.step_percent / 100);
-      result.stopPrice = entryPrice * (1 + options.step_percent / 100);
+      result.stopPrice = entryPrice * (1 + options.hedge_percent / 100);
     } else {
       result.targetPrice = entryPrice * (1 + options.step_percent / 100);
-      result.stopPrice = entryPrice * (1 - options.step_percent / 100);
+      result.stopPrice = entryPrice * (1 - options.hedge_percent / 100);
     }
 
     return result;

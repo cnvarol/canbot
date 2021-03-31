@@ -1,3 +1,7 @@
+/* eslint-disable no-throw-literal */
+/* eslint-disable no-restricted-syntax */
+/* eslint-disable no-await-in-loop */
+/* eslint-disable max-classes-per-file */
 const ccxt = require('ccxt');
 const _ = require('lodash');
 const OrderBag = require('../utils/order_bag');
@@ -41,7 +45,14 @@ module.exports = class CcxtExchangeOrder {
         );
         break;
       case Order.TYPE_MARKET:
-        promise = this.ccxtClient.createOrder(order.getSymbol(), order.getType(), side, order.getAmount(), undefined, parameters.args || undefined);
+        promise = this.ccxtClient.createOrder(
+          order.getSymbol(),
+          order.getType(),
+          side,
+          order.getAmount(),
+          undefined,
+          parameters.args || undefined
+        );
         break;
       default:
         throw `Ccxt order converter unsupported order type:${order.getType()}`;

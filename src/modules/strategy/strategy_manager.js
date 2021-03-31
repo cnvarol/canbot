@@ -108,7 +108,7 @@ module.exports = class StrategyManager {
    * @param lastSignalEntry
    * @returns {Promise<array>}
    */
-  async executeStrategyBacktest(strategyName, exchange, symbol, options, lastSignal, lastSignalEntry) {
+  async executeStrategyBacktest(strategyName, exchange, symbol, options, lastSignal, lastSignalEntry, lastSignalAmount) {
     const results = await this.getTaResult(strategyName, exchange, symbol, options);
     if (!results || Object.keys(results).length === 0) {
       return {};
@@ -117,9 +117,9 @@ module.exports = class StrategyManager {
     const price = results._candle ? results._candle.close : undefined;
 
     let context;
-    if (lastSignal && lastSignalEntry && price) {
+    if (lastSignal && lastSignalEntry && lastSignalAmount && price) {
       // provide a suitable value; its just backtesting
-      const amount = lastSignal === 'short' ? -1 : 1;
+      // const amount = lastSignal === 'short' ? -1 : 1;
 
       context = StrategyContext.createFromPosition(
         options,
@@ -127,7 +127,7 @@ module.exports = class StrategyManager {
         new Position(
           symbol,
           lastSignal,
-          amount,
+          lastSignalAmount,
           CommonUtil.getProfitAsPercent(lastSignal, price, lastSignalEntry),
           undefined,
           lastSignalEntry

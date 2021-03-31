@@ -291,10 +291,6 @@ module.exports = class ExchangeOrderWatchdogListener {
     const orderChanges = await this.gridTradingCalculator.createGridTradingOrders(position, orders, options);
 
     orderChanges.forEach(async orderChange => {
-      if (orderChange.type === 'stop' && size >= options.risk_size) {
-        return;
-      }
-
       logger.info(
         `Grid Trading: needed order change detected: ${JSON.stringify({
           orderChange: orderChange,
