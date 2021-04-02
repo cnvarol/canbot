@@ -33,8 +33,8 @@
                   <h5>{{ balances.info.totalMarginBalance|round }} <small>USDT</small></h5>
                 </div>
                 <div class="col-md-4 text-center">
-                  <h5 class="text-success">Initial</h5>
-                  <h5>{{ balances.info.totalOpenOrderInitialMargin|round }} <small>USDT</small></h5>
+                  <h5 class="text-success">Available</h5>
+                  <h5>{{ balances.info.availableBalance|round }} <small>USDT</small></h5>
                 </div>
               </div>
             </div>
