@@ -192,7 +192,7 @@ module.exports = class GridTradingCalculator {
       }
     }
 
-    if (currentOrders.stop && position.profit < 20 && position.profit > -5) {
+    if (currentOrders.stop) {
       if (currentOrders.stop.id) {
         newOrders.push({
           id: currentOrders.stop.id,
