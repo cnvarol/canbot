@@ -3,6 +3,8 @@
 {% block title %}Orders | Crypto Bot{% endblock %}
 
 {% block content %}
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
     <section class="content-header">
         <div class="container-fluid">
             <div class="row mb-2">
@@ -18,14 +20,13 @@
             <div class="row">
                 <div class="col-md-3">
 
-                    <div class="card">
-                        <div class="card-header">
+                    <div class="card card-outline card-success">
+                        <div class="card-header border-bottom-0">
                             <h3 class="card-title">
-                                <i class="fas fa-text-width"></i>
                                 Pairs
                             </h3>
 
-                            <small class="float-sm-right"><input class="filter-pairs" type="text" placeholder="Filter"></small>
+                            <small class="float-sm-right"><input class="filter-pairs form-control form-control-sm" type="text" placeholder="Filter"></small>
                         </div>
                         <div class="card-body">
                             <ul class="list-unstyled">
@@ -36,11 +37,13 @@
                         </div>
                     </div>
                 </div>
-
+                <div class="col-md-9">
                 {% block page_content %}{% endblock %}
+                </div>
             </div>
         </div>
     </div>
+</div>
 {% endblock %}
 
 

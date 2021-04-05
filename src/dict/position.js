@@ -30,6 +30,23 @@ module.exports = class Position {
     this.entry = entry;
     this.createdAt = createdAt;
     this.raw = raw;
+    this.positionSide = undefined;
+
+    if (this.raw && this.raw.positionSide) {
+      this.positionSide = this.raw.positionSide;
+    }
+  }
+
+  getPositionSide() {
+    return this.positionSide;
+  }
+
+  isShortPosition() {
+    return this.positionSide === 'SHORT';
+  }
+
+  isLongPosition() {
+    return this.positionSide === 'LONG';
   }
 
   getSide() {

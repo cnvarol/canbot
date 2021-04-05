@@ -8,6 +8,11 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="apple-touch-fullscreen" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="dark-translucent">
+    <link rel="apple-touch-icon" href="/img/bitcoin.png"/>
+
 
     <title>{% block title %}Dashboard | Crypto Bot{% endblock %}</title>
 
@@ -19,8 +24,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <link rel="stylesheet" href="{{ '/css/adminlte.css' }}">
     <!-- style -->
     <link rel="stylesheet" href="{{ '/css/style.css' }}">
-    <!-- Google Font: Source Sans Pro -->
-    <link href="https://fonts.googleapis.com/css?family=Exo+2:300,400,400i,700" rel="stylesheet">
 
     {% block stylesheet %}{% endblock stylesheet %}
 
@@ -28,65 +31,80 @@ scratch. This page gets rid of all links and provides the needed markup only.
     {% endblock head %}
 </head>
 <body class="hold-transition layout-top-nav layout-navbar-fixed">
+<script>
+    if (localStorage.getItem('darkMode') === 'enabled') {
+        document.body.classList.add('dark-mode');
+    }
+</script>
 <div class="wrapper">
     <!-- Navbar -->
-    <nav class="main-header navbar navbar-expand-md navbar-light navbar-white">
-        <div class="container">
-            <a href="{{ '/' }}" class="navbar-brand">
-                <img src="{{ '/img/bitcoin.svg' }}" alt="Logo" class="brand-image img-circle elevation-1"
-                     style="opacity: .8">
-            </a>
-            <button class="navbar-toggler order-1" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+    <nav class="main-header navbar navbar-expand-md navbar-dark navbar-green border-bottom-0">
+        <a href="{{ '/' }}" class="navbar-brand">
+            <img src="{{ '/img/bitcoin.svg' }}" alt="Logo" class="brand-image img-circle elevation-1"> Crypto Bot
+        </a>
+        <button class="navbar-toggler order-1" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-            <div class="collapse navbar-collapse order-3" id="navbarCollapse">
-                <!-- Left navbar links -->
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a href="{{ '/' }}" class="nav-link">Dashboard</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="{{ '/trades' }}" class="nav-link">Trades</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="{{ '/pairs' }}" class="nav-link">Pairs</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="{{ '/orders' }}" class="nav-link">Orders</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="{{ '/signals' }}" class="nav-link">Signals</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="{{ '/tools/candles' }}" class="nav-link">Candles</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="{{ '/backtest' }}" class="nav-link">Backtest</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="{{ '/logs' }}" class="nav-link">Logs</a>
-                    </li>
+        <div class="collapse navbar-collapse order-3" id="navbarCollapse">
+            <!-- Left navbar links -->
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a href="{{ '/' }}" class="nav-link">Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ '/trades' }}" class="nav-link">Trades</a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ '/pairs' }}" class="nav-link">Pairs</a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ '/orders' }}" class="nav-link">Orders</a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ '/signals' }}" class="nav-link">Signals</a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ '/tools/candles' }}" class="nav-link">Candles</a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ '/backtest' }}" class="nav-link">Backtest</a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ '/logs' }}" class="nav-link">Logs</a>
+                </li>
 
-                    {% set desks = desks() %}
-                    {% if desks|length > 0 %}
-                        <li class="nav-item dropdown">
-                            <a id="dropdownSubMenu1" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle">Desks</a>
-                            <ul aria-labelledby="dropdownSubMenu1" class="dropdown-menu border-0 shadow">
-                                {% for desk in desks %}
-                                    <li><a href="/desks/{{ loop.index - 1 }}" class="dropdown-item">{{ desk }} </a></li>
-                                {% endfor %}
+                {% set desks = desks() %}
+                {% if desks|length > 0 %}
+                    <li class="nav-item dropdown">
+                        <a id="dropdownSubMenu1" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle">Desks</a>
+                        <ul aria-labelledby="dropdownSubMenu1" class="dropdown-menu border-0 shadow">
+                            {% for desk in desks %}
+                                <li><a href="/desks/{{ loop.index - 1 }}" class="dropdown-item">{{ desk }} </a></li>
+                            {% endfor %}
 
-                                <div class="dropdown-divider"></div>
+                            <div class="dropdown-divider"></div>
 
-                                {% for desk in desks %}
-                                    <li><a href="/desks/{{ loop.index - 1 }}/fullscreen" class="dropdown-item"><i class="fas fa-expand text-sm text-muted"></i> &nbsp; {{ desk }}</a></li>
-                                {% endfor %}
-                            </ul>
-                        </li>
-                    {% endif %}
-                </ul>
-            </div>
+                            {% for desk in desks %}
+                                <li><a href="/desks/{{ loop.index - 1 }}/fullscreen" class="dropdown-item"><i class="fas fa-expand text-sm text-muted"></i> &nbsp; {{ desk }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                {% endif %}
+            </ul>
+
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                    <label class="btn bg-olive">
+                        <input type="radio" name="options" id="lightTheme" autocomplete="off" checked=""><i class="fas fa-sun"></i>
+                    </label>
+                    <label class="btn bg-olive">
+                        <input type="radio" name="options" id="darkTheme" autocomplete="off"><i class="far fa-moon"></i>
+                    </label>
+                    </div>
+                </li>
+            </ul>
         </div>
     </nav>
     <!-- /.navbar -->
@@ -98,7 +116,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <footer class="main-footer">
         <!-- To the right -->
         <div class="float-right d-none d-sm-inline">
-            v1.1
+            v1.2 (Hedge Mode)
         </div>
         <!-- Default to the left -->
         Node.js {{ node_version() }} - Memory {{ memory_usage() }} MB - Up {{ uptime() }}
@@ -123,6 +141,32 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 $(this).addClass('active');
             }
         });
+
+        $('#darkTheme').on('change', function() {
+            if (!$('body').hasClass('dark-mode')) {
+                localStorage.setItem('darkMode', 'enabled');
+                $('body').addClass('dark-mode');
+            }
+        });
+
+        $('#lightTheme').on('change', function() {
+            if ($('body').hasClass('dark-mode')) {
+                localStorage.setItem('darkMode', 'disabled');
+                $('body').removeClass('dark-mode');
+            }
+        });
+
+        if (localStorage.getItem('darkMode') === 'enabled') {
+            $('#darkTheme').click();
+        }
+
+        if (localStorage.getItem('darkMode') === 'disabled') {
+            $('#lightTheme').click();
+        }
+
+        if (!localStorage.getItem('darkMode')) {
+            $('#lightTheme').click();
+        }
     })
 </script>
 {% block javascript %}{% endblock javascript %}

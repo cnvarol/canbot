@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 const _ = require('lodash');
 
 /**
@@ -86,14 +87,20 @@ module.exports = class Order {
     return this.options && this.options.close === true;
   }
 
-  static createMarketOrder(symbol, amount) {
+  static createMarketOrder(symbol, amount, side, options = {}) {
+    let marketSide = side;
+    if (options.close) {
+      marketSide = side === this.SIDE_LONG ? this.SIDE_SHORT : this.SIDE_LONG;
+    }
+
     return new Order(
       Math.round(new Date().getTime().toString() * Math.random()),
       symbol,
-      amount > 0 ? Order.SIDE_LONG : Order.SIDE_SHORT,
+      marketSide,
       amount > 0 ? 0.000001 : -0.000001, // fake prices
       amount,
-      this.TYPE_MARKET
+      this.TYPE_MARKET,
+      options
     );
   }
 
@@ -246,6 +253,17 @@ module.exports = class Order {
   }
 
   static createUpdateOrderOnCurrent(exchangeOrder, price = undefined, amount = undefined) {
+    if (!exchangeOrder.options && exchangeOrder.positionSide && exchangeOrder.type === this.TYPE_LIMIT) {
+      if (
+        (exchangeOrder.positionSide === exchangeOrder.POSITION_SIDE_LONG && exchangeOrder.side === 'sell') ||
+        (exchangeOrder.positionSide === exchangeOrder.POSITION_SIDE_SHORT && exchangeOrder.side === 'buy')
+      ) {
+        exchangeOrder.options = { close: true, adjust_price: true, post_only: true };
+      } else {
+        exchangeOrder.options = { adjust_price: true, post_only: true };
+      }
+    }
+
     return new Order(
       Math.round(new Date().getTime().toString() * Math.random()),
       exchangeOrder.symbol,

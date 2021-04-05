@@ -32,11 +32,13 @@ module.exports = class BinanceFutures {
     this.intervals = [];
     this.balances = {};
     this.ccxtClient = undefined;
+    this.config = { hedge: false };
   }
 
   start(config, symbols) {
     const { logger } = this;
     this.exchange = null;
+    this.config = config;
 
     const ccxtClient = (this.ccxtClient = new ccxt.binance({
       apiKey: config.key,
@@ -49,7 +51,7 @@ module.exports = class BinanceFutures {
     this.symbols = symbols;
     this.positions = {};
     this.orders = {};
-    this.ccxtExchangeOrder = BinanceFutures.createCustomCcxtOrderInstance(ccxtClient, symbols, logger);
+    this.ccxtExchangeOrder = BinanceFutures.createCustomCcxtOrderInstance(ccxtClient, symbols, logger, config);
 
     const me = this;
 
@@ -66,7 +68,7 @@ module.exports = class BinanceFutures {
 
       setInterval(async () => {
         me.throttler.addTask('binance_futures_sync_balances', me.syncBalancesViaRestApi.bind(me));
-      }, 1000 * 10);
+      }, 1000 * 60);
 
       setTimeout(async () => {
         await ccxtClient.fetchMarkets();
@@ -133,7 +135,7 @@ module.exports = class BinanceFutures {
     const currentPositions = {};
 
     positions.forEach(position => {
-      currentPositions[position.symbol] = position;
+      currentPositions[`${position.symbol}:${position.side}`] = position;
     });
 
     this.positions = currentPositions;
@@ -157,21 +159,27 @@ module.exports = class BinanceFutures {
 
   async getPositions() {
     return Object.values(this.positions).map(position => {
+      // we are updating fresh profit from websocket with markprice
       // overwrite profits by ticker price from position; ticker prices are more fresh
-      if (position.getEntry() && this.tickers[position.getSymbol()]) {
+      /* if (position.getEntry() && this.tickers[position.getSymbol()]) {
         const profit = position.isLong()
           ? (this.tickers[position.symbol].bid / position.entry - 1) * 100 // long profit
           : (position.entry / this.tickers[position.symbol].ask - 1) * 100; // short profit
 
+        if (position.raw) {
+          const pnl = (Math.abs(position.amount) * position.entry * profit) / 100;
+          position.raw.unRealizedProfit = pnl;
+        }
+
         return Position.createProfitUpdate(position, profit);
-      }
+      } */
 
       return position;
     });
   }
 
   async getPositionForSymbol(symbol) {
-    return (await this.getPositions()).find(position => position.symbol === symbol);
+    return (await this.getPositions()).filter(position => position.symbol === symbol);
   }
 
   calculatePrice(price, symbol) {
@@ -222,9 +230,9 @@ module.exports = class BinanceFutures {
       throw new Error('Invalid amount / price for update');
     }
 
-    const result = this.ccxtExchangeOrder.updateOrder(id, order);
+    // const result = this.ccxtExchangeOrder.updateOrder(id, order);
     await this.ccxtExchangeOrder.syncOrders();
-    return result;
+    return undefined;
   }
 
   /**
@@ -267,12 +275,13 @@ module.exports = class BinanceFutures {
   static createPositionFromWebsocket(position) {
     const positionAmt = parseFloat(position.pa);
     const entryPrice = parseFloat(position.ep);
+    const profit = (parseFloat(position.up) / Math.abs(positionAmt)) * 100;
 
     return new Position(
       position.s,
       positionAmt < 0 ? 'short' : 'long',
       positionAmt,
-      undefined,
+      profit,
       new Date(),
       entryPrice,
       undefined,
@@ -280,51 +289,90 @@ module.exports = class BinanceFutures {
     );
   }
 
+  async positionUpdateFromWebSocket(position) {
+    try {
+      const amount = parseFloat(position.pa);
+      const entryPrice = parseFloat(position.ep);
+
+      const side = position.ps.toLowerCase();
+      const posKey = `${position.s}:${side}`;
+
+      const currentPosition = this.positions[posKey];
+      currentPosition.amount = amount;
+      currentPosition.entry = entryPrice;
+
+      const profit =
+        currentPosition.amount < 0
+          ? (currentPosition.entry / currentPosition.markPrice - 1) * 100 // short
+          : (currentPosition.markPrice / currentPosition.entry - 1) * 100; // long
+
+      const pnl = (Math.abs(currentPosition.amount) * currentPosition.entry * profit) / 100;
+      currentPosition.profit = profit;
+
+      if (currentPosition.raw) {
+        currentPosition.raw.unRealizedProfit = pnl;
+      }
+
+      this.positions[posKey] = currentPosition;
+    } catch (e) {
+      this.logger.error(`Binance Futures: error update position:${e}`);
+    }
+  }
+
   /**
    * Websocket position updates
    */
   accountUpdate(message) {
+    if (message.a && message.a.B) {
+      message.a.B.forEach(asset => {
+        if (asset.a === 'USDT') {
+          this.balances.info.totalWalletBalance = asset.wb;
+        }
+      });
+    }
+
     if (message.a && message.a.P) {
-      message.a.P.forEach(position => {
-        if (!position.s || !position.ps || position.ps.toLowerCase() !== 'both') {
+      message.a.P.forEach(async position => {
+        if (!position.s || !position.ps) {
           return;
         }
 
+        const side = position.ps.toLowerCase();
+        const posKey = `${position.s}:${side}`;
+
         // position closed
-        if (position.s in this.positions && position.pa === '0') {
-          delete this.positions[position.s];
+        if (posKey in this.positions && position.pa === '0') {
+          delete this.positions[posKey];
 
-          this.logger.info(
-            `Binance Futures: Websocket position closed/removed: ${JSON.stringify([position.s, position])}`
-          );
-
+          this.logger.info(`Binance Futures: Websocket position closed/removed: ${JSON.stringify([posKey, position])}`);
           return;
         }
 
         // position open
-        if (
+        /* if (
           !(position.s in this.positions) &&
           position.pa !== '0' &&
           (parseFloat(position.ep) > 0.00001 || parseFloat(position.ep) < -0.00001) // prevent float point issues
         ) {
-          this.positions[position.s] = BinanceFutures.createPositionFromWebsocket(position);
+          const side = position.ps.toLowerCase();
+          this.positions[`${position.s}:${side}`] = BinanceFutures.createPositionFromWebsocket(position);
 
           this.logger.info(`Binance Futures: Websocket position new found: ${JSON.stringify([position.s, position])}`);
 
           return;
-        }
+        } */
 
         // position update
-        if (position.s in this.positions) {
-          this.logger.info(
-            `Binance Futures: Websocket position update: ${JSON.stringify([
-              position.s,
-              position.pa,
-              this.positions[position.s].getAmount()
-            ])}`
-          );
+        if (posKey in this.positions) {
+          if (parseFloat(position.pa) === this.positions[posKey].getAmount()) {
+            return;
+          }
+
+          await this.positionUpdateFromWebSocket(position);
+
+          this.logger.info(`Binance Futures: Websocket position update: ${JSON.stringify([posKey, position])}`);
         }
-      }, this);
+      });
     }
   }
 
@@ -365,12 +413,48 @@ module.exports = class BinanceFutures {
     return false;
   }
 
+  async positionMarkPriceUpdate(symbol, markPrice) {
+    try {
+      let totalUnrealizedProfit = 0;
+
+      Object.values(this.positions).forEach(position => {
+        if (position.symbol === symbol && position.raw) {
+          position.markPrice = markPrice;
+          position.raw.markPrice = markPrice;
+
+          const profit =
+            position.amount < 0
+              ? (position.entry / position.markPrice - 1) * 100 // short
+              : (position.markPrice / position.entry - 1) * 100; // long
+
+          const pnl =
+            position.amount < 0
+              ? (position.entry - position.markPrice) * Math.abs(position.amount)
+              : (position.markPrice - position.entry) * Math.abs(position.amount);
+
+          // (Math.abs(position.amount) * position.entry * profit) / 100;
+
+          position.raw.unRealizedProfit = pnl;
+          position.profit = profit;
+        }
+
+        totalUnrealizedProfit += parseFloat(position.raw.unRealizedProfit);
+      });
+
+      this.balances.info.totalMarginBalance = parseFloat(this.balances.info.totalWalletBalance) + totalUnrealizedProfit;
+      this.balances.info.totalUnrealizedProfit = totalUnrealizedProfit;
+    } catch (e) {
+      this.logger.error(`Binance Futures: error update mark price:${e}`);
+    }
+  }
+
   async initPublicWebsocket(symbols) {
     const me = this;
 
     const allSubscriptions = [];
     symbols.forEach(symbol => {
       allSubscriptions.push(`${symbol.symbol.toLowerCase()}@bookTicker`);
+      allSubscriptions.push(`${symbol.symbol.toLowerCase()}@markPrice`);
       allSubscriptions.push(...symbol.periods.map(p => `${symbol.symbol.toLowerCase()}@kline_${p}`));
     });
 
@@ -446,6 +530,8 @@ module.exports = class BinanceFutures {
               ))
             )
           );
+        } else if (body.stream && body.stream.toLowerCase().includes('@markprice')) {
+          await me.positionMarkPriceUpdate(body.data.s, parseFloat(body.data.p));
         } else if (body.stream && body.stream.toLowerCase().includes('@kline')) {
           await me.candleImporter.insertThrottledCandles([
             new ExchangeCandlestick(
@@ -558,7 +644,7 @@ module.exports = class BinanceFutures {
     return true;
   }
 
-  static createCustomCcxtOrderInstance(ccxtClient, symbols, logger) {
+  static createCustomCcxtOrderInstance(ccxtClient, symbols, logger, config) {
     // ccxt id and binance ids are not matching
     const CcxtExchangeOrderExtends = class extends CcxtExchangeOrder {
       async createOrder(order) {
@@ -584,12 +670,31 @@ module.exports = class BinanceFutures {
           args: {}
         };
 
+        if (config.hedge) {
+          request.args.positionSide = order.side.toUpperCase();
+          request.args.side = order.side === Order.SIDE_SHORT ? 'SELL' : 'BUY';
+        }
+
         if (order.isReduceOnly()) {
-          request.args.reduceOnly = true;
+          if (config.hedge) {
+            order.side = order.side === Order.SIDE_SHORT ? 'long' : 'short';
+            request.args.positionSide = order.side.toUpperCase();
+            request.args.side = order.side === Order.SIDE_SHORT ? 'BUY' : 'SELL';
+          } else {
+            request.args.reduceOnly = true;
+          }
         }
 
         if (order.getType() === Order.TYPE_STOP) {
           request.args.stopPrice = order.getPrice();
+        }
+
+        if (order.getType() === Order.TYPE_MARKET) {
+          // request.args.side = order.side === Order.SIDE_SHORT ? 'BUY' : 'SELL';
+        }
+
+        if (order.options && order.options.close && config.hedge) {
+          request.args.side = order.side === Order.SIDE_SHORT ? 'BUY' : 'SELL';
         }
 
         return request;

@@ -10,10 +10,35 @@ nav {
     padding: 0;
 }
 
+.dark-mode .content-wrapper {
+    /* background-color: #454d55; */
+    background-image: linear-gradient(rgb(34, 37, 49) 0%, rgba(34, 37, 49, 0) 413px) !important;
+    color: #fff;
+    /* background-attachment: fixed !important; */
+}
+
+/* .dark-mode .card {
+    background-color: transparent !important;
+} */
+
+.dark-mode a {
+    color: #f1f1f1 !important;
+}
+
+.dark-mode a:hover {
+    color: #ffffff !important;
+}
+
 /* Medium devices (tablets, 768px and up) */
 @media (min-width: 768px) {
     .span-md {
         word-break: break-all;
+    }
+}
+
+@media (max-width: 768px) {
+    .border-right {
+        border-right: 0 !important;
     }
 }
 

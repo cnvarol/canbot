@@ -56,15 +56,16 @@ module.exports = class Trade {
       // process.exit();
     });
 
-    process.on('uncaughtException', (err, origin) => {
+    // TODO (semihalev): open this comment later
+    /* process.on('uncaughtException', (err, origin) => {
       const message = `UncaughtException (${origin}): ${instanceId} - ${os.hostname()} - ${os.platform()} - ${moment().format()} ${err}`;
 
       this.notify.send(message);
-    });
+    }); */
 
-    /*this.logger.on('error', async err => {
+    /* this.logger.on('error', async err => {
       this.notify.send(err);
-    });*/
+    }); */
 
     const message = `Start: ${instanceId} - ${os.hostname()} - ${os.platform()} - ${moment().format()}`;
 
@@ -98,7 +99,7 @@ module.exports = class Trade {
 
       setInterval(() => {
         eventEmitter.emit('watchdog', {});
-      }, this.systemUtil.getConfig('tick.watchdog', 30800));
+      }, this.systemUtil.getConfig('tick.watchdog', 30000));
 
       setInterval(() => {
         eventEmitter.emit('tick_ordering', {});

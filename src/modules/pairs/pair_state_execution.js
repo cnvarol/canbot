@@ -30,7 +30,7 @@ module.exports = class PairStateExecution {
    * @returns {Promise<void>}
    */
   async onCancelPair(pairState) {
-    await this.orderExecutor.cancelAll(pairState.getExchange(), pairState.getSymbol());
+    await this.orderExecutor.cancelAll(pairState.getExchange(), pairState.getSymbol(), pairState.getSide());
     pairState.clear();
   }
 
@@ -39,7 +39,12 @@ module.exports = class PairStateExecution {
    * @returns {Promise<void>}
    */
   async onSellBuyPair(pairState) {
-    const position = await this.exchangeManager.getPosition(pairState.exchange, pairState.symbol);
+    const positions = await this.exchangeManager.getPosition(pairState.exchange, pairState.symbol);
+
+    let position = positions;
+    if (Array.isArray(positions)) {
+      position = positions.find(p => p.symbol === pairState.symbol && p.side === pairState.side);
+    }
 
     if (position) {
       pairState.clear();
@@ -74,7 +79,7 @@ module.exports = class PairStateExecution {
                 exchangeOrder
               ])}`
             );
-            pairState.clear(pairState.exchange, pairState.symbol);
+            pairState.clear(pairState.exchange, pairState.symbol, pairState.side);
           } else {
             // just log this case
             this.logger.info(
@@ -110,9 +115,9 @@ module.exports = class PairStateExecution {
       const state = pairState.getExchangeOrder();
       if (state) {
         newOrders
-          .filter(o => state.id !== o.id && state.id != o.id)
+          .filter(o => state.id !== o.id && state.id !== o.id)
           .forEach(async order => {
-            this.logger.error(`Pair State: Clear invalid orders:${JSON.stringify([order])}`);
+            this.logger.info(`Pair State: Clear invalid orders:${JSON.stringify([order])}`);
             try {
               await this.orderExecutor.cancelOrder(pairState.exchange, order.id);
             } catch (e) {
@@ -124,10 +129,15 @@ module.exports = class PairStateExecution {
   }
 
   async onClosePair(pairState) {
-    const position = await this.exchangeManager.getPosition(pairState.exchange, pairState.symbol);
+    const positions = await this.exchangeManager.getPosition(pairState.exchange, pairState.symbol);
+
+    let position = positions;
+    if (Array.isArray(positions)) {
+      position = positions.find(p => p.symbol === pairState.getSymbol() && p.side === pairState.side);
+    }
 
     if (!position) {
-      pairState.clear(pairState.exchange, pairState.symbol);
+      pairState.clear(pairState.exchange, pairState.symbol, pairState.side);
       this.logger.debug(
         `Close Pair: Block selling order; no open position: ${JSON.stringify([pairState.exchange, pairState.symbol])}`
       );
@@ -138,7 +148,7 @@ module.exports = class PairStateExecution {
         this.logger.debug(
           `Close Pair: Found open orders clearing: ${JSON.stringify([pairState.exchange, pairState.symbol])}`
         );
-        await this.orderExecutor.cancelAll(pairState.exchange, pairState.symbol);
+        await this.orderExecutor.cancelAll(pairState.exchange, pairState.symbol, pairState.side);
       }
 
       return;
@@ -150,7 +160,8 @@ module.exports = class PairStateExecution {
         `Pair State: Create position close order: ${JSON.stringify([
           pairState.exchange,
           pairState.symbol,
-          pairState.position
+          pairState.position,
+          pairState.side
         ])}`
       );
 
@@ -159,6 +170,7 @@ module.exports = class PairStateExecution {
       const exchangeOrder = await this.executeCloseOrder(
         pairState.exchange,
         pairState.symbol,
+        position.side,
         position.side === 'short' ? amount : amount * -1, // invert the current position
         pairState.options,
         pairState
@@ -176,7 +188,7 @@ module.exports = class PairStateExecution {
                 exchangeOrder
               ])}`
             );
-            pairState.clear(pairState.exchange, pairState.symbol);
+            pairState.clear(pairState.exchange, pairState.symbol, pairState.side);
           } else {
             // just log this case
             this.logger.error(
@@ -197,7 +209,7 @@ module.exports = class PairStateExecution {
               exchangeOrder
             ])}`
           );
-          pairState.clear(pairState.exchange, pairState.symbol);
+          pairState.clear(pairState.exchange, pairState.symbol, pairState.side);
         } else {
           // add order to know it for later usage
           pairState.setExchangeOrder(exchangeOrder);
@@ -212,9 +224,9 @@ module.exports = class PairStateExecution {
       const state = pairState.getExchangeOrder();
       if (state) {
         newOrders
-          .filter(o => state.id !== o.id && state.id != o.id)
+          .filter(o => state.id !== o.id && state.id !== o.id)
           .forEach(async order => {
-            this.logger.error(`Pair State: Clear invalid orders:${JSON.stringify([order])}`);
+            this.logger.info(`Pair State: Clear invalid orders:${JSON.stringify([order])}`);
             try {
               await this.orderExecutor.cancelOrder(pairState.exchange, order.id);
             } catch (e) {
@@ -279,13 +291,13 @@ module.exports = class PairStateExecution {
 
     const myOrder =
       options && options.market === true
-        ? Order.createMarketOrder(symbol, orderSize)
+        ? Order.createMarketOrder(symbol, orderSize, side)
         : Order.createLimitPostOnlyOrderAutoAdjustedPriceOrder(symbol, orderSize);
 
     return this.orderExecutor.executeOrder(exchangeName, myOrder);
   }
 
-  async executeCloseOrder(exchangeName, symbol, orderSize, options) {
+  async executeCloseOrder(exchangeName, symbol, side, orderSize, options) {
     // round to nearest exchange amount size
     const exchangeOrderSize = this.exchangeManager.get(exchangeName).calculateAmount(orderSize, symbol);
     if (!exchangeOrderSize) {
@@ -295,7 +307,7 @@ module.exports = class PairStateExecution {
 
     const order =
       options && options.market === true
-        ? Order.createMarketOrder(symbol, exchangeOrderSize)
+        ? Order.createMarketOrder(symbol, exchangeOrderSize, side, { close: true })
         : Order.createCloseOrderWithPriceAdjustment(symbol, exchangeOrderSize);
 
     return this.orderExecutor.executeOrder(exchangeName, order);
@@ -303,7 +315,7 @@ module.exports = class PairStateExecution {
 
   async extractManagedPairStateOrderFromOrders(pairState) {
     const orders = await this.exchangeManager.getOrders(pairState.getExchange(), pairState.getSymbol());
-    const position = await this.exchangeManager.getPosition(pairState.getExchange(), pairState.getSymbol());
+    const positions = await this.exchangeManager.getPosition(pairState.getExchange(), pairState.getSymbol());
 
     const matchingOrder = orders.filter(o => {
       if (o.getType() !== Order.TYPE_LIMIT) {
@@ -316,6 +328,23 @@ module.exports = class PairStateExecution {
 
       if (o.getLongOrShortSide() === 'long' && pairState.getState() === 'long') {
         return true;
+      }
+
+      let position = positions;
+      if (Array.isArray(positions)) {
+        position = positions.find(p => p.symbol === pairState.symbol && p.side === pairState.side);
+      }
+
+      if (o.positionSide && o.positionSide !== 'BOTH') {
+        if (position && pairState.getState() === 'close') {
+          if (position.isLongPosition() && o.getPositionSide() === 'LONG') {
+            return true;
+          }
+
+          if (position.isShortPosition() && o.getPositionSide() === 'SHORT') {
+            return true;
+          }
+        }
       }
 
       if (position && pairState.getState() === 'close') {

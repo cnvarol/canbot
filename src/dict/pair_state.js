@@ -33,8 +33,18 @@ module.exports = class PairState {
       throw new Error('TypeError: invalid OrderCapital');
     }
 
-    const state = new PairState(exchange, symbol, PairState.STATE_LONG, options, adjustedPrice, clearCallback);
+    const state = new PairState(
+      exchange,
+      symbol,
+      PairState.STATE_LONG,
+      PairState.STATE_LONG,
+      options,
+      adjustedPrice,
+      clearCallback
+    );
     state.capital = capital;
+    state.side = PairState.STATE_LONG;
+
     return state;
   }
 
@@ -52,12 +62,22 @@ module.exports = class PairState {
       throw new Error('TypeError: invalid OrderCapital');
     }
 
-    const state = new PairState(exchange, symbol, PairState.STATE_SHORT, options, adjustedPrice, clearCallback);
+    const state = new PairState(
+      exchange,
+      symbol,
+      PairState.STATE_SHORT,
+      PairState.STATE_SHORT,
+      options,
+      adjustedPrice,
+      clearCallback
+    );
     state.capital = capital;
+    state.side = PairState.STATE_SHORT;
+
     return state;
   }
 
-  constructor(exchange, symbol, state, options, adjustedPrice, clearCallback) {
+  constructor(exchange, symbol, side, state, options, adjustedPrice, clearCallback) {
     if (![PairState.STATE_LONG, PairState.STATE_SHORT, PairState.STATE_CLOSE, PairState.STATE_CANCEL].includes(state)) {
       throw new Error(`Invalidate state: ${state}`);
     }
@@ -70,6 +90,7 @@ module.exports = class PairState {
     this.exchange = exchange;
     this.symbol = symbol;
     this.state = state;
+    this.side = side;
     this.options = options;
     this.order = undefined;
     this.exchangeOrder = undefined;
@@ -105,6 +126,13 @@ module.exports = class PairState {
    */
   getState() {
     return this.state;
+  }
+
+  /**
+   * @returns {string}
+   */
+  getSide() {
+    return this.side;
   }
 
   clear() {

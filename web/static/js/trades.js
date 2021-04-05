@@ -15,7 +15,7 @@ Vue.filter('filter_price', function(value) {
 });
 
 Vue.filter('round', function(value, decimalPlaces = 0) {
-  return value.toFixed(decimalPlaces);
+  return parseFloat(value).toFixed(decimalPlaces);
 });
 
 Vue.filter('date', function(value) {
@@ -25,6 +25,7 @@ Vue.filter('date', function(value) {
 new Vue({
   el: '#vue-trades',
   components: {
-    'trades': httpVueLoader('js/trades.vue')
+    'trades': httpVueLoader('js/trades.vue'),
+    VueBootstrap4Table
   }
 });

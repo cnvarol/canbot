@@ -31,7 +31,7 @@
                         <div class="card">
                             <!-- /.card-header -->
                             <div class="card-body table-responsive p-0">
-                                <table class="table table-bordered table-sm table-hover">
+                                <table class="table table-sm table-hover">
                                     <thead>
                                     <tr>
                                         <th scope="col">Exchange</th>
@@ -56,6 +56,10 @@
                                                     <i class="fas fa-chevron-circle-down text-danger"></i>
                                                 {% elseif signal.side == 'close' %}
                                                     <i class="fa fa-times" aria-hidden="true"></i>
+                                                {% elseif signal.side == 'close_long' %}
+                                                    <i class="fa fa-times" aria-hidden="true"></i>
+                                                {% elseif signal.side == 'close_short' %}
+                                                    <i class="fa fa-times" aria-hidden="true"></i>                                               
                                                 {% endif %}
                                             </td>
                                             <td>{{ signal.strategy }}</td>

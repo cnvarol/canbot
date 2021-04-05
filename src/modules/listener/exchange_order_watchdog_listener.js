@@ -1,3 +1,4 @@
+const moment = require('moment');
 const orderUtil = require('../../utils/order_util');
 const Order = require('../../dict/order');
 
@@ -7,19 +8,25 @@ module.exports = class ExchangeOrderWatchdogListener {
     instances,
     stopLossCalculator,
     riskRewardRatioCalculator,
+    gridTradingCalculator,
     orderExecutor,
     pairStateManager,
     logger,
-    tickers
+    tickers,
+    notifier
   ) {
     this.exchangeManager = exchangeManager;
     this.instances = instances;
     this.stopLossCalculator = stopLossCalculator;
     this.riskRewardRatioCalculator = riskRewardRatioCalculator;
+    this.gridTradingCalculator = gridTradingCalculator;
     this.orderExecutor = orderExecutor;
     this.pairStateManager = pairStateManager;
     this.logger = logger;
     this.tickers = tickers;
+    this.notifier = notifier;
+    this.notified = {};
+    this.orders = {};
   }
 
   onTick() {
@@ -57,6 +64,11 @@ module.exports = class ExchangeOrderWatchdogListener {
           await this.stopLossWatchdog(exchange, position, stopLoss);
         }
 
+        const gridTrading = pair.watchdogs.find(watchdog => watchdog.name === 'grid_trading');
+        if (gridTrading) {
+          await this.gridTradingWatchdog(exchange, position, gridTrading);
+        }
+
         const riskRewardRatio = pair.watchdogs.find(watchdog => watchdog.name === 'risk_reward_ratio');
         if (riskRewardRatio) {
           await this.riskRewardRatioWatchdog(exchange, position, riskRewardRatio);
@@ -92,7 +104,7 @@ module.exports = class ExchangeOrderWatchdogListener {
     }
 
     const found = pair.watchdogs.find(watchdog =>
-      ['trailing_stop', 'stoploss', 'risk_reward_ratio'].includes(watchdog.name)
+      ['trailing_stop', 'stoploss', 'risk_reward_ratio', 'grid_trading'].includes(watchdog.name)
     );
     if (!found) {
       return;
@@ -173,6 +185,190 @@ module.exports = class ExchangeOrderWatchdogListener {
     });
   }
 
+  async gridTradingWatchdog(exchange, position, options) {
+    // TODO(semihalev): currently no limit for steps, limit this.
+
+    const { logger } = this;
+
+    const symbol = position.getSymbol();
+    const orders = await exchange.getOrdersForSymbol(symbol);
+    const currentPositions = await exchange.getPositionForSymbol(symbol);
+
+    if (Array.isArray(currentPositions) && options.hedge_position && position.profit < options.hedge_percent) {
+      if (currentPositions.length < 2) {
+        let amount = Math.abs(position.amount);
+        if (position.side === 'long') {
+          amount *= -2;
+        } else {
+          amount *= 2;
+        }
+
+        const side = position.side === Order.SIDE_LONG ? Order.SIDE_SHORT : Order.SIDE_LONG;
+        const hedgeOrder = Order.createMarketOrder(symbol, amount, side);
+        await this.orderExecutor.executeOrder(exchange.getName(), hedgeOrder);
+
+        logger.info(
+          `Grid Trading: opening hedge position: ${JSON.stringify({
+            hedgeOrder: hedgeOrder,
+            symbol: symbol,
+            exchange: exchange.getName()
+          })}`
+        );
+      }
+    }
+
+    let { profit } = position;
+    let amount = Math.abs(position.amount);
+
+    if (Array.isArray(currentPositions)) {
+      profit = 0;
+      amount = 0;
+      let pnl = 0;
+
+      currentPositions.forEach(p => {
+        amount += Math.abs(p.amount) * p.entry;
+        if (p.raw && p.raw.unRealizedProfit) {
+          pnl += parseFloat(p.raw.unRealizedProfit);
+        }
+      });
+
+      profit = (pnl / amount) * 100;
+    }
+
+    if (profit >= options.take_profit || (amount >= options.risk_size && profit >= options.risk_take_profit)) {
+      // close position/s with market order
+      if (Array.isArray(currentPositions)) {
+        currentPositions.forEach(async p => {
+          const marketOrder = Order.createMarketOrder(symbol, p.amount, p.side, { close: true });
+          await this.orderExecutor.executeOrder(exchange.getName(), marketOrder);
+        });
+      } else {
+        const marketOrder = Order.createMarketOrder(symbol, position.amount, position.side, { close: true });
+        await this.orderExecutor.executeOrder(exchange.getName(), marketOrder);
+      }
+
+      logger.info(
+        `Grid Trading: take profit closing: ${JSON.stringify({
+          symbol: symbol,
+          exchange: exchange.getName(),
+          profit: profit.toFixed(2)
+        })}`
+      );
+
+      return;
+    }
+
+    const size = Math.abs(position.amount * position.entry).toFixed(2);
+    if (options.risk_notify && size >= options.risk_size) {
+      const warnWindow = moment()
+        .subtract(180, 'minutes')
+        .toDate();
+
+      const noteKey = position.exchange + position.symbol + position.side + size;
+      if (!(noteKey in this.notified) || (noteKey in this.notified && this.notified[noteKey] < warnWindow)) {
+        this.notifier.send(
+          `Position size of ${position.symbol} too large.\nPlease await from significant losses.\nCurrent Size: *${size}* USDT`
+        );
+
+        this.notified[noteKey] = new Date();
+      }
+    }
+
+    // check duplicate orders
+    const duplicateOrders = this.gridTradingCalculator.checkDuplicateOrders(position, orders);
+
+    duplicateOrders.forEach(async order => {
+      logger.error(
+        `Grid Trading: found duplicate order: ${JSON.stringify({
+          order: order,
+          symbol: symbol,
+          exchange: exchange.getName()
+        })}`
+      );
+      await exchange.cancelOrder(order.id);
+    });
+
+    const orderChanges = await this.gridTradingCalculator.createGridTradingOrders(position, orders, options);
+
+    orderChanges.forEach(async orderChange => {
+      logger.info(
+        `Grid Trading: needed order change detected: ${JSON.stringify({
+          orderChange: orderChange,
+          symbol: symbol,
+          exchange: exchange.getName()
+        })}`
+      );
+
+      // update
+      if (orderChange.id && String(orderChange.id).length > 0) {
+        logger.info(
+          `Grid Trading: order update: ${JSON.stringify({
+            orderChange: orderChange,
+            symbol: symbol,
+            exchange: exchange.getName()
+          })}`
+        );
+
+        try {
+          await exchange.cancelOrder(orderChange.id);
+        } catch (e) {
+          logger.info(
+            `Grid Trading: order cancel error: ${JSON.stringify({
+              orderChange: orderChange,
+              symbol: symbol,
+              exchange: exchange.getName(),
+              message: e
+            })}`
+          );
+        }
+
+        return;
+      }
+
+      const price = exchange.calculatePrice(orderChange.price, symbol);
+      if (!price) {
+        logger.error(
+          `Grid Trading: Invalid price: ${JSON.stringify({
+            orderChange: orderChange,
+            symbol: symbol,
+            exchange: exchange.getName()
+          })}`
+        );
+
+        return;
+      }
+
+      const orderKey = position.exchange + position.symbol + position.side + orderChange.type;
+      if (orderKey in this.orders && this.orders[orderKey].price === orderChange.price) {
+        // lets check the order changing in next tick.
+        this.orders[orderKey].price = 0;
+        return;
+      }
+
+      this.orders[orderKey] = { price: orderChange.price };
+
+      // we need to normalize the price here: more general solution?
+      logger.info(
+        `Grid Trading: order create: ${JSON.stringify({
+          orderChange: orderChange,
+          symbol: symbol,
+          exchange: exchange.getName()
+        })}`
+      );
+
+      // const ourOrder = Order.createLimitPostOnlyOrder(symbol, position.side, orderChange.price, orderChange.amount);
+
+      const ourOrder =
+        orderChange.type === 'stop'
+          ? Order.createStopOrder(symbol, position.side, orderChange.price, orderChange.amount)
+          : Order.createLimitPostOnlyOrder(symbol, position.side, orderChange.price, orderChange.amount);
+
+      ourOrder.price = price;
+
+      await this.orderExecutor.executeOrder(exchange.getName(), ourOrder);
+    });
+  }
+
   async riskRewardRatioWatchdog(exchange, position, riskRewardRatioOptions) {
     const { logger } = this;
 
@@ -214,7 +410,7 @@ module.exports = class ExchangeOrderWatchdogListener {
           );
         } catch (e) {
           await exchange.cancelOrder(orderChange.id);
-          logger.error(
+          logger.info(
             `Risk Reward: order update error: ${JSON.stringify({
               orderChange: orderChange,
               symbol: symbol,
@@ -307,7 +503,7 @@ module.exports = class ExchangeOrderWatchdogListener {
           profit.toFixed(2)
         ])}`
       );
-      this.pairStateManager.update(exchange.getName(), position.symbol, 'close');
+      this.pairStateManager.update(exchange.getName(), position.symbol, position.side, 'close');
     }
   }
 

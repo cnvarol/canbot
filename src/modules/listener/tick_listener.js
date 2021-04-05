@@ -1,5 +1,6 @@
 const moment = require('moment');
 const _ = require('lodash');
+const { Keyboard } = require('telegram-keyboard');
 const StrategyContext = require('../../dict/strategy_context');
 const Order = require('../../dict/order');
 const OrderCapital = require('../../dict/order_capital');
@@ -45,7 +46,16 @@ module.exports = class TickListener {
     const strategyKey = strategy.strategy;
 
     let context = StrategyContext.create(strategy.options, ticker, true);
-    const position = await this.exchangeManager.getPosition(symbol.exchange, symbol.symbol);
+    const positions = await this.exchangeManager.getPosition(symbol.exchange, symbol.symbol);
+
+    let position = positions;
+    if (Array.isArray(positions)) {
+      position = positions.find(p => p.symbol === symbol.symbol && p.side === 'long');
+      if (!position) {
+        position = positions.find(p => p.symbol === symbol.symbol && p.side === 'short');
+      }
+    }
+
     if (position) {
       context = StrategyContext.createFromPosition(strategy.options, ticker, position, true);
     }
@@ -66,7 +76,7 @@ module.exports = class TickListener {
       return;
     }
 
-    if (!['close', 'short', 'long'].includes(signal)) {
+    if (!['close_short', 'close_long', 'close', 'short', 'long'].includes(signal)) {
       throw Error(`Invalid signal: ${JSON.stringify(signal, strategy)}`);
     }
 
@@ -81,7 +91,7 @@ module.exports = class TickListener {
       // console.log('blocked')
     } else {
       this.notified[symbol.exchange + symbol.symbol + strategyKey] = new Date();
-      this.notifier.send(`[${signal} (${strategyKey})` + `] ${symbol.exchange}:${symbol.symbol} - ${ticker.ask}`);
+      this.notifier.send(`[${signal} (${strategyKey})] ${symbol.exchange}:${symbol.symbol} - ${ticker.ask}`);
 
       // log signal
       this.signalLogger.signal(
@@ -104,7 +114,12 @@ module.exports = class TickListener {
     if (telegram) {
       const bot = telegram.telegraf;
 
-      bot.start(ctx => ctx.reply(`Welcome ${ctx.from.first_name} 😜 I'm ready for your commands.`));
+      const keyboard = Keyboard.make([
+        ['/start', '/stop'], // First row
+        ['/balances', '/positions'] // Second row
+      ]).reply();
+
+      bot.start(ctx => ctx.reply(`Welcome ${ctx.from.first_name} 😜 I'm ready for your commands.`, keyboard));
       bot.command('balances', ctx => this.getBalances(ctx));
 
       bot.command('positions', ctx => {
@@ -147,7 +162,16 @@ Margin Risk Ratio: ${riskRatio.toFixed(2)}%`);
     const strategyKey = strategy.strategy;
 
     let context = StrategyContext.create(strategy.options, ticker);
-    const position = await this.exchangeManager.getPosition(symbol.exchange, symbol.symbol);
+    const positions = await this.exchangeManager.getPosition(symbol.exchange, symbol.symbol);
+
+    let position = positions;
+    if (Array.isArray(positions)) {
+      position = positions.find(p => p.symbol === symbol.symbol && p.side === 'long');
+      if (!position) {
+        position = positions.find(p => p.symbol === symbol.symbol && p.side === 'short');
+      }
+    }
+
     if (position) {
       context = StrategyContext.createFromPosition(strategy.options, ticker, position);
     }
@@ -170,29 +194,31 @@ Margin Risk Ratio: ${riskRatio.toFixed(2)}%`);
       await this.placeStrategyOrders(placedOrder, symbol);
     }
 
-    const signal = result.getSignal();
+    let signal = result.getSignal();
+
     if (!signal || typeof signal === 'undefined') {
       return;
     }
 
-    if (!['close', 'short', 'long'].includes(signal)) {
+    if (!['close', 'close_short', 'close_long', 'short', 'long'].includes(signal)) {
       throw Error(`Invalid signal: ${JSON.stringify(signal, strategy)}`);
     }
 
-    const signalWindow = moment()
-      .subtract(_.get(symbol, 'trade.signal_slowdown_minutes', 15), 'minutes')
+    /* const signalWindow = moment()
+      .subtract(_.get(symbol, 'trade.signal_slowdown_minutes', 1), 'minutes')
       .toDate();
 
-    const noteKey = symbol.exchange + symbol.symbol;
+    // TODO(semihalev): We really need this block?
+    const noteKey = symbol.exchange + symbol.symbol + signal;
     if (noteKey in this.notified && this.notified[noteKey] >= signalWindow) {
-      return;
-    }
+      // return;
+    } */
 
     // log signal
     this.logger.info(
       [new Date().toISOString(), signal, strategyKey, symbol.exchange, symbol.symbol, ticker.ask].join(' ')
     );
-    this.notifier.send(`[${signal} (${strategyKey})] ${symbol.exchange}:${symbol.symbol} - ${ticker.ask}`);
+    // this.notifier.send(`[${signal} (${strategyKey})] ${symbol.exchange}:${symbol.symbol} - ${ticker.ask}`);
     this.signalLogger.signal(
       symbol.exchange,
       symbol.symbol,
@@ -204,9 +230,16 @@ Margin Risk Ratio: ${riskRatio.toFixed(2)}%`);
       signal,
       strategyKey
     );
-    this.notified[noteKey] = new Date();
+    // this.notified[noteKey] = new Date();
 
-    await this.pairStateManager.update(symbol.exchange, symbol.symbol, signal);
+    let side = signal;
+    if (signal === 'close_long' || signal === 'close_short') {
+      const split = _.split(signal, '_', 2);
+      signal = split[0];
+      side = split[1];
+    }
+
+    await this.pairStateManager.update(symbol.exchange, symbol.symbol, signal, side, { market: true });
   }
 
   async placeStrategyOrders(placedOrder, symbol) {
@@ -233,15 +266,15 @@ Margin Risk Ratio: ${riskRatio.toFixed(2)}%`);
     const balances = await binanceFutures.getBalances();
     if (balances.info) {
       const riskRatio = Math.round((balances.info.totalMaintMargin/balances.info.totalMarginBalance) * 100 * 100)/100;
-      if (riskRatio >= 5 && riskRatio % 5 >= 0 && riskRatio % 5 < 1) {
+      if (riskRatio >= 5 && riskRatio % 5 >= 0) {
         if (!this.warnNotified) {
           this.notifier.send(
-            `Binance futures margin risk ratio high now. Please await from significant losses.\n\nMargin Risk Ratio: ${riskRatio}%\nUnrealized PNL: ${parseFloat(balances.info.totalUnrealizedProfit).toFixed(2)} USDT`
+            `Binance futures margin risk ratio high now. Please await from significant losses.\n\nMargin Risk Ratio: *${riskRatio}*%\nUnrealized PNL: *${parseFloat(balances.info.totalUnrealizedProfit).toFixed(2)}* USDT`
           );
           this.warnNotified = true;
           setTimeout(async () => {
             this.warnNotified = false;
-          }, 300000);
+          }, 360 * 10000);
         }
       }
     }

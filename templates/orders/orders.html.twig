@@ -1,8 +1,27 @@
 {% extends './layout.html.twig' %}
 
 {% block page_content %}
-    <div class="col-md-5">
+<div class="row">
+    <div class="col-md-12">
+        <div class="small-box bg-info">
+            <div class="inner">
+                <h3>{% if ticker is defined %}{{ ticker.ask|price_format }} / {{ ticker.bid|price_format }}{% else %}{% endif %}</h3>
+                <p>Price{% if ticker is defined %} - {{ ticker.createdAt|date('y-m-d H:i:s') }}{% endif %}</p>
+            </div>
+            <div class="icon">
+                <i class="ion ion-bag"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12">
         <div class="card card-primary">
+            <div class="card-body p-0">
+                <div id="tradingview" style="width: 100%; height: 400px"></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-7">
+        <div class="card card-default">
             <div class="card-header">
                 <h3 class="card-title">Order - {{ pair }}</h3>
             </div>
@@ -33,6 +52,7 @@
                                 <label for="order_type">Type</label>
                                 <select class="form-control" id="order_type" name="type">
                                     <option value="limit" {% if form.type is not defined or form.type|default == 'limit' %}selected{% endif %}>limit</option>
+                                    <option value="market" {% if form.type|default == 'market' %}selected{% endif %}>market</option>
                                     <option value="stop" {% if form.type|default == 'stop' %}selected{% endif %}>stop</option>
                                 </select>
                             </div>
@@ -56,24 +76,14 @@
                 </div>
 
                 <div class="card-footer">
-                    <button type="submit" class="btn btn-success" name="side" value="long"><i class="fas fa-shopping-cart"></i> Buy</button>
+                    <button type="submit" class="btn btn-success" name="side" value="long">Open long</button>
                     &nbsp;
-                    <button type="submit" class="btn btn-danger" name="side" value="short"><i class="far fa-trash-alt"></i> Sell</button>
+                    <button type="submit" class="btn btn-danger" name="side" value="short">Open short</button>
                 </div>
             </form>
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="small-box bg-info">
-            <div class="inner">
-                <h3>{% if ticker is defined %}{{ ticker.ask|price_format }} / {{ ticker.bid|price_format }}{% else %}{% endif %}</h3>
-                <p>Price{% if ticker is defined %} - {{ ticker.createdAt|date('y-m-d H:i:s') }}{% endif %}</p>
-            </div>
-            <div class="icon">
-                <i class="ion ion-bag"></i>
-            </div>
-        </div>
-
+    <div class="col-md-5">
         {% if orders|default([])|length > 0 %}
             <div class="card">
                 <div class="card-header border-0">
@@ -110,7 +120,7 @@
                                 </td>
                                 <td>
                                     <a href="/orders/{{ pair|url_encode }}/cancel/{{ order.id|url_encode }}" class="btn btn-tool btn-sm" title="Cancel">
-                                        <i class="fas fa-window-close text-dark"></i>
+                                        <i class="fas fa-window-close"></i>
                                     </a>
                                 </td>
                             </tr>
@@ -121,14 +131,15 @@
             </div>
         {% endif %}
 
-        {% if position %}
+        {% if positions %}
             <div class="card">
                 <div class="card-header border-0">
-                    <h3 class="card-title">Position</h3>
+                    <h3 class="card-title">Positions</h3>
                 </div>
                 <div class="card-body p-0">
                     <table class="table table-striped table-valign-middle">
                         <tbody>
+                        {% for position in positions %}
                         <tr>
                             <td class="{{ position.amount < 0 ? 'text-danger' : 'text-success' }}">
                                 {{ position.amount|price_format }}
@@ -157,35 +168,29 @@
                                 {% endif %}
                             </td>
                         </tr>
+                        {% endfor %}
                         </tbody>
                     </table>
                 </div>
             </div>
         {% endif %}
-
-        <div class="card card-primary">
-            <div class="card-body">
-                <div id="tradingview" style="width: 100%; height: 400px"></div>
-            </div>
-        </div>
     </div>
+</div>
 {% endblock %}
 
 {% block javascript %}
 
 {{ parent() }}
 
-<script type="text/javascript" src="/js/orders.js"></script>
-  <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-
-
-  <script type="text/javascript">
+<script src="/js/orders.js"></script>
+<script src="https://s3.tradingview.com/tv.js"></script>
+<script>
   new TradingView.widget(
     {
       "autosize": true,
       "symbol": "{{ tradingview }}",
             "interval": "15",
-            "theme": "Light",
+            "theme": localStorage.getItem('darkMode') === 'enabled' ? "dark" : "light",
             "style": "60",
             "locale": "en",
             "toolbar_bg": "#f1f3f6",
@@ -194,9 +199,6 @@
             "container_id": "tradingview",
             "timezone": Intl.DateTimeFormat().resolvedOptions().timeZone,
             "studies": [
-                "BB@tv-basicstudies",
-                "MACD@tv-basicstudies",
-                "MAExp@tv-basicstudies",
                 "RSI@tv-basicstudies",
             ],
         }
