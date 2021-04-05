@@ -127,7 +127,6 @@ module.exports = class Backtest {
           lastSignal.signal = currentSignal;
           lastSignal.price = item.price;
           lastSignal.amount = amount;
-
           lastSignalClosed.signal = undefined;
           lastSignalClosed.price = undefined;
         } else if (['close', 'close_short', 'close_long'].includes(currentSignal)) {
@@ -253,7 +252,7 @@ module.exports = class Backtest {
           let pnlValue = 0; // Profit or Loss Value
 
           // When the position is Long
-          if (entrySignalType == 'long') {
+          if (entrySignalType === 'long') {
             if (exitPrice > entryPrice) {
               // Long Trade is Profitable
               trades.profitableCount += 1;
@@ -261,7 +260,7 @@ module.exports = class Backtest {
 
             // Set the PNL
             pnlValue = exitValue - workingCapital;
-          } else if (entrySignalType == 'short') {
+          } else if (entrySignalType === 'short') {
             if (exitPrice < entryPrice) {
               // Short Trade is Profitable
               trades.profitableCount += 1;
@@ -282,7 +281,7 @@ module.exports = class Backtest {
 
           // Update Working Cap
           workingCapital += pnlValue;
-        } else if (signalType == 'long' || signalType == 'short') {
+        } else if (signalType === 'long' || signalType === 'short') {
           // Enter into a position
           lastPosition = signalObject;
         }

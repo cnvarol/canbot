@@ -114,7 +114,7 @@ module.exports = class StrategyManager {
       return {};
     }
 
-    const price = results._candle ? results._candle.close : undefined;
+    let price = results._candle ? results._candle.close : undefined;
 
     let context;
     if (lastSignal && lastSignalEntry && lastSignalAmount && price) {
