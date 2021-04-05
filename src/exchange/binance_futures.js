@@ -51,7 +51,7 @@ module.exports = class BinanceFutures {
     this.symbols = symbols;
     this.positions = {};
     this.orders = {};
-    this.ccxtExchangeOrder = BinanceFutures.createCustomCcxtOrderInstance(ccxtClient, symbols, logger);
+    this.ccxtExchangeOrder = BinanceFutures.createCustomCcxtOrderInstance(ccxtClient, symbols, logger, config);
 
     const me = this;
 
@@ -644,7 +644,7 @@ module.exports = class BinanceFutures {
     return true;
   }
 
-  static createCustomCcxtOrderInstance(ccxtClient, symbols, logger) {
+  static createCustomCcxtOrderInstance(ccxtClient, symbols, logger, config) {
     // ccxt id and binance ids are not matching
     const CcxtExchangeOrderExtends = class extends CcxtExchangeOrder {
       async createOrder(order) {
@@ -670,13 +670,13 @@ module.exports = class BinanceFutures {
           args: {}
         };
 
-        if (this.config.hedge) {
+        if (config.hedge) {
           request.args.positionSide = order.side.toUpperCase();
           request.args.side = order.side === Order.SIDE_SHORT ? 'SELL' : 'BUY';
         }
 
         if (order.isReduceOnly()) {
-          if (this.config.hedge) {
+          if (config.hedge) {
             order.side = order.side === Order.SIDE_SHORT ? 'long' : 'short';
             request.args.positionSide = order.side.toUpperCase();
             request.args.side = order.side === Order.SIDE_SHORT ? 'BUY' : 'SELL';
@@ -693,7 +693,7 @@ module.exports = class BinanceFutures {
           // request.args.side = order.side === Order.SIDE_SHORT ? 'BUY' : 'SELL';
         }
 
-        if (order.options && order.options.close && this.config.hedge) {
+        if (order.options && order.options.close && config.hedge) {
           request.args.side = order.side === Order.SIDE_SHORT ? 'BUY' : 'SELL';
         }
 
