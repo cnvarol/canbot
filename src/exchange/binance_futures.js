@@ -32,11 +32,13 @@ module.exports = class BinanceFutures {
     this.intervals = [];
     this.balances = {};
     this.ccxtClient = undefined;
+    this.config = { hedge: false };
   }
 
   start(config, symbols) {
     const { logger } = this;
     this.exchange = null;
+    this.config = config;
 
     const ccxtClient = (this.ccxtClient = new ccxt.binance({
       apiKey: config.key,
@@ -668,13 +670,19 @@ module.exports = class BinanceFutures {
           args: {}
         };
 
-        request.args.positionSide = order.side.toUpperCase();
-        request.args.side = order.side === Order.SIDE_SHORT ? 'SELL' : 'BUY';
+        if (this.config.hedge) {
+          request.args.positionSide = order.side.toUpperCase();
+          request.args.side = order.side === Order.SIDE_SHORT ? 'SELL' : 'BUY';
+        }
 
         if (order.isReduceOnly()) {
-          order.side = order.side === Order.SIDE_SHORT ? 'long' : 'short';
-          request.args.positionSide = order.side.toUpperCase();
-          request.args.side = order.side === Order.SIDE_SHORT ? 'BUY' : 'SELL';
+          if (this.config.hedge) {
+            order.side = order.side === Order.SIDE_SHORT ? 'long' : 'short';
+            request.args.positionSide = order.side.toUpperCase();
+            request.args.side = order.side === Order.SIDE_SHORT ? 'BUY' : 'SELL';
+          } else {
+            request.args.reduceOnly = true;
+          }
         }
 
         if (order.getType() === Order.TYPE_STOP) {
@@ -685,7 +693,7 @@ module.exports = class BinanceFutures {
           // request.args.side = order.side === Order.SIDE_SHORT ? 'BUY' : 'SELL';
         }
 
-        if (order.options && order.options.close) {
+        if (order.options && order.options.close && this.config.hedge) {
           request.args.side = order.side === Order.SIDE_SHORT ? 'BUY' : 'SELL';
         }
 
