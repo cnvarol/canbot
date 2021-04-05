@@ -75,14 +75,14 @@ module.exports = class {
       return emptySignal;
     }
 
-    if (context.isBacktest() && lastSignal === 'long' && long && profit <= -5) {
+    if (context.isBacktest() && lastSignal === 'long' && long && profit <= -6) {
       const emptySignal = SignalResult.createEmptySignal(debug);
       emptySignal.setSignal('long');
 
       return emptySignal;
     }
 
-    if (context.isBacktest() && lastSignal === 'short' && short && profit <= -5) {
+    if (context.isBacktest() && lastSignal === 'short' && short && profit <= -6) {
       const emptySignal = SignalResult.createEmptySignal(debug);
       emptySignal.setSignal('short');
 
