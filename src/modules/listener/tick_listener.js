@@ -255,7 +255,7 @@ Margin Risk Ratio: ${riskRatio.toFixed(2)}%`);
       await this.orderExecutor.executeOrderWithAmountAndPrice(symbol.exchange, exchangeOrder);
 
       this.notifier.send(
-        `Another order executed for ${symbol.symbol} for ${order.side} position.\nExchange: ${symbol.exchange}\nSize: ${(order.price*amount).toFixed(2)} USDT`
+        `Order executed for ${symbol.symbol} for ${order.side} position.\nSize: *${parseFloat(order.price*amount).toFixed(2)}* USDT`
       );
     }
   }
