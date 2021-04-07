@@ -254,8 +254,9 @@ Margin Risk Ratio: ${riskRatio.toFixed(2)}%`);
 
       await this.orderExecutor.executeOrderWithAmountAndPrice(symbol.exchange, exchangeOrder);
 
-      this.notified[symbol.exchange + symbol.symbol + order.side] = new Date();
-      this.notifier.send(`[update - ${order.side}` + `] ${symbol.exchange}:${symbol.symbol} - ${order.price} - ${amount}`);
+      this.notifier.send(
+        `Another order executed for ${symbol.symbol} for ${order.side} position.\nExchange: ${symbol.exchange}\nSize: ${(order.price*amount).toFixed(2)} USDT`
+      );
     }
   }
 
@@ -265,11 +266,14 @@ Margin Risk Ratio: ${riskRatio.toFixed(2)}%`);
 
     const balances = await binanceFutures.getBalances();
     if (balances.info) {
-      const riskRatio = Math.round((balances.info.totalMaintMargin/balances.info.totalMarginBalance) * 100 * 100)/100;
+      const riskRatio =
+        Math.round((balances.info.totalMaintMargin / balances.info.totalMarginBalance) * 100 * 100) / 100;
       if (riskRatio >= 5 && riskRatio % 5 >= 0) {
         if (!this.warnNotified) {
           this.notifier.send(
-            `Binance futures margin risk ratio high now. Please await from significant losses.\n\nMargin Risk Ratio: *${riskRatio}*%\nUnrealized PNL: *${parseFloat(balances.info.totalUnrealizedProfit).toFixed(2)}* USDT`
+            `Binance futures margin risk ratio high now. Please await from significant losses.\n\nMargin Risk Ratio: *${riskRatio}*%\nUnrealized PNL: *${parseFloat(
+              balances.info.totalUnrealizedProfit
+            ).toFixed(2)}* USDT`
           );
           this.warnNotified = true;
           setTimeout(async () => {
