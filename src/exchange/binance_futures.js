@@ -44,7 +44,7 @@ module.exports = class BinanceFutures {
       apiKey: config.key,
       secret: config.secret,
       enableRateLimit: true,
-      rateLimit: 250,
+      rateLimit: 100,
       options: { defaultType: 'future', warnOnFetchOpenOrdersWithoutSymbol: false }
     }));
 
