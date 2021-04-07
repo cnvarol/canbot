@@ -43,6 +43,8 @@ module.exports = class BinanceFutures {
     const ccxtClient = (this.ccxtClient = new ccxt.binance({
       apiKey: config.key,
       secret: config.secret,
+      enableRateLimit: true,
+      rateLimit: 250,
       options: { defaultType: 'future', warnOnFetchOpenOrdersWithoutSymbol: false }
     }));
 
