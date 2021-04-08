@@ -250,9 +250,11 @@ Margin Risk Ratio: ${riskRatio.toFixed(2)}%`);
         OrderCapital.createCurrency(order.amount_currency)
       );
 
-      const exchangeOrder = Order.createLimitPostOnlyOrder(symbol.symbol, order.side, order.price, amount);
+      // const exchangeOrder = Order.createLimitPostOnlyOrder(symbol.symbol, order.side, order.price, amount);
+      // await this.orderExecutor.executeOrderWithAmountAndPrice(symbol.exchange, exchangeOrder);
 
-      await this.orderExecutor.executeOrderWithAmountAndPrice(symbol.exchange, exchangeOrder);
+      const exchangeOrder = Order.createMarketOrder(symbol.symbol, amount, order.side);
+      await this.orderExecutor.executeOrder(symbol.exchange, exchangeOrder);
 
       this.notifier.send(
         `Order executed for ${symbol.symbol} for ${order.side} position.\nSize: *${parseFloat(order.price*amount).toFixed(2)}* USDT`
