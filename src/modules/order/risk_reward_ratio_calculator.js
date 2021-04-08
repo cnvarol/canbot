@@ -60,6 +60,11 @@ module.exports = class RiskRewardRatioCalculator {
       // update order
       const stopOrder = stopOrders[0];
 
+      // order is in execute period, don't change anything
+      if (stopOrder.raw && stopOrder.raw.status === 'PARTIALLY_FILLED') {
+        return {};
+      }
+
       // only +1% amount change is important for us
       if (OrderUtil.isPercentDifferentGreaterThen(position.amount, stopOrder.amount, 1)) {
         let amount = Math.abs(position.amount);
@@ -96,6 +101,11 @@ module.exports = class RiskRewardRatioCalculator {
     } else {
       // update order
       const targetOrder = targetOrders[0];
+
+      // order is in execute period, don't change anything
+      if (targetOrder.raw && targetOrder.raw.status === 'PARTIALLY_FILLED') {
+        return {};
+      }
 
       // only +1% amount change is important for us
       if (OrderUtil.isPercentDifferentGreaterThen(position.amount, targetOrder.amount, 1)) {
