@@ -104,7 +104,9 @@ module.exports = class BinanceFutures {
       } catch (e) {
         me.logger.error(`Binance Futures: set leverage error: ${JSON.stringify([symbol.symbol, leverage, String(e)])}`);
       }
+    });
 
+    symbols.forEach(symbol => {
       symbol.periods.forEach(period => {
         // for bot init prefill data: load latest candles from api
         this.queue.add(async () => {
