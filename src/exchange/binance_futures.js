@@ -32,19 +32,17 @@ module.exports = class BinanceFutures {
     this.intervals = [];
     this.balances = {};
     this.ccxtClient = undefined;
-    this.config = { hedge: false };
   }
 
   start(config, symbols) {
     const { logger } = this;
     this.exchange = null;
-    this.config = config;
 
     const ccxtClient = (this.ccxtClient = new ccxt.binance({
       apiKey: config.key,
       secret: config.secret,
       enableRateLimit: true,
-      rateLimit: 100,
+      rateLimit: config.rateLimit || 100,
       options: { defaultType: 'future', warnOnFetchOpenOrdersWithoutSymbol: false }
     }));
 
