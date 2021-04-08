@@ -12,12 +12,12 @@ module.exports = class GridTradingCalculator {
     if (position.raw && position.raw.positionSide !== 'BOTH') {
       ordersCheck = orders.filter(
         order =>
-          (order.type === ExchangeOrder.TYPE_LIMIT || order.type === Exchange.TYPE_STOP) &&
+          (order.type === ExchangeOrder.TYPE_LIMIT || order.type === ExchangeOrder.TYPE_STOP) &&
           order.positionSide === position.raw.positionSide
       );
     } else {
       ordersCheck = orders.filter(
-        order => order.type === ExchangeOrder.TYPE_LIMIT || order.type === Exchange.TYPE_STOP
+        order => order.type === ExchangeOrder.TYPE_LIMIT || order.type === ExchangeOrder.TYPE_STOP
       );
     }
 

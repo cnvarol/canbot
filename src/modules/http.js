@@ -71,6 +71,11 @@ module.exports = class Http {
       return process.version;
     });
 
+    const hedge_mode = this.systemUtil.getConfig('exchanges.binance_futures.hedge');
+    twig.extendFunction('hedge_mode', function() {
+      return hedge_mode;
+    });
+
     twig.extendFunction('memory_usage', function() {
       return Math.round((process.memoryUsage().heapUsed / 1024 / 1024) * 100) / 100;
     });
