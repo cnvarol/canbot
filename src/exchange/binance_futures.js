@@ -90,19 +90,23 @@ module.exports = class BinanceFutures {
       me.logger.info('Binance Futures: Starting as anonymous; no trading possible');
     }
 
-    symbols.forEach(async symbol => {
-      const leverage = me.getLeverage(symbol.symbol);
-      try {
-        await ccxtClient.fapiPrivate_post_leverage({
-          symbol: symbol.symbol,
-          leverage: leverage
-        });
+    setTimeout(async () => {
+      symbols.forEach(async symbol => {
+        const leverage = me.getLeverage(symbol.symbol);
+        try {
+          await ccxtClient.fapiPrivate_post_leverage({
+            symbol: symbol.symbol,
+            leverage: leverage
+          });
 
-        me.logger.info(`Binance Futures: set leverage: ${symbol.symbol} - [${leverage}x]`);
-      } catch (e) {
-        me.logger.error(`Binance Futures: set leverage error: ${JSON.stringify([symbol.symbol, leverage, String(e)])}`);
-      }
-    });
+          me.logger.info(`Binance Futures: set leverage: ${symbol.symbol} - [${leverage}x]`);
+        } catch (e) {
+          me.logger.error(
+            `Binance Futures: set leverage error: ${JSON.stringify([symbol.symbol, leverage, String(e)])}`
+          );
+        }
+      });
+    }, 6000);
 
     symbols.forEach(symbol => {
       symbol.periods.forEach(period => {
