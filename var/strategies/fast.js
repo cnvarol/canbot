@@ -24,6 +24,10 @@ module.exports = class {
     }
 
     const macd = macdFull.slice(-2);
+    if (macd.length !== 2) {
+      return undefined;
+    }
+
     const current = macd[0].histogram;
     const before = macd[1].histogram;
 
