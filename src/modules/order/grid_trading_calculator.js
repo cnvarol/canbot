@@ -1,4 +1,3 @@
-const { Exchange } = require('ccxt');
 const ExchangeOrder = require('../../dict/exchange_order');
 const OrderUtil = require('../../utils/order_util');
 
