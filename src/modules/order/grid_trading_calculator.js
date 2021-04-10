@@ -40,16 +40,7 @@ module.exports = class GridTradingCalculator {
     return duplicateOrders;
   }
 
-  calculateForOpenPosition(
-    position,
-    options = {
-      risk_size: 7500,
-      step_percent: 6,
-      risk_step_percent: 12,
-      hedge_step_percent: 4,
-      risk_hedge_step_percent: 8
-    }
-  ) {
+  calculateForOpenPosition(position, hedgeRisk, options) {
     let entryPrice = position.entry;
     const size = Math.abs(position.amount * position.entry);
 
@@ -65,7 +56,7 @@ module.exports = class GridTradingCalculator {
 
     entryPrice = Math.abs(entryPrice);
 
-    if (size >= options.risk_size) {
+    if (size >= options.risk_size || hedgeRisk) {
       if (position.side === 'long') {
         result.targetPrice = entryPrice * (1 - options.risk_step_percent / 100);
         result.stopPrice = entryPrice * (1 + options.risk_hedge_step_percent / 100);
@@ -88,9 +79,9 @@ module.exports = class GridTradingCalculator {
     return result;
   }
 
-  async syncGridTradingOrders(position, orders, options) {
+  async syncGridTradingOrders(position, orders, hedgeRisk, options) {
     const newOrders = {};
-    const result = this.calculateForOpenPosition(position, options);
+    const result = this.calculateForOpenPosition(position, hedgeRisk, options);
 
     let stopOrders;
     if (position.raw && position.raw.positionSide !== 'BOTH') {
@@ -180,8 +171,8 @@ module.exports = class GridTradingCalculator {
     return newOrders;
   }
 
-  async createGridTradingOrders(position, orders, options) {
-    const currentOrders = await this.syncGridTradingOrders(position, orders, options);
+  async createGridTradingOrders(position, orders, hedgeRisk, options) {
+    const currentOrders = await this.syncGridTradingOrders(position, orders, hedgeRisk, options);
 
     const newOrders = [];
     if (currentOrders.target) {

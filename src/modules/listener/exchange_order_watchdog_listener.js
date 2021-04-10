@@ -185,7 +185,23 @@ module.exports = class ExchangeOrderWatchdogListener {
     });
   }
 
-  async gridTradingWatchdog(exchange, position, options) {
+  async gridTradingWatchdog(
+    exchange,
+    position,
+    options = {
+      max_orders: 7,
+      hedge_position: true,
+      hedge_percent: -1,
+      step_percent: 6,
+      hedge_step_percent: 12,
+      take_profit: 1,
+      risk_notify: true,
+      risk_size: 10000,
+      risk_take_profit: 0.75,
+      risk_step_percent: 12,
+      risk_hedge_step_percent: 24
+    }
+  ) {
     // TODO(semihalev): currently no limit for steps, limit this.
 
     const { logger } = this;
@@ -288,7 +304,17 @@ module.exports = class ExchangeOrderWatchdogListener {
       await exchange.cancelOrder(order.id);
     });
 
-    const orderChanges = await this.gridTradingCalculator.createGridTradingOrders(position, orders, options);
+    let hedgeRisk = false;
+    if (Array.isArray(currentPositions) && currentPositions.length === 2) {
+      currentPositions.forEach(p => {
+        const hedgeSize = Math.abs(p.amount * p.entry);
+        if (position.side !== p.side && hedgeSize >= options.risk_size) {
+          hedgeRisk = true;
+        }
+      });
+    }
+
+    const orderChanges = await this.gridTradingCalculator.createGridTradingOrders(position, orders, hedgeRisk, options);
 
     orderChanges.forEach(async orderChange => {
       logger.info(
