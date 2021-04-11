@@ -336,7 +336,11 @@ module.exports = class ExchangeOrderWatchdogListener {
         );
 
         try {
-          await exchange.cancelOrder(orderChange.id);
+          if (hedgeRisk) {
+            await exchange.cancelAll(symbol);
+          } else {
+            await exchange.cancelOrder(orderChange.id);
+          }
         } catch (e) {
           logger.info(
             `Grid Trading: order cancel error: ${JSON.stringify({
