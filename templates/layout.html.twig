@@ -30,7 +30,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
     <script>
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/service-worker.js')
+            navigator.serviceWorker.register('/service-worker.js', {
+                scope: '.'
+            })
             .then(function(registration) {
                 console.log('Registration successful, scope is:', registration.scope);
             })
