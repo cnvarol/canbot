@@ -1,0 +1,17 @@
+{
+    "name": "Crypto Bot",
+    "short_name": "Crypto Bot",
+    "description": "Crypto trading bot",
+    "icons": [
+      {
+        "src": "/img/bitcoin.png",
+        "sizes": "512x512",
+        "type": "image/png"
+      }
+    ],
+    "theme_color": "#343a40",
+    "background_color": "#454d55",
+    "start_url": "/trades",
+    "scope": "/",
+    "display": "standalone"
+  }
