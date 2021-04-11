@@ -5,7 +5,7 @@ module.exports = class LogsRepository {
     this.db = db;
   }
 
-  getLatestLogs(excludes = ['debug'], limit = 200) {
+  getLatestLogs(excludes = ['debug'], limit = 2000) {
     return new Promise(resolve => {
       let sql = `SELECT * from logs order by created_at DESC LIMIT ${limit}`;
 
