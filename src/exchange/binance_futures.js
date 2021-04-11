@@ -233,13 +233,25 @@ module.exports = class BinanceFutures {
 
   async cancelOrder(id) {
     const result = this.ccxtExchangeOrder.cancelOrder(id);
-    await this.ccxtExchangeOrder.syncOrders();
+    this.throttler.addTask(
+      'binance_futures_sync_orders',
+      async () => {
+        await this.ccxtExchangeOrder.syncOrders();
+      },
+      3000
+    );
     return result;
   }
 
   async cancelAll(symbol) {
     const result = this.ccxtExchangeOrder.cancelAll(symbol);
-    await this.ccxtExchangeOrder.syncOrders();
+    this.throttler.addTask(
+      'binance_futures_sync_orders',
+      async () => {
+        await this.ccxtExchangeOrder.syncOrders();
+      },
+      3000
+    );
     return result;
   }
 
@@ -249,7 +261,13 @@ module.exports = class BinanceFutures {
     }
 
     // const result = this.ccxtExchangeOrder.updateOrder(id, order);
-    await this.ccxtExchangeOrder.syncOrders();
+    this.throttler.addTask(
+      'binance_futures_sync_orders',
+      async () => {
+        await this.ccxtExchangeOrder.syncOrders();
+      },
+      3000
+    );
     return undefined;
   }
 
