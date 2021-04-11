@@ -386,7 +386,7 @@ module.exports = class BinanceFutures {
             return;
           }
 
-          await this.positionUpdateFromWebSocket(position);
+          // await this.positionUpdateFromWebSocket(position);
 
           this.logger.info(`Binance Futures: Websocket position update: ${JSON.stringify([posKey, position])}`);
         }
