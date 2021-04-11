@@ -13,5 +13,5 @@
     "background_color": "#454d55",
     "start_url": "/trades",
     "scope": "/",
-    "display": "browser"
+    "display": "fullscreen"
   }
