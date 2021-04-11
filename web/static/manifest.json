@@ -12,6 +12,6 @@
     "theme_color": "#343a40",
     "background_color": "#454d55",
     "start_url": "/trades",
-    "scope": ".",
+    "scope": "/",
     "display": "standalone"
   }
