@@ -219,7 +219,8 @@ module.exports = class ExchangeOrderWatchdogListener {
       this.throttler.inTasks('binance_futures_sync_orders') ||
       this.throttler.inTasks('binance_futures_sync_positions')
     ) {
-      await this.sleep(500);
+      this.logger.debug(`Grid trading: Binance futures important tasks in queue, wait for 1000 ms`);
+      await this.sleep(1000);
     }
 
     const symbol = position.getSymbol();
@@ -422,7 +423,8 @@ module.exports = class ExchangeOrderWatchdogListener {
       this.throttler.inTasks('binance_futures_sync_orders') ||
       this.throttler.inTasks('binance_futures_sync_positions')
     ) {
-      await this.sleep(500);
+      this.logger.debug(`Risk Reward: Binance futures important tasks in queue, wait for 1000 ms`);
+      await this.sleep(1000);
     }
 
     const symbol = position.getSymbol();
