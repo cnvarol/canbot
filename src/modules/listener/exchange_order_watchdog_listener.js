@@ -188,12 +188,6 @@ module.exports = class ExchangeOrderWatchdogListener {
     });
   }
 
-  sleep(ms) {
-    return new Promise(resolve => {
-      setTimeout(resolve, ms);
-    });
-  }
-
   async gridTradingWatchdog(
     exchange,
     position,
@@ -215,12 +209,16 @@ module.exports = class ExchangeOrderWatchdogListener {
 
     const { logger } = this;
 
-    while (
+    if (
       this.throttler.inTasks('binance_futures_sync_orders') ||
       this.throttler.inTasks('binance_futures_sync_positions')
     ) {
       this.logger.debug(`Grid trading: Binance futures important tasks in queue, wait for 1000 ms`);
-      await this.sleep(1000);
+      setTimeout(async () => {
+        await this.gridTradingWatchdog(exchange, position, options);
+      }, 1000);
+
+      return;
     }
 
     const symbol = position.getSymbol();
@@ -419,12 +417,16 @@ module.exports = class ExchangeOrderWatchdogListener {
   async riskRewardRatioWatchdog(exchange, position, riskRewardRatioOptions) {
     const { logger } = this;
 
-    while (
+    if (
       this.throttler.inTasks('binance_futures_sync_orders') ||
       this.throttler.inTasks('binance_futures_sync_positions')
     ) {
       this.logger.debug(`Risk Reward: Binance futures important tasks in queue, wait for 1000 ms`);
-      await this.sleep(1000);
+      setTimeout(async () => {
+        await this.riskRewardRatioWatchdog(exchange, position, riskRewardRatioOptions);
+      }, 1000);
+
+      return;
     }
 
     const symbol = position.getSymbol();
