@@ -214,8 +214,8 @@ module.exports = class ExchangeOrderWatchdogListener {
       this.throttler.inTasks('binance_futures_sync_positions')
     ) {
       this.logger.debug(`Grid trading: Binance futures important tasks in queue, wait for 1000 ms`);
-      setTimeout(async () => {
-        await this.gridTradingWatchdog(exchange, position, options);
+      setTimeout(() => {
+        this.gridTradingWatchdog(exchange, position, options);
       }, 1000);
 
       return;
@@ -422,8 +422,8 @@ module.exports = class ExchangeOrderWatchdogListener {
       this.throttler.inTasks('binance_futures_sync_positions')
     ) {
       this.logger.debug(`Risk Reward: Binance futures important tasks in queue, wait for 1000 ms`);
-      setTimeout(async () => {
-        await this.riskRewardRatioWatchdog(exchange, position, riskRewardRatioOptions);
+      setTimeout(() => {
+        this.riskRewardRatioWatchdog(exchange, position, riskRewardRatioOptions);
       }, 1000);
 
       return;
