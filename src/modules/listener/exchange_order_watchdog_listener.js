@@ -355,9 +355,10 @@ module.exports = class ExchangeOrderWatchdogListener {
         try {
           if (size >= options.risk_size) {
             await exchange.cancelAll(symbol);
-          } else {
-            await exchange.cancelOrder(orderChange.id);
+            return;
           }
+
+          await exchange.cancelOrder(orderChange.id);
         } catch (e) {
           logger.info(
             `Grid Trading: order cancel error: ${JSON.stringify({
