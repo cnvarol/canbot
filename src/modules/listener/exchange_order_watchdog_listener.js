@@ -188,7 +188,7 @@ module.exports = class ExchangeOrderWatchdogListener {
     });
   }
 
-  async sleep(ms) {
+  sleep(ms) {
     return new Promise(resolve => {
       setTimeout(resolve, ms);
     });
