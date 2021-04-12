@@ -353,7 +353,7 @@ module.exports = class ExchangeOrderWatchdogListener {
         );
 
         try {
-          if (hedgeRisk) {
+          if (size >= options.risk_size) {
             await exchange.cancelAll(symbol);
           } else {
             await exchange.cancelOrder(orderChange.id);
