@@ -252,7 +252,8 @@ module.exports = {
       this.getPairStateManager(),
       this.getLogger(),
       this.getTickers(),
-      this.getNotifier()
+      this.getNotifier(),
+      this.getThrottler()
     ));
   },
 

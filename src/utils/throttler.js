@@ -4,6 +4,14 @@ module.exports = class Throttler {
     this.tasks = {};
   }
 
+  inTasks(key) {
+    if (key in this.tasks) {
+      return true;
+    }
+
+    return false;
+  }
+
   addTask(key, func, timeout = 1000) {
     if (func.constructor.name !== 'AsyncFunction') {
       throw new Error(`Throttler no async function given: ${key}`);

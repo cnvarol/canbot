@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 const moment = require('moment');
 const orderUtil = require('../../utils/order_util');
 const Order = require('../../dict/order');
@@ -13,7 +14,8 @@ module.exports = class ExchangeOrderWatchdogListener {
     pairStateManager,
     logger,
     tickers,
-    notifier
+    notifier,
+    throttler
   ) {
     this.exchangeManager = exchangeManager;
     this.instances = instances;
@@ -27,6 +29,7 @@ module.exports = class ExchangeOrderWatchdogListener {
     this.notifier = notifier;
     this.notified = {};
     this.orders = {};
+    this.throttler = throttler;
   }
 
   onTick() {
@@ -185,6 +188,12 @@ module.exports = class ExchangeOrderWatchdogListener {
     });
   }
 
+  async sleep(ms) {
+    return new Promise(resolve => {
+      setTimeout(resolve, ms);
+    });
+  }
+
   async gridTradingWatchdog(
     exchange,
     position,
@@ -205,6 +214,13 @@ module.exports = class ExchangeOrderWatchdogListener {
     // TODO(semihalev): currently no limit for steps, limit this.
 
     const { logger } = this;
+
+    while (
+      this.throttler.inTasks('binance_futures_sync_orders') ||
+      this.throttler.inTasks('binance_futures_sync_positions')
+    ) {
+      await this.sleep(500);
+    }
 
     const symbol = position.getSymbol();
     const orders = await exchange.getOrdersForSymbol(symbol);
@@ -401,6 +417,13 @@ module.exports = class ExchangeOrderWatchdogListener {
 
   async riskRewardRatioWatchdog(exchange, position, riskRewardRatioOptions) {
     const { logger } = this;
+
+    while (
+      this.throttler.inTasks('binance_futures_sync_orders') ||
+      this.throttler.inTasks('binance_futures_sync_positions')
+    ) {
+      await this.sleep(500);
+    }
 
     const symbol = position.getSymbol();
     const orders = await exchange.getOrdersForSymbol(symbol);
