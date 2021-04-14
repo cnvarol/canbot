@@ -56,7 +56,7 @@ module.exports = class GridTradingCalculator {
 
     entryPrice = Math.abs(entryPrice);
 
-    if (size >= options.risk_size || hedgeRisk) {
+    /* if (size >= options.risk_size || hedgeRisk) {
       if (position.side === 'long') {
         result.targetPrice = entryPrice * (1 - options.risk_step_percent / 100);
         result.stopPrice = entryPrice * (1 + options.risk_hedge_step_percent / 100);
@@ -74,6 +74,22 @@ module.exports = class GridTradingCalculator {
     } else {
       result.targetPrice = entryPrice * (1 + options.step_percent / 100);
       result.stopPrice = entryPrice * (1 - options.hedge_step_percent / 100);
+    } */
+
+    let step_percent = size / 500;
+    let hedge_step_percent = size / 375;
+
+    if (hedgeRisk) {
+      step_percent = size / 250;
+      hedge_step_percent = size / 187.5;
+    }
+
+    if (position.side === 'long') {
+      result.targetPrice = entryPrice * (1 - step_percent / 100);
+      result.stopPrice = entryPrice * (1 + hedge_step_percent / 100);
+    } else {
+      result.targetPrice = entryPrice * (1 + step_percent / 100);
+      result.stopPrice = entryPrice * (1 - hedge_step_percent / 100);
     }
 
     return result;
