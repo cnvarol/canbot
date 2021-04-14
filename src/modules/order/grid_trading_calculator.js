@@ -77,11 +77,11 @@ module.exports = class GridTradingCalculator {
     } */
 
     let step_percent = size / 500;
-    let hedge_step_percent = size / 125;
+    let hedge_step_percent = size / 100;
 
     if (hedgeRisk) {
-      step_percent = size / 120;
-      hedge_step_percent = size / 30;
+      step_percent = size / 150;
+      hedge_step_percent = size / 15;
     }
 
     if (position.side === 'long') {
