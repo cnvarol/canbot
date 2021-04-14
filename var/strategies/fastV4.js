@@ -76,7 +76,7 @@ module.exports = class {
     }
 
     const size = Math.abs(context.getAmount() * context.getEntry());
-    const risk_profit = size ** 1.02 / 700 ** 1.04;
+    const risk_profit = (size ** 1.02 / 700 ** 1.04) * -1;
 
     debug.risk_profit = risk_profit;
     debug.amount = Math.abs(context.getAmount());
