@@ -2,7 +2,7 @@ const SignalResult = require('../../src/modules/strategy/dict/signal_result');
 
 module.exports = class {
   getName() {
-    return 'fastV3';
+    return 'fastV4';
   }
 
   buildIndicator(indicatorBuilder) {
