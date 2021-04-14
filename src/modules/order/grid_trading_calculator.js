@@ -83,8 +83,8 @@ module.exports = class GridTradingCalculator {
     let step_percent = size / 700;
     const hedge_step_percent = size / 200;
 
-    if (step_percent * -1 <= options.hedge_percent) {
-      step_percent *= 2;
+    if (step_percent <= 2) {
+      step_percent = 2;
     }
 
     if (position.side === 'long') {
