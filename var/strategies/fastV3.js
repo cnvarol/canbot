@@ -24,8 +24,8 @@ module.exports = class {
     }
 
     const macd = macdFull.slice(-2);
-    const current = macd[0].histogram;
-    const before = macd[1].histogram;
+    const before = macd[0].histogram;
+    const current = macd[1].histogram;
 
     const rsiP = 0.1 * (rsi - 50);
     const fisher_rsi = (Math.exp(2 * rsiP) - 1) / (Math.exp(2 * rsiP) + 1);
@@ -76,7 +76,8 @@ module.exports = class {
     }
 
     const size = Math.abs(context.getAmount() * context.getEntry());
-    const risk_profit = (size / 500) * -1;
+
+    const risk_profit = Math.sqrt(size / 12) * -1;
 
     debug.risk_profit = risk_profit;
     debug.amount = Math.abs(context.getAmount());
