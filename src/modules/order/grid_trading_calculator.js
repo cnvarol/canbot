@@ -40,7 +40,7 @@ module.exports = class GridTradingCalculator {
     return duplicateOrders;
   }
 
-  calculateForOpenPosition(position, hedgeRisk, options) {
+  calculateForOpenPosition(position, options) {
     let entryPrice = position.entry;
     const size = Math.abs(position.amount * position.entry);
 
@@ -70,9 +70,9 @@ module.exports = class GridTradingCalculator {
     return result;
   }
 
-  async syncGridTradingOrders(position, orders, hedgeRisk, options) {
+  async syncGridTradingOrders(position, orders, options) {
     const newOrders = {};
-    const result = this.calculateForOpenPosition(position, hedgeRisk, options);
+    const result = this.calculateForOpenPosition(position, options);
 
     let stopOrders;
     if (position.raw && position.raw.positionSide !== 'BOTH') {
@@ -162,8 +162,8 @@ module.exports = class GridTradingCalculator {
     return newOrders;
   }
 
-  async createGridTradingOrders(position, orders, hedgeRisk, options) {
-    const currentOrders = await this.syncGridTradingOrders(position, orders, hedgeRisk, options);
+  async createGridTradingOrders(position, orders, options) {
+    const currentOrders = await this.syncGridTradingOrders(position, orders, options);
 
     const newOrders = [];
     if (currentOrders.target) {

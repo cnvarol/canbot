@@ -318,17 +318,7 @@ module.exports = class ExchangeOrderWatchdogListener {
       await exchange.cancelOrder(order.id);
     });
 
-    let hedgeRisk = false;
-    if (Array.isArray(currentPositions) && currentPositions.length === 2) {
-      currentPositions.forEach(p => {
-        const hedgeSize = Math.abs(p.amount * p.entry);
-        if (position.side !== p.side && hedgeSize >= options.risk_size) {
-          hedgeRisk = true;
-        }
-      });
-    }
-
-    const orderChanges = await this.gridTradingCalculator.createGridTradingOrders(position, orders, hedgeRisk, options);
+    const orderChanges = await this.gridTradingCalculator.createGridTradingOrders(position, orders, options);
 
     orderChanges.forEach(async orderChange => {
       logger.info(
