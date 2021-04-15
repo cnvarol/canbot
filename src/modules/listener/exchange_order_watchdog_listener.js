@@ -195,8 +195,8 @@ module.exports = class ExchangeOrderWatchdogListener {
       hedge_position: false,
       hedge_percent: -1,
       take_profit: 1,
-      step_divider: 100,
-      hedge_step_divider: 25,
+      step_resolution: 25,
+      hedge_step_resolution: 5,
       risk_notify: true,
       risk_size: 5000,
       risk_take_profit: 0.75
