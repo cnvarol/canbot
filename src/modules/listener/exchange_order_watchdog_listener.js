@@ -192,17 +192,14 @@ module.exports = class ExchangeOrderWatchdogListener {
     exchange,
     position,
     options = {
-      max_orders: 7,
-      hedge_position: true,
+      hedge_position: false,
       hedge_percent: -1,
-      step_percent: 6,
-      hedge_step_percent: 12,
       take_profit: 1,
+      step_divider: 100,
+      hedge_step_divider: 25,
       risk_notify: true,
-      risk_size: 10000,
-      risk_take_profit: 0.75,
-      risk_step_percent: 12,
-      risk_hedge_step_percent: 24
+      risk_size: 5000,
+      risk_take_profit: 0.75
     }
   ) {
     // TODO(semihalev): currently no limit for steps, limit this.
@@ -228,7 +225,7 @@ module.exports = class ExchangeOrderWatchdogListener {
     const currentPositions = await exchange.getPositionForSymbol(symbol);
 
     if (Array.isArray(currentPositions) && options.hedge_position && position.profit < options.hedge_percent) {
-      if (currentPositions.length < 2) {
+      if (currentPositions.length < 2 && Math.abs(position.amount * position.entry) < 1000) {
         let amount = Math.abs(position.amount);
         if (position.side === 'long') {
           amount *= -1;
