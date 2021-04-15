@@ -42,7 +42,7 @@ module.exports = class GridTradingCalculator {
 
   calculateForOpenPosition(position, hedgeRisk, options) {
     let entryPrice = position.entry;
-    let size = Math.abs(position.amount * position.entry);
+    const size = Math.abs(position.amount * position.entry);
 
     if (!entryPrice) {
       this.logger.info(`Invalid entryPrice for grid trading:${JSON.stringify(position)}`);
@@ -55,10 +55,6 @@ module.exports = class GridTradingCalculator {
     };
 
     entryPrice = Math.abs(entryPrice);
-
-    if (hedgeRisk) {
-      size *= 10;
-    }
 
     const step_percent = Math.sqrt(size / options.step_resolution);
     const hedge_step_percent = Math.sqrt(size / options.hedge_step_resolution);
