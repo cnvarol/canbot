@@ -283,7 +283,7 @@ module.exports = class Http {
 
       // simple sleep for async ui blocking for exchange communication
       setTimeout(() => {
-        res.redirect('/trades');
+        res.json({ status: 'success' });
       }, 800);
     });
 

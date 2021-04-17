@@ -91,12 +91,11 @@
           </span>
         </template>
         <template slot="actions" slot-scope="props">
-          <form :action="'/pairs/' + props.row.exchange + '-' + props.row.position.symbol" method="post">
-            <input type="hidden" name="positionSide" :value="props.row.position.side">
+          <form v-on:submit.prevent>
             <button name="action" value="close" data-toggle="tooltip"
-                    title="Limit Close" class="btn btn-outline-primary btn-xs"><i class="fa fa-times"></i> Limit Close</button>
+                    title="Limit Close" class="btn btn-outline-primary btn-xs" v-on:click="closePosition(props.row.exchange, props.row.position.symbol, 'close', props.row.position.side)"><i class="fa fa-times"></i> Limit Close</button>
             <button name="action" value="close_market" data-toggle="tooltip" 
-                    title="Market Close" class="btn btn-outline-danger btn-xs"><i class="fa fa-times"></i> Market Close</button>
+                    title="Market Close" class="btn btn-outline-danger btn-xs" v-on:click="closePosition(props.row.exchange, props.row.position.symbol, 'close_market', props.row.position.side)"><i class="fa fa-times"></i> Market Close</button>
           </form>
         </template>
         <template slot="sort-asc-icon"><i class="fas fa-sort-up"></i></template>
@@ -172,7 +171,20 @@ module.exports = {
       totalShortPosition: 0.00,
       positionsUpdatedAt: '',
       ordersUpdatedAt: '',
-
+      toastOptions: {
+        position: "top-right",
+        timeout: 5000,
+        closeOnClick: true,
+        pauseOnFocusLoss: true,
+        pauseOnHover: true,
+        draggable: true,
+        draggablePercent: 0.6,
+        showCloseButtonOnHover: false,
+        hideProgressBar: true,
+        closeButton: "button",
+        icon: true,
+        rtl: false
+      },
       columns: [{
               label: "Ex",
               name: "exchange",
@@ -267,6 +279,7 @@ module.exports = {
   created: function() {
     this.fetchPageAsJson();
     this.timer = setInterval(this.fetchPageAsJson, 3000);
+    this.toast = VueToastification.createToastInterface();
   },
   methods: {
     async fetchPageAsJson() {
@@ -303,6 +316,26 @@ module.exports = {
     },
     cancelAutoUpdate() {
       clearInterval(this.timer);
+    },
+    async closePosition(exchange, symbol, action, side) {
+      if (!confirm(`Do you really want to close ${side} position for ${symbol}?`)) {
+        return;
+      }
+
+      const requestOptions = {
+        method: "POST",
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded'},
+        body: `positionside=${side}&action=${action}`
+      };
+
+      const res = await fetch(`/pairs/${exchange}-${symbol}`, requestOptions);
+      const data = await res.json();
+
+      if ('status' in data && data.status === 'success') {
+        this.toast.success(`Successfuly closed ${side} position for ${symbol}`, this.toastOptions);
+      } else {
+        this.toast.error(`Error occurred while closing ${side} position for ${symbol}`, this.toastOptions);
+      }
     }
   },
   beforeDestroy() {

@@ -8,11 +8,14 @@
     <script src="/js/trades.js?v={{ asset_version() }}" type="module"></script>
 
     <!-- DataTables and Plugins -->
-    <script  src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"  crossorigin="anonymous"></script>
-    <script  src="https://unpkg.com/vue-bootstrap4-table@1.1.11/dist/vue-bootstrap4-table.min.js"  crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/vue-bootstrap4-table@1.1.11/dist/vue-bootstrap4-table.min.js" crossorigin="anonymous"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue-toastification" crossorigin="anonymous"></script>
 {% endblock %}
 
 {% block stylesheet %}
+    <link rel="stylesheet" href="{{ '/css/toast.css' }}">
 {% endblock %}
 
 {% block content %}
