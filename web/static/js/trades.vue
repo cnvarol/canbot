@@ -325,7 +325,7 @@ module.exports = {
       const requestOptions = {
         method: "POST",
         headers: { 'Content-Type': 'application/x-www-form-urlencoded'},
-        body: `positionside=${side}&action=${action}`
+        body: `positionSide=${side}&action=${action}`
       };
 
       const res = await fetch(`/pairs/${exchange}-${symbol}`, requestOptions);
