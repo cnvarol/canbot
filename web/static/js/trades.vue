@@ -408,15 +408,18 @@ module.exports = {
     this.connectToWebSocket();
   },
   methods: {
+    webSocketPing() {
+      this.ws.send(JSON.stringify({type: 'SocketStateChangedEvent', state: 'alive'});
+    },
     connectToWebSocket() {
-      const ws = new WebSocket(`wss://${location.hostname}/ws`);
+      this.ws = new WebSocket(`wss://${location.hostname}/ws`);
       ws.onmessage = async ({data}) => {
         await this.onMessage(data);
       };
 
       let pingInterval;
       ws.onopen = event => {
-        pingInterval = setInterval(ws.send(JSON.stringify({type: 'SocketStateChangedEvent', state: 'alive'})), 1000);
+        pingInterval = setInterval(webSocketPing, 1000);
       }
 
       ws.onclose = (e) => {
