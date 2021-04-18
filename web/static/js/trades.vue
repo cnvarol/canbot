@@ -70,7 +70,7 @@
       </div>
       <div class="card-body">
       <div class="table-responsive">
-      <vue-bootstrap4-table :rows="positions" :classes="classes" :columns="columns" :config="config" :total-rows="positions.length">
+      <vue-bootstrap4-table :rows="positions" :classes="dataTableClasses" :columns="positionsColumns" :config="dataTableConfig" :total-rows="positions.length">
         <template slot="exchange" slot-scope="props"><img :src="`/img/exchanges/${props.cell_value}.png`" :alt="props.cell_value" :title="props.cell_value" width="16px" height="16px"></template>
         <template slot="symbol" slot-scope="props">
           <span v-if="props.row.position.side === 'short'" class="badge badge-danger">short</span>
@@ -114,7 +114,28 @@
       </div>
       <div class="card-body">
         <div class="table-responsive">
-          <table class="table table-sm table-hover">
+          <vue-bootstrap4-table :rows="orders" :classes="dataTableClasses" :columns="ordersColumns" :config="dataTableConfig" :total-rows="orders.length">
+            <template slot="exchange" slot-scope="props"><img :src="`/img/exchanges/${props.cell_value}.png`" :alt="props.cell_value" :title="props.cell_value" width="16px" height="16px"></template>
+            <template slot="symbol" slot-scope="props">
+              <span v-if="props.row.order.side === 'sell'" class="badge badge-danger">short</span>
+              <span v-if="props.row.order.side === 'buy'" class="badge badge-success">long</span>
+              <a target="blank" :href="'/tradingview/' + props.row.exchange + ':' + props.cell_value">{{ props.cell_value }}</a> 
+            </template>
+            <template slot="currency" slot-scope="props">{{ props.cell_value|filter_price }} <small>USDT</small></template>
+            <template slot="price" slot-scope="props">
+              {{ props.cell_value|filter_price }} <small>USDT</small> 
+              <span v-if="props.row.order.percent_to_price" title="Percent to current price" v-bind:class="{ 'text-success': props.row.order.percent_to_price > 0, 'text-danger': props.row.order.percent_to_price < 0 }">{{ props.row.order.percent_to_price|round(2) }}%</span>
+            </template>
+            <template slot="updatedAt" slot-scope="props">{{ new Date(props.cell_value).toLocaleString('tr-TR') }}</template>
+            <template slot="actions" slot-scope="props">
+              <button name="cancel" class="btn btn-outline-danger btn-xs" v-on:click="cancelOrder(props.row.exchange, props.row.order.symbol, props.row.order.type, props.row.order.side, props.row.order.id)"><i class="fa fa-times"></i> Cancel</button>
+            </template>
+            <template slot="sort-asc-icon"><i class="fas fa-sort-up"></i></template>
+            <template slot="sort-desc-icon"><i class="fas fa-sort-down"></i></template>
+            <template slot="no-sort-icon"><i class="fas fa-sort"></i></template>
+            <template slot="empty-results">No open any order.</template>
+          </vue-bootstrap4-table>
+          <!-- table class="table table-sm table-hover">
             <thead>
             <tr>
               <th scope="col" title="Exchange" style="width:30px">Ex</th>
@@ -151,7 +172,7 @@
               </td>
             </tr>
             </tbody>
-          </table>
+          </table -->
         </div>
       </div>
     </div>
@@ -173,7 +194,7 @@ module.exports = {
       ordersUpdatedAt: '',
       toastOptions: {
         position: "top-right",
-        timeout: 5000,
+        timeout: 3000,
         closeOnClick: true,
         pauseOnFocusLoss: true,
         pauseOnHover: true,
@@ -185,7 +206,88 @@ module.exports = {
         icon: true,
         rtl: false
       },
-      columns: [{
+      ordersColumns: [{
+              label: "Ex",
+              name: "exchange",
+              slot_name: "exchange",
+              sort: false,
+              row_text_alignment:  "text-left",
+              column_text_alignment:  "text-left",
+          },
+          {
+              label: "Symbol",
+              name: "order.symbol",
+              slot_name: "symbol",
+              sort: true,
+              row_text_alignment:  "text-left",
+              column_text_alignment:  "text-left"
+          },
+          {
+              label: "Size",
+              name: "currency",
+              slot_name: "currency",
+              row_text_alignment:  "text-left",
+              column_text_alignment:  "text-left",
+              sort: true,
+              initial_sort: true,
+              initial_sort_order: "desc"
+          },
+          {
+              label: "Status",
+              name: "order.status",
+              slot_name: "status",
+              sort: true,
+              row_text_alignment:  "text-left",
+              column_text_alignment:  "text-left"
+          },
+          {
+              label: "Type",
+              name: "order.type",
+              slot_name: "type",
+              sort: true,
+              row_text_alignment:  "text-left",
+              column_text_alignment:  "text-left"
+          },
+          {
+              label: "Price",
+              name: "order.price",
+              slot_name: "price",
+              sort: true,
+              row_text_alignment:  "text-left",
+              column_text_alignment:  "text-left"
+          },
+          {
+              label: "Amount",
+              name: "order.amount",
+              slot_name: "amount",
+              sort: true,
+              row_text_alignment:  "text-left",
+              column_text_alignment:  "text-left"
+          },
+          {
+              label: "Retry",
+              name: "order.retry",
+              slot_name: "retry",
+              sort: false,
+              row_text_alignment:  "text-left",
+              column_text_alignment:  "text-left"
+          },
+          {
+              label: "Updated",
+              name: "order.updatedAt",
+              slot_name: "updatedAt",
+              sort: true,
+              row_text_alignment:  "text-left",
+              column_text_alignment:  "text-left"
+          },
+          {
+              label: "Actions",
+              slot_name: "actions",
+              row_text_alignment:  "text-left",
+              column_text_alignment:  "text-left"
+          }
+      ],
+      positionsColumns: [{
               label: "Ex",
               name: "exchange",
               slot_name: "exchange",
@@ -250,7 +352,7 @@ module.exports = {
               column_text_alignment:  "text-left"
           },
       ],
-      classes: {
+      dataTableClasses: {
           table : {
               "table-sm table-hover" : true,
               "table-sm table-hover" : function(rows) {
@@ -258,16 +360,16 @@ module.exports = {
               }
           },
       },
-      config: {
+      dataTableConfig: {
           card_mode: false,
           global_search: {
               placeholder: "Search"
           },
           highlight_row_hover_color:"rgba(0, 0, 0, 0.075)",
           server_mode: false,
-          per_page: 25,
+          per_page: 50,
           num_of_visibile_pagination_buttons: 5,
-          per_page_options: [25, 50, 100, 150, 200],
+          per_page_options: [25, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500],
           checkbox_rows: false,
           rows_selectable: false,
           show_refresh_button: false,
@@ -310,12 +412,24 @@ module.exports = {
         }
       });
 
+      this.orders.forEach(o => {
+        o.currency = parseFloat(o.order.price) * parseFloat(o.order.amount);
+      });
+
       this.positionsUpdatedAt = new Date().toLocaleTimeString();
       this.ordersUpdatedAt = new Date().toLocaleTimeString();
 
     },
     cancelAutoUpdate() {
       clearInterval(this.timer);
+    },
+    async cancelOrder(exchange, symbol, type, side, id) {
+      const res = await fetch(`/order/${exchange}/${id}`);
+      if (res.status === 200) {
+        this.toast.success(`Successfuly cancelled ${side} ${type} order for ${symbol}`, this.toastOptions);
+      } else {
+        this.toast.error(`Error occurred while closing ${side} order for ${symbol}`, this.toastOptions);
+      }
     },
     async closePosition(exchange, symbol, action, side) {
       if (!confirm(`Do you really want to close ${side} position for ${symbol}?`)) {

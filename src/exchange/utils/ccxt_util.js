@@ -49,6 +49,17 @@ module.exports = class CcxtUtil {
         break;
     }
 
+    let createdAt = new Date();
+    let updatedAt = new Date();
+
+    if (order.info && order.info.time) {
+      createdAt = new Date(order.info.time);
+    }
+
+    if (order.info && order.info.updateTime) {
+      updatedAt = new Date(order.info.updateTime);
+    }
+
     return new ExchangeOrder(
       order.id,
       order.symbol,
@@ -59,8 +70,8 @@ module.exports = class CcxtUtil {
       null,
       order.side.toLowerCase() === 'sell' ? 'sell' : 'buy', // secure the value,
       orderType,
-      new Date(), // no date?
-      new Date(),
+      createdAt,
+      updatedAt,
       JSON.parse(JSON.stringify(order))
     );
   }
