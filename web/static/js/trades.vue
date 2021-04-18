@@ -124,7 +124,7 @@
             <template slot="currency" slot-scope="props">{{ props.cell_value|filter_price }} <small>USDT</small></template>
             <template slot="price" slot-scope="props">
               {{ props.cell_value|filter_price }} <small>USDT</small> 
-              <span v-if="props.row.order.percent_to_price" title="Percent to current price" v-bind:class="{ 'text-success': props.row.order.percent_to_price > 0, 'text-danger': props.row.order.percent_to_price < 0 }">{{ props.row.order.percent_to_price|round(2) }}%</span>
+              <span v-if="props.row.percent_to_price" title="Percent to current price" v-bind:class="{ 'text-success': props.row.percent_to_price > 0, 'text-danger': props.row.percent_to_price < 0 }">{{ props.row.percent_to_price|round(2) }}%</span>
             </template>
             <template slot="updatedAt" slot-scope="props">{{ new Date(props.cell_value).toLocaleString('tr-TR') }}</template>
             <template slot="actions" slot-scope="props">
