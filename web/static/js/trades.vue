@@ -420,8 +420,8 @@ module.exports = {
         await this.onMessage(data);
       };
 
-      ws.onopen = event => {
-        setTimout(this.webSocketPing, 1000);
+      ws.onopen = (e) => {
+        setTimeout(this.webSocketPing, 1000);
       }
 
       ws.onclose = (e) => {
