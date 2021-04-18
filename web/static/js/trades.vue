@@ -451,7 +451,6 @@ module.exports = {
           this.toast.info(`${data.event.order.symbol} ${data.event.order.side.toLowerCase()} ${data.event.order.type.toLowerCase()} order ${data.event.order.status.toLowerCase()}.`, this.messageOptions);
           break;
         case 'ExchangePositionEvent':
-          const exchangeName = this.createExchangeName(data.exchange);
           this.toast.warning(`${data.event.position.symbol} ${data.event.position.side} position ${data.event.state}.`, this.messageOptions);
           break;
       }
