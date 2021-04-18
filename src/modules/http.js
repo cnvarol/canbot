@@ -125,7 +125,6 @@ module.exports = class Http {
 
       ws.on('message', message => {
         const data = JSON.parse(message);
-        console.log(message);
         if (data.type === 'SocketStateChangedEvent' && data.state === 'alive') {
           ws.send(JSON.stringify({ type: 'SocketStateChangedEvent', state: 'ok' }));
         }

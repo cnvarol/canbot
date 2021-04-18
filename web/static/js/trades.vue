@@ -433,6 +433,8 @@ module.exports = {
     async onMessage(data) {
       const event = JSON.parse(data);
 
+      console.log(event.type);
+      
       switch(event.type) {
         case 'SocketStateChangedEvent':
           if (event.state === 'connected') {
