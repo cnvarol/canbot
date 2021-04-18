@@ -228,9 +228,9 @@ module.exports = {
           const types = {};
           return toasts.reduce((aggToasts, toast) => {
             // Check if type was not seen before
-            if (!types[toast]) {
+            if (!types[toast.type]) {
               aggToasts.push(toast);
-              types[toast] = true;
+              types[toast.type] = true;
             }
             return aggToasts;
           }, []);
