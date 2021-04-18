@@ -210,7 +210,7 @@ module.exports = {
       },
       messageOptions: {
         position: "bottom-right",
-        timeout: 2000,
+        timeout: 3000,
         closeOnClick: true,
         pauseOnFocusLoss: true,
         pauseOnHover: true,
@@ -430,7 +430,7 @@ module.exports = {
       };
 
       ws.onerror = (e) => {
-        console.error('WebSocket encountered error: ', err.message, 'Closing socket');
+        console.error('WebSocket encountered error: ', e.message, 'Closing socket');
         ws.close();
       };
     },
