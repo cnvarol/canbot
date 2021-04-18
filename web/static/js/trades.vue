@@ -416,8 +416,8 @@ module.exports = {
 
       ws.onclose = (e) => {
         console.log('WebSocket is closed. Reconnect will be attempted in 1 second.', e.reason);
-        setTimeout(function() {
-          this.connectToWebSocket();
+        setTimeout(() => {
+          connectToWebSocket();
         }, 1000);
       };
 
