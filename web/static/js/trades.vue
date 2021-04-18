@@ -414,13 +414,16 @@ module.exports = {
         await this.onMessage(data);
       };
 
-      const pingInterval = setInterval(ws.send(JSON.stringify({status: 'alive'})), 3000);
+      let pingInterval;
+      ws.onopen = (e) => {
+        pingInterval = setInterval(ws.send(JSON.stringify({status: 'alive'})), 3000);
+      }
 
       ws.onclose = (e) => {
         console.log('WebSocket is closed. Reconnect will be attempted in 1 second.', e.reason);
 
         clearInterval(pingInterval);
-        
+
         setTimeout(() => {
           connectToWebSocket();
         }, 1000);
