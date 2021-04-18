@@ -123,7 +123,7 @@ module.exports = class Http {
     wss.on('connection', ws => {
       ws.send(JSON.stringify({ type: 'SocketStateChangedEvent', state: 'connected' }));
 
-      wss.on('message', message => {
+      ws.on('message', message => {
         const data = JSON.parse(message);
         console.log(message);
         if (data.type === 'SocketStateChangedEvent' && data.state === 'alive') {
