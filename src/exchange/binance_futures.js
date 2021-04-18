@@ -353,7 +353,10 @@ module.exports = class BinanceFutures {
 
       this.positions[posKey] = currentPosition;
 
-      this.eventEmitter.emit('exchange_order', new ExchangePositionEvent(this.getName(), currentPosition, 'updated'));
+      this.eventEmitter.emit(
+        'exchange_position',
+        new ExchangePositionEvent(this.getName(), currentPosition, 'updated')
+      );
     } catch (e) {
       this.logger.error(`Binance Futures: error update position:${e}`);
     }
@@ -385,7 +388,7 @@ module.exports = class BinanceFutures {
           const currentPosition = this.positions[posKey];
 
           this.eventEmitter.emit(
-            'exchange_order',
+            'exchange_position',
             new ExchangePositionEvent(this.getName(), currentPosition, 'closed')
           );
 
@@ -404,7 +407,7 @@ module.exports = class BinanceFutures {
           (parseFloat(position.ep) > 0.00001 || parseFloat(position.ep) < -0.00001) // prevent float point issues
         ) {
           this.eventEmitter.emit(
-            'exchange_order',
+            'exchange_position',
             new ExchangePositionEvent(this.getName(), BinanceFutures.createPositionFromWebsocket(position), 'opened')
           );
           /* const side = position.ps.toLowerCase();
