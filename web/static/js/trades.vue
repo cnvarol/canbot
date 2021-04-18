@@ -409,7 +409,7 @@ module.exports = {
   },
   methods: {
     webSocketPing() {
-      this.ws.send(JSON.stringify({type: 'SocketStateChangedEvent', state: 'alive'});
+      this.ws.send(JSON.stringify({type: 'SocketStateChangedEvent', state: 'alive'}));
     },
     connectToWebSocket() {
       this.ws = new WebSocket(`wss://${location.hostname}/ws`);
