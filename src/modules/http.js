@@ -121,7 +121,7 @@ module.exports = class Http {
     const wss = new WebSocket.Server({ server });
 
     wss.on('connection', ws => {
-      ws.send('connected');
+      ws.send(JSON.stringify({ state: 'connected' }));
     });
 
     wss.broadcast = function broadcast(msg) {
@@ -135,8 +135,8 @@ module.exports = class Http {
       wss.broadcast(JSON.stringify({ type: 'ExchangeOrderEvent', event: event }));
     });
 
-    this.eventEmitter.on('position_state_changed', async event => {
-      wss.broadcast(JSON.stringify({ type: 'PositionStateChangeEvent', event: event }));
+    this.eventEmitter.on('exchange_position', async event => {
+      wss.broadcast(JSON.stringify({ type: 'ExchangePositionEvent', event: event }));
     });
 
     server.listen(8999, '127.0.0.1', () => {

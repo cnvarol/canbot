@@ -14,6 +14,7 @@ const ExchangeCandlestick = require('../dict/exchange_candlestick');
 const Position = require('../dict/position');
 const CcxtExchangeOrder = require('./ccxt/ccxt_exchange_order');
 const ExchangeOrderEvent = require('../event/exchange_order_event');
+const ExchangePositionEvent = require('../event/exchange_position_event');
 
 module.exports = class BinanceFutures {
   constructor(eventEmitter, requestClient, candlestickResample, logger, queue, candleImporter, throttler) {
@@ -351,6 +352,8 @@ module.exports = class BinanceFutures {
       }
 
       this.positions[posKey] = currentPosition;
+
+      this.eventEmitter.emit('exchange_order', new ExchangePositionEvent(this.getName(), currentPosition, 'updated'));
     } catch (e) {
       this.logger.error(`Binance Futures: error update position:${e}`);
     }
@@ -379,25 +382,38 @@ module.exports = class BinanceFutures {
 
         // position closed
         if (posKey in this.positions && position.pa === '0') {
+          const currentPosition = this.positions[posKey];
+
+          this.eventEmitter.emit(
+            'exchange_order',
+            new ExchangePositionEvent(this.getName(), currentPosition, 'closed')
+          );
+
           delete this.positions[posKey];
 
-          this.logger.info(`Binance Futures: Websocket position closed/removed: ${JSON.stringify([posKey, position])}`);
+          this.logger.info(
+            `Binance Futures: Websocket position closed/removed: ${JSON.stringify([posKey, currentPosition])}`
+          );
           return;
         }
 
         // position open
-        /* if (
+        if (
           !(position.s in this.positions) &&
           position.pa !== '0' &&
           (parseFloat(position.ep) > 0.00001 || parseFloat(position.ep) < -0.00001) // prevent float point issues
         ) {
-          const side = position.ps.toLowerCase();
+          this.eventEmitter.emit(
+            'exchange_order',
+            new ExchangePositionEvent(this.getName(), BinanceFutures.createPositionFromWebsocket(position), 'opened')
+          );
+          /* const side = position.ps.toLowerCase();
           this.positions[`${position.s}:${side}`] = BinanceFutures.createPositionFromWebsocket(position);
 
-          this.logger.info(`Binance Futures: Websocket position new found: ${JSON.stringify([position.s, position])}`);
+          this.logger.info(`Binance Futures: Websocket position new found: ${JSON.stringify([position.s, position])}`); */
 
           return;
-        } */
+        }
 
         // position update
         if (posKey in this.positions) {
