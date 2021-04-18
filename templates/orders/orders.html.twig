@@ -2,6 +2,11 @@
 
 {% block page_content %}
 <div class="row">
+    {% if alert is defined %}
+        <div class="col-md-12">
+            {% include '../components/alert.html.twig' with {'alert': alert} %}
+        </div>
+    {% endif %}
     <div class="col-md-12">
         <div class="small-box bg-info">
             <div class="inner">
@@ -28,10 +33,6 @@
 
             <form action="/orders/{{ pair|url_encode }}" method="post" role="form">
                 <div class="card-body">
-                    {% if alert is defined %}
-                        {% include '../components/alert.html.twig' with {'alert': alert} %}
-                    {% endif %}
-
                     <div class="row">
                         <div class="col-8">
                             <div class="form-group">
