@@ -448,12 +448,11 @@ module.exports = {
           }
           break;
         case 'ExchangeOrderEvent':
-          const exchangeName = this.createExchangeName(data.exchange);
-          this.toast.info(`${exchangeName} ${data.event.order.symbol} ${data.event.order.side.toLowerCase()} ${data.event.order.type.toLowerCase()} order ${data.event.order.status.toLowerCase()}.`, this.messageOptions);
+          this.toast.info(`${data.event.order.symbol} ${data.event.order.side.toLowerCase()} ${data.event.order.type.toLowerCase()} order ${data.event.order.status.toLowerCase()}.`, this.messageOptions);
           break;
         case 'ExchangePositionEvent':
           const exchangeName = this.createExchangeName(data.exchange);
-          this.toast.warning(`${exchangeName} ${data.event.position.symbol} ${data.event.position.side} position ${data.event.state}.`, this.messageOptions);
+          this.toast.warning(`${data.event.position.symbol} ${data.event.position.side} position ${data.event.state}.`, this.messageOptions);
           break;
       }
     },
@@ -531,11 +530,11 @@ module.exports = {
       const data = await res.json();
 
       if ('status' in data && data.status === 'success') {
-        this.toast.success(`Successfuly cancelled ${side} ${type} order for ${symbol}`, this.toastOptions);
+        this.toast.success(`Successfuly cancelled ${symbol} ${side} ${type} order`, this.toastOptions);
       } else if ('status' in data && data.status === 'error') {
-        this.toast.error(`Error occurred while cancelling ${side} ${type} order for ${symbol}. Error: ${data.error}`, this.toastOptions);
+        this.toast.error(`Error occurred while cancelling ${symbol} ${side} ${type} order Error: ${data.error}`, this.toastOptions);
       } else {
-        this.toast.error(`Error occurred while cancelling ${side} ${type} order for ${symbol}`, this.toastOptions);
+        this.toast.error(`Error occurred while cancelling ${symbol} ${side} ${type} order`, this.toastOptions);
       }
     },
     async closePosition(exchange, symbol, action, side) {
@@ -553,9 +552,9 @@ module.exports = {
       const data = await res.json();
 
       if ('status' in data && data.status === 'success') {
-        this.toast.success(`Successfuly closed ${side} position for ${symbol}`, this.toastOptions);
+        this.toast.success(`Successfuly closed ${symbol} ${side} position`, this.toastOptions);
       } else {
-        this.toast.error(`Error occurred while closing ${side} position for ${symbol}`, this.toastOptions);
+        this.toast.error(`Error occurred while closing ${symbol} ${side} position`, this.toastOptions);
       }
     }
   },
