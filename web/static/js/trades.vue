@@ -412,7 +412,9 @@ module.exports = {
       this.ws.send(JSON.stringify({type: 'SocketStateChangedEvent', state: 'alive'}));
     },
     connectToWebSocket() {
-      this.ws = new WebSocket(`wss://${location.hostname}/ws`);
+      const ws = new WebSocket(`wss://${location.hostname}/ws`);
+      this.ws = ws;
+
       ws.onmessage = async ({data}) => {
         await this.onMessage(data);
       };
@@ -432,6 +434,8 @@ module.exports = {
         console.error('WebSocket encountered error: ', e.message, 'Closing socket');
         ws.close();
       };
+
+      return ws;
     },
     async onMessage(data) {
       const event = JSON.parse(data);
