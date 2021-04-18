@@ -460,7 +460,7 @@ module.exports = {
           this.toast.info(`${data.event.order.symbol} ${data.event.order.side.toLowerCase()} ${data.event.order.type.toLowerCase()} order ${status}`, this.messageOptions);
           break;
         case 'ExchangePositionEvent':
-          this.toast.warning(`${data.event.position.symbol} ${data.event.position.side} position ${data.event.state} for size ${(data.event.position.amount * data.event.position.price).toFixed(2)} USDT`, this.messageOptions);
+          this.toast.warning(`${data.event.position.symbol} ${data.event.position.side} position ${data.event.state} size ${(data.event.position.amount * data.event.position.price).toFixed(2)} USDT`, this.messageOptions);
           break;
       }
     },
