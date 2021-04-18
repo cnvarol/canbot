@@ -439,7 +439,7 @@ module.exports = {
     async onMessage(event) {
       const data = JSON.parse(event);
 
-      console.log(data);
+      console.log(event);
       
       switch(data.type) {
         case 'SocketStateChangedEvent':
