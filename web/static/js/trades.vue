@@ -114,7 +114,7 @@
       </div>
       <div class="card-body">
         <div class="table-responsive">
-          <vue-bootstrap4-table :rows="orders" :classes="dataTableClasses" :columns="ordersColumns" :config="dataTableConfig" :total-rows="orders.length">
+          <vue-bootstrap4-table :rows="orders" :classes="dataTableClasses" :columns="ordersColumns" :config="dataTableConfig" :total-rows="orders.length" :actions="ordersActions" @on-cancelall="onCancelAll">
             <template slot="exchange" slot-scope="props"><img :src="`/img/exchanges/${props.cell_value}.png`" :alt="props.cell_value" :title="props.cell_value" width="16px" height="16px"></template>
             <template slot="symbol" slot-scope="props">
               <span v-if="props.row.order.side === 'sell'" class="badge badge-danger">short</span>
@@ -208,7 +208,14 @@ module.exports = {
         icon: true,
         rtl: false
       },
-      ordersColumns: [{
+      ordersActions: [{
+              btn_text: "Cancel All",
+              event_name: "on-cancelall",
+              class: "btn btn-danger btn-sm"
+          }
+      ],
+      ordersColumns: [
+          {
               label: "Ex",
               name: "exchange",
               slot_name: "exchange",
@@ -389,6 +396,24 @@ module.exports = {
     capitalizeFirstLetter(string) {
       return string.charAt(0).toUpperCase() + string.slice(1);
     },
+    async onCancelAll() {
+      if (!confirm(`Do you really want to cancel all orders?`)) {
+        return;
+      }
+
+      const exchange = 'binance_futures';
+
+      const res = await fetch(`/order/${exchange}/cancel/all`);
+      const data = await res.json();
+
+      if ('status' in data && data.status === 'success') {
+        this.toast.success(`Successfuly cancelled all orders on ${exchange}`, this.toastOptions);
+      } else if ('status' in data && data.status === 'error') {
+        this.toast.error(`Error occurred while cancelling all orders on ${exchange}. Error: ${data.error}`, this.toastOptions);
+      } else {
+        this.toast.error(`Error occurred while cancelling all orders on ${exchange}`, this.toastOptions);
+      }
+    },
     async fetchPageAsJson() {
       const res = await fetch('/trades.json');
       const data = await res.json();
@@ -430,10 +455,14 @@ module.exports = {
     },
     async cancelOrder(exchange, symbol, type, side, id) {
       const res = await fetch(`/order/${exchange}/${id}`);
-      if (res.status === 200) {
+      const data = await res.json();
+
+      if ('status' in data && data.status === 'success') {
         this.toast.success(`Successfuly cancelled ${side} ${type} order for ${symbol}`, this.toastOptions);
+      } else if ('status' in data && data.status === 'error') {
+        this.toast.error(`Error occurred while cancelling ${side} ${type} order for ${symbol}. Error: ${data.error}`, this.toastOptions);
       } else {
-        this.toast.error(`Error occurred while closing ${side} order for ${symbol}`, this.toastOptions);
+        this.toast.error(`Error occurred while cancelling ${side} ${type} order for ${symbol}`, this.toastOptions);
       }
     },
     async closePosition(exchange, symbol, action, side) {

@@ -29,9 +29,16 @@ module.exports = class OrdersHttp {
 
     const orders = await this.exchangeManager.getOrders(res[0], res[1]);
 
-    for (const order of orders) {
+    orders.forEach(async order => {
       await this.orderExecutor.cancelOrder(res[0], order.id);
-    }
+    });
+  }
+
+  async cancelAllOrders(exchangeName) {
+    const symbols = this.exchangeManager.getSymbols(exchangeName);
+    symbols.forEach(async p => {
+      await this.orderExecutor.cancelAll(exchangeName, p.symbol);
+    });
   }
 
   getTicker(pair) {

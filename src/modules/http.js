@@ -296,11 +296,21 @@ module.exports = class Http {
 
       try {
         await exchange.cancelOrder(id);
+        res.json({ status: 'success' });
       } catch (e) {
-        console.log(`Cancel order error: ${JSON.stringify([exchangeName, id, String(e)])}`);
+        res.json({ status: 'error', error: e });
       }
+    });
 
-      res.redirect('/trades');
+    app.get('/order/:exchange/cancel/all', async (req, res) => {
+      const exchangeName = req.params.exchange;
+
+      try {
+        await this.ordersHttp.cancelAllOrders(exchangeName);
+        res.json({ status: 'success' });
+      } catch (e) {
+        res.json({ status: 'error', error: e });
+      }
     });
 
     app.get('/orders', async (req, res) => {

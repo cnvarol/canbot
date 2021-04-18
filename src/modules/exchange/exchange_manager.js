@@ -9,6 +9,7 @@ module.exports = class ExchangeManager {
     this.exchangesIterator = exchangesIterator;
 
     this.exchanges = [];
+    this.symbols = {};
   }
 
   init() {
@@ -39,6 +40,8 @@ module.exports = class ExchangeManager {
       )
     );
 
+    this.symbols = symbols;
+
     this.exchanges = activeExchanges;
   }
 
@@ -48,6 +51,10 @@ module.exports = class ExchangeManager {
 
   get(name) {
     return this.exchanges.find(exchange => exchange.getName() === name);
+  }
+
+  getSymbols(exchangeName) {
+    return this.symbols[exchangeName];
   }
 
   async getPosition(exchangeName, symbol) {
