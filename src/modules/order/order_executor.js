@@ -218,9 +218,8 @@ module.exports = class OrderExecutor {
     }
 
     try {
-      const order = await exchange.cancelOrder(orderId);
+      await exchange.cancelOrder(orderId);
       this.logger.info(`Order canceled: ${orderId}`);
-      return order;
     } catch (err) {
       this.logger.error(`Order cancel error: ${orderId} ${err}`);
     }
@@ -230,7 +229,7 @@ module.exports = class OrderExecutor {
     const exchange = this.exchangeManager.get(exchangeName);
 
     try {
-      return await exchange.cancelAll(symbol);
+      await exchange.cancelAll(symbol);
     } catch (err) {
       this.logger.error(`Order cancel all error: ${JSON.stringify([symbol, err])}`);
     }

@@ -5,6 +5,8 @@ const auth = require('basic-auth');
 const cookieParser = require('cookie-parser');
 const crypto = require('crypto');
 const moment = require('moment');
+const http = require('http');
+const WebSocket = require('ws');
 const OrderUtil = require('../utils/order_util');
 
 module.exports = class Http {
@@ -20,6 +22,7 @@ module.exports = class Http {
     candleImporter,
     ordersHttp,
     tickers,
+    eventEmitter,
     projectDir
   ) {
     this.systemUtil = systemUtil;
@@ -34,6 +37,7 @@ module.exports = class Http {
     this.ordersHttp = ordersHttp;
     this.projectDir = projectDir;
     this.tickers = tickers;
+    this.eventEmitter = eventEmitter;
   }
 
   start() {
@@ -91,12 +95,6 @@ module.exports = class Http {
 
     const app = express();
 
-    app.set('views', `${this.projectDir}/templates`);
-    app.set('twig options', {
-      allow_async: true,
-      strict_variables: false
-    });
-
     app.use(express.urlencoded({ limit: '12mb', extended: true, parameterLimit: 50000 }));
     app.use(cookieParser());
     app.use(compression());
@@ -117,6 +115,39 @@ module.exports = class Http {
         return next();
       });
     }
+
+    const server = http.createServer(app);
+
+    const wss = new WebSocket.Server({ server });
+
+    wss.on('connection', ws => {
+      ws.send('connected');
+    });
+
+    wss.broadcast = function broadcast(msg) {
+      console.log(msg);
+      wss.clients.forEach(function each(client) {
+        client.send(msg);
+      });
+    };
+
+    this.eventEmitter.on('order', async event => {
+      wss.broadcast(JSON.stringify({ type: 'OrderEvent', event: event }));
+    });
+
+    this.eventEmitter.on('position_state_changed', async event => {
+      wss.broadcast(JSON.stringify({ type: 'PositionStateChangeEvent', event: event }));
+    });
+
+    server.listen(8999, '127.0.0.1', () => {
+      console.log(`Websocket listening on: ${server.address().address}:${server.address().port}`);
+    });
+
+    app.set('views', `${this.projectDir}/templates`);
+    app.set('twig options', {
+      allow_async: true,
+      strict_variables: false
+    });
 
     const { ta } = this;
 
@@ -423,7 +454,7 @@ module.exports = class Http {
         if (exchangeName.includes('binance_futures')) {
           balances = await exchange.getBalances();
         }
-        
+
         const myPositions = await exchange.getPositions();
         myPositions.forEach(position => {
           // simply converting of asset to currency value

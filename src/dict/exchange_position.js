@@ -12,7 +12,7 @@ module.exports = class ExchangePosition {
 
   // TODO(semih): it may need or not check later :${this.position.side}
   getKey() {
-    return `${this.exchange + this.position.symbol}:${this.position.side}`;
+    return `${this.exchange}:${this.position.symbol}:${this.position.side}`;
   }
 
   getExchange() {

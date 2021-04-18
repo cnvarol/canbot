@@ -386,6 +386,7 @@ module.exports = {
       this.getCandleImporter(),
       this.getOrdersHttp(),
       this.getTickers(),
+      this.getEventEmitter(),
       parameters.projectDir
     );
   },
