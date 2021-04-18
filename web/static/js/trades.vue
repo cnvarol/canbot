@@ -452,7 +452,7 @@ module.exports = {
           if (status === 'new') {
             status = 'created';
           } else if (status === 'partially_filled') {
-            status = 'partially filled';
+            return;
           } else if (status === 'canceled') {
             return;
           }
