@@ -124,10 +124,9 @@ module.exports = class Http {
       ws.send(JSON.stringify({ state: 'connected' }));
     });
 
-    wss.broadcast = function broadcast(msg) {
-      console.log(msg);
+    wss.broadcast = function broadcast(message) {
       wss.clients.forEach(function each(client) {
-        client.send(msg);
+        client.send(message);
       });
     };
 

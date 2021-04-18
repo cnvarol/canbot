@@ -391,6 +391,15 @@ module.exports = {
     this.fetchPageAsJson();
     this.timer = setInterval(this.fetchPageAsJson, 3000);
     this.toast = VueToastification.createToastInterface();
+
+    try {
+      const ws = new WebSocket(`wss://${location.hostname}/ws`);
+      ws.onmessage = ({data}) => {
+        console.log(data);
+      }
+    } catch(err) {
+      console.log(err);
+    }
   },
   methods: {
     capitalizeFirstLetter(string) {
