@@ -448,7 +448,14 @@ module.exports = {
           }
           break;
         case 'ExchangeOrderEvent':
-          this.toast.info(`${data.event.order.symbol} ${data.event.order.side.toLowerCase()} ${data.event.order.type.toLowerCase()} order ${data.event.order.status.toLowerCase()}.`, this.messageOptions);
+          let status = data.event.order.status.toLowerCase();
+          if (status === 'new') {
+            status = 'created';
+          } else if (status === 'partially_filled') {
+            status = 'partially filled';
+          }
+
+          this.toast.info(`${data.event.order.symbol} ${data.event.order.side.toLowerCase()} ${data.event.order.type.toLowerCase()} order ${status}.`, this.messageOptions);
           break;
         case 'ExchangePositionEvent':
           this.toast.warning(`${data.event.position.symbol} ${data.event.position.side} position ${data.event.state}.`, this.messageOptions);
