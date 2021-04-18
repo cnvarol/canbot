@@ -453,8 +453,10 @@ module.exports = {
             status = 'created';
           } else if (status === 'partially_filled') {
             status = 'partially filled';
+          } else if (status === 'cancelled') {
+            return;
           }
-
+          
           this.toast.info(`${data.event.order.symbol} ${data.event.order.side.toLowerCase()} ${data.event.order.type.toLowerCase()} order ${status}`, this.messageOptions);
           break;
         case 'ExchangePositionEvent':
