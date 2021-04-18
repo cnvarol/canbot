@@ -427,7 +427,7 @@ module.exports = {
       };
     },
     async onMessage(data) {
-      this.toast(data, messageOptions);
+      this.toast(data, this.messageOptions);
     },
     capitalizeFirstLetter(string) {
       return string.charAt(0).toUpperCase() + string.slice(1);
