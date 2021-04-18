@@ -436,25 +436,37 @@ module.exports = {
 
       return ws;
     },
-    async onMessage(data) {
-      const event = JSON.parse(data);
+    async onMessage(event) {
+      const data = JSON.parse(event);
 
-      console.log(event.type);
+      console.log(data);
       
-      switch(event.type) {
+      switch(data.type) {
         case 'SocketStateChangedEvent':
-          if (event.state === 'connected') {
+          if (data.state === 'connected') {
             this.toast.success('Websocket connected.', this.messageOptions);
           }
           break;
         case 'ExchangeOrderEvent':
+          const exchangeName = this.createExchangeName(data.exchange);
+          this.toast.info(`${exchangeName} ${data.event.order.symbol} ${data.event.order.side.toLowerCase()} ${data.event.order.type.toLowerCase()} order ${data.event.order.status.toLowerCase()}.`, this.messageOptions);
           break;
         case 'ExchangePositionEvent':
+          const exchangeName = this.createExchangeName(data.exchange);
+          this.toast.warning(`${exchangeName} ${data.event.position.symbol} ${data.event.position.side} position ${data.event.state}.`, this.messageOptions);
           break;
       }
     },
     capitalizeFirstLetter(string) {
       return string.charAt(0).toUpperCase() + string.slice(1);
+    },
+    createExchangeName(name) {
+      const split = name.split('_');
+      if (split.length !== 2) {
+        return '';
+      }
+
+      return `${capitalizeFirstLetter(split[0])} ${capitalizeFirstLetter(split[1])}`;
     },
     async onCancelAll() {
       if (!confirm(`Do you really want to cancel all orders?`)) {
@@ -462,16 +474,17 @@ module.exports = {
       }
 
       const exchange = 'binance_futures';
+      const exchangeName = this.createExchangeName(exchange);
 
       const res = await fetch(`/order/${exchange}/cancel/all`);
       const data = await res.json();
 
       if ('status' in data && data.status === 'success') {
-        this.toast.success(`Successfuly cancelled all orders on ${exchange}`, this.toastOptions);
+        this.toast.success(`Successfuly cancelled all orders on ${exchangeName}`, this.toastOptions);
       } else if ('status' in data && data.status === 'error') {
-        this.toast.error(`Error occurred while cancelling all orders on ${exchange}. Error: ${data.error}`, this.toastOptions);
+        this.toast.error(`Error occurred while cancelling all orders on ${exchangeName}. Error: ${data.error}`, this.toastOptions);
       } else {
-        this.toast.error(`Error occurred while cancelling all orders on ${exchange}`, this.toastOptions);
+        this.toast.error(`Error occurred while cancelling all orders on ${exchangeName}`, this.toastOptions);
       }
     },
     async fetchPageAsJson() {
