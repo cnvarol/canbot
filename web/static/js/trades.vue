@@ -415,8 +415,8 @@ module.exports = {
       };
 
       let pingInterval;
-      ws.onconnection = event => {
-        pingInterval = setInterval(event.send(JSON.stringify({type: 'SocketStateChangedEvent', state: 'alive'})), 3000);
+      ws.onopen = event => {
+        pingInterval = setInterval(ws.send(JSON.stringify({type: 'SocketStateChangedEvent', state: 'alive'})), 1000);
       }
 
       ws.onclose = (e) => {
