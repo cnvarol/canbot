@@ -210,7 +210,7 @@ module.exports = {
       },
       messageOptions: {
         position: "bottom-right",
-        timeout: 5000,
+        timeout: 7500,
         closeOnClick: true,
         pauseOnFocusLoss: true,
         pauseOnHover: true,
@@ -460,7 +460,7 @@ module.exports = {
           this.toast.info(`${data.event.order.symbol} ${data.event.order.side.toLowerCase()} ${data.event.order.type.toLowerCase()} order ${status}`, this.messageOptions);
           break;
         case 'ExchangePositionEvent':
-          this.toast.warning(`${data.event.position.symbol} ${data.event.position.side} position ${data.event.state} size ${(data.event.position.amount * data.event.position.entry).toFixed(2)} USDT`, this.messageOptions);
+          this.toast.info(`${data.event.position.symbol} ${data.event.position.side} position ${data.event.state} size ${(data.event.position.amount * data.event.position.entry).toFixed(2)} USDT`, this.messageOptions);
           break;
       }
     },
