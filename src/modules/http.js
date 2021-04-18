@@ -131,8 +131,8 @@ module.exports = class Http {
       });
     };
 
-    this.eventEmitter.on('order', async event => {
-      wss.broadcast(JSON.stringify({ type: 'OrderEvent', event: event }));
+    this.eventEmitter.on('exchange_order', async event => {
+      wss.broadcast(JSON.stringify({ type: 'ExchangeOrderEvent', event: event }));
     });
 
     this.eventEmitter.on('position_state_changed', async event => {

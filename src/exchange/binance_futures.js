@@ -13,6 +13,7 @@ const TickerEvent = require('../event/ticker_event');
 const ExchangeCandlestick = require('../dict/exchange_candlestick');
 const Position = require('../dict/position');
 const CcxtExchangeOrder = require('./ccxt/ccxt_exchange_order');
+const ExchangeOrderEvent = require('../event/exchange_order_event');
 
 module.exports = class BinanceFutures {
   constructor(eventEmitter, requestClient, candlestickResample, logger, queue, candleImporter, throttler) {
@@ -647,6 +648,7 @@ module.exports = class BinanceFutures {
             3000
           );
           me.ccxtExchangeOrder.triggerPlainOrder(order);
+          me.eventEmitter.emit('exchange_order', new ExchangeOrderEvent(me.getName(), order));
         }
 
         if (message.e && message.e.toUpperCase() === 'ACCOUNT_UPDATE') {
