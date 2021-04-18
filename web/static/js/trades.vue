@@ -121,6 +121,8 @@
               <span v-if="props.row.order.side === 'buy'" class="badge badge-success">long</span>
               <a target="blank" :href="'/tradingview/' + props.row.exchange + ':' + props.cell_value">{{ props.cell_value }}</a> 
             </template>
+            <template slot="status" slot-scope="props">{{ capitalizeFirstLetter(props.cell_value) }}</template>
+            <template slot="type" slot-scope="props">{{ capitalizeFirstLetter(props.cell_value) }}</template>
             <template slot="currency" slot-scope="props">{{ props.cell_value|filter_price }} <small>USDT</small></template>
             <template slot="price" slot-scope="props">
               {{ props.cell_value|filter_price }} <small>USDT</small> 
@@ -384,6 +386,9 @@ module.exports = {
     this.toast = VueToastification.createToastInterface();
   },
   methods: {
+    capitalizeFirstLetter(string) {
+      return string.charAt(0).toUpperCase() + string.slice(1);
+    },
     async fetchPageAsJson() {
       const res = await fetch('/trades.json');
       const data = await res.json();
