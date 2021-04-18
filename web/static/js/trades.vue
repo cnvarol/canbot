@@ -208,6 +208,20 @@ module.exports = {
         icon: true,
         rtl: false
       },
+      messageOptions: {
+        position: "bottom-right",
+        timeout: 2000,
+        closeOnClick: true,
+        pauseOnFocusLoss: true,
+        pauseOnHover: true,
+        draggable: true,
+        draggablePercent: 0.6,
+        showCloseButtonOnHover: false,
+        hideProgressBar: false,
+        closeButton: "button",
+        icon: true,
+        rtl: false
+      },      
       ordersActions: [{
               btn_text: "Cancel All",
               event_name: "on-cancelall",
@@ -391,17 +405,30 @@ module.exports = {
     this.fetchPageAsJson();
     this.timer = setInterval(this.fetchPageAsJson, 3000);
     this.toast = VueToastification.createToastInterface();
-
-    try {
-      const ws = new WebSocket(`wss://${location.hostname}/ws`);
-      ws.onmessage = ({data}) => {
-        console.log(data);
-      }
-    } catch(err) {
-      console.log(err);
-    }
+    this.connectToWebSocket();
   },
   methods: {
+    connectToWebSocket() {
+      const ws = new WebSocket(`wss://${location.hostname}/ws`);
+      ws.onmessage = async ({data}) => {
+        await this.onMessage(data);
+      };
+
+      ws.onclose = (e) => {
+        console.log('WebSocket is closed. Reconnect will be attempted in 1 second.', e.reason);
+        setTimeout(function() {
+          this.connectToWebSocket();
+        }, 1000);
+      };
+
+      ws.onerror = (e) => {
+        console.error('WebSocket encountered error: ', err.message, 'Closing socket');
+        ws.close();
+      };
+    },
+    async onMessage(data) {
+      this.toast(data, messageOptions);
+    },
     capitalizeFirstLetter(string) {
       return string.charAt(0).toUpperCase() + string.slice(1);
     },
