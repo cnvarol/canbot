@@ -220,21 +220,7 @@ module.exports = {
         hideProgressBar: false,
         closeButton: "button",
         icon: true,
-        rtl: false,
-        newestOnTop: true,
-        maxToasts: 100,
-        filterToasts: toasts => {
-          // Keep track of existing types
-          const types = {};
-          return toasts.reduce((aggToasts, toast) => {
-            // Check if type was not seen before
-            if (!types[toast.type]) {
-              aggToasts.push(toast);
-              types[toast.type] = true;
-            }
-            return aggToasts;
-          }, []);
-        }
+        rtl: false
       },      
       ordersActions: [{
               btn_text: "Cancel All",
@@ -418,7 +404,22 @@ module.exports = {
   created: function() {
     this.fetchPageAsJson();
     this.timer = setInterval(this.fetchPageAsJson, 3000);
-    this.toast = VueToastification.createToastInterface();
+    this.toast = VueToastification.createToastInterface({
+        newestOnTop: true,
+        maxToasts: 100,
+        filterToasts: toasts => {
+          // Keep track of existing types
+          const types = {};
+          return toasts.reduce((aggToasts, toast) => {
+            // Check if type was not seen before
+            if (!types[toast.type]) {
+              aggToasts.push(toast);
+              types[toast.type] = true;
+            }
+            return aggToasts;
+          }, []);
+        }
+    });
     this.connectToWebSocket();
   },
   methods: {
