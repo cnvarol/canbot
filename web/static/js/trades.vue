@@ -210,7 +210,7 @@ module.exports = {
       },
       messageOptions: {
         position: "bottom-right",
-        timeout: 3000,
+        timeout: 5000,
         closeOnClick: true,
         pauseOnFocusLoss: true,
         pauseOnHover: true,
@@ -455,10 +455,10 @@ module.exports = {
             status = 'partially filled';
           }
 
-          this.toast.info(`${data.event.order.symbol} ${data.event.order.side.toLowerCase()} ${data.event.order.type.toLowerCase()} order ${status}.`, this.messageOptions);
+          this.toast.info(`${data.event.order.symbol} ${data.event.order.side.toLowerCase()} ${data.event.order.type.toLowerCase()} order ${status}`, this.messageOptions);
           break;
         case 'ExchangePositionEvent':
-          this.toast.warning(`${data.event.position.symbol} ${data.event.position.side} position ${data.event.state}.`, this.messageOptions);
+          this.toast.warning(`${data.event.position.symbol} ${data.event.position.side} position ${data.event.state}`, this.messageOptions);
           break;
       }
     },
