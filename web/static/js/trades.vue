@@ -410,6 +410,7 @@ module.exports = {
   methods: {
     webSocketPing() {
       this.ws.send(JSON.stringify({type: 'SocketStateChangedEvent', state: 'alive'}));
+      setTimout(this.webSocketPing, 1000);
     },
     connectToWebSocket() {
       const ws = new WebSocket(`wss://${location.hostname}/ws`);
@@ -419,15 +420,13 @@ module.exports = {
         await this.onMessage(data);
       };
 
-      let pingInterval;
       ws.onopen = event => {
-        pingInterval = setInterval(webSocketPing, 1000);
+        setTimout(this.webSocketPing, 1000);
       }
 
       ws.onclose = (e) => {
-        console.log('WebSocket is closed. Reconnect will be attempted in 1 second.', e.reason);
-        clearInterval(pingInterval);
-        setTimeout(this.connectToWebSocket, 1000);
+        console.log('WebSocket is closed. Reconnect will be attempted in 2 second.', e.reason);
+        setTimeout(this.connectToWebSocket, 2000);
       };
 
       ws.onerror = (e) => {
