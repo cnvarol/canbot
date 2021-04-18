@@ -220,7 +220,19 @@ module.exports = {
         hideProgressBar: false,
         closeButton: "button",
         icon: true,
-        rtl: false
+        rtl: false,
+        newestOnTop: true,
+        filterToasts: toasts => {
+          // Keep track of existing types
+          const types = {};
+          return toasts.reduce((aggToasts, toast) => {
+            // Check if type was not seen before
+            if (!types[toast]) {
+              aggToasts.push(toast);
+              types[toast] = true;
+            }
+            return aggToasts;
+        }, []);
       },      
       ordersActions: [{
               btn_text: "Cancel All",
