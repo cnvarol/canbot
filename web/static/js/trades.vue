@@ -210,7 +210,7 @@ module.exports = {
       },
       messageOptions: {
         position: "bottom-right",
-        timeout: 7500,
+        timeout: 3000,
         closeOnClick: true,
         pauseOnFocusLoss: true,
         pauseOnHover: true,
@@ -222,6 +222,7 @@ module.exports = {
         icon: true,
         rtl: false,
         newestOnTop: true,
+        maxToasts: 100,
         filterToasts: toasts => {
           // Keep track of existing types
           const types = {};
@@ -232,7 +233,8 @@ module.exports = {
               types[toast] = true;
             }
             return aggToasts;
-        }, []);
+          }, []);
+        }
       },      
       ordersActions: [{
               btn_text: "Cancel All",
