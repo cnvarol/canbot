@@ -416,7 +416,7 @@ module.exports = {
 
       let pingInterval;
       ws.onopen = (e) => {
-        pingInterval = setInterval(ws.send(JSON.stringify({status: 'alive'})), 3000);
+        pingInterval = setInterval(ws.send(JSON.stringify({type: 'SocketStateChangedEvent', state: 'alive'})), 3000);
       }
 
       ws.onclose = (e) => {
@@ -424,8 +424,8 @@ module.exports = {
 
         clearInterval(pingInterval);
 
-        setTimeout(() => {
-          connectToWebSocket();
+        setTimeout((this) => {
+          this.connectToWebSocket();
         }, 1000);
       };
 
@@ -435,7 +435,19 @@ module.exports = {
       };
     },
     async onMessage(data) {
-      this.toast(data, this.messageOptions);
+      const event = JSON.parse(data);
+
+      switch(event.type) {
+        case 'SocketStateChangedEvent':
+          if (event.state === 'connected') {
+            this.toast.success('Websocket connected.', this.messageOptions);
+          }
+          break;
+        case 'ExchangeOrderEvent':
+          break;
+        case 'ExchangePositionEvent':
+          break;
+      }
     },
     capitalizeFirstLetter(string) {
       return string.charAt(0).toUpperCase() + string.slice(1);

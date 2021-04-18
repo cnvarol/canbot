@@ -121,7 +121,15 @@ module.exports = class Http {
     const wss = new WebSocket.Server({ server });
 
     wss.on('connection', ws => {
-      ws.send(JSON.stringify({ state: 'connected' }));
+      ws.send(JSON.stringify({ type: 'SocketStateChangedEvent', state: 'connected' }));
+
+      wss.on('message', message => {
+        const data = JSON.parse(message);
+        console.log(message);
+        if (data.type === 'SocketStateChangedEvent' && data.state === 'alive') {
+          ws.send(JSON.stringify({ type: 'SocketStateChangedEvent', state: 'ok' }));
+        }
+      });
     });
 
     wss.broadcast = function broadcast(message) {
