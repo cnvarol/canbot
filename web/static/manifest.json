@@ -1,12 +1,19 @@
 {
     "name": "Crypto Bot",
     "short_name": "Crypto Bot",
-    "description": "Crypto trading bot",
+    "description": "Crypto Trading Bot",
     "icons": [
       {
-        "src": "/img/bitcoin.png",
+        "src": "/img/maskable_icon_x512_rounded.png",
         "sizes": "512x512",
-        "type": "image/png"
+        "type": "image/png",
+        "purpose": "any"
+      },
+      {
+        "src": "/img/maskable_icon_x512_circle.png",
+        "sizes": "512x512",
+        "type": "image/png",
+        "purpose": "maskable"
       }
     ],
     "theme_color": "#343a40",
