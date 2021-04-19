@@ -4,7 +4,7 @@
   }
   @keyframes fadeIn {
     from {
-      opacity: 0.5;
+      opacity: 0;
     }
     to {
       opacity: 1;
@@ -15,7 +15,7 @@
       opacity: 1;
     }
     to {
-      opacity: 0.5;
+      opacity: 0;
     }
   }
   .fade-enter-active {
@@ -25,9 +25,7 @@
     animation-name: fadeOut;
   }
   .fade-move {
-    transition-timing-function: ease-in-out;
-    transition-property: all;
-    transition-duration: 50ms;
+    transition: all 0.05s 0s ease-in-out;
   }
 </style>
 <template>
