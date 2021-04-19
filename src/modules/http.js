@@ -116,42 +116,38 @@ module.exports = class Http {
       });
     }
 
-    try {
-      const server = http.createServer(app);
+    const server = http.createServer(app);
 
-      const wss = new WebSocket.Server({ server });
+    const wss = new WebSocket.Server({ server });
 
-      wss.on('connection', ws => {
-        ws.send(JSON.stringify({ type: 'SocketStateChangedEvent', state: 'connected' }));
+    wss.on('connection', ws => {
+      ws.send(JSON.stringify({ type: 'SocketStateChangedEvent', state: 'connected' }));
 
-        ws.on('message', message => {
-          const data = JSON.parse(message);
-          if (data.type === 'SocketStateChangedEvent' && data.state === 'alive') {
-            ws.send(JSON.stringify({ type: 'SocketStateChangedEvent', state: 'ok' }));
-          }
-        });
+      ws.on('message', message => {
+        const data = JSON.parse(message);
+        if (data.type === 'SocketStateChangedEvent' && data.state === 'alive') {
+          ws.send(JSON.stringify({ type: 'SocketStateChangedEvent', state: 'ok' }));
+        }
       });
+    });
 
-      wss.broadcast = function broadcast(message) {
-        wss.clients.forEach(function each(client) {
-          client.send(message);
-        });
-      };
-
-      this.eventEmitter.on('exchange_order', async event => {
-        wss.broadcast(JSON.stringify({ type: 'ExchangeOrderEvent', event: event }));
+    wss.broadcast = function broadcast(message) {
+      wss.clients.forEach(function each(client) {
+        client.send(message);
       });
+    };
 
-      this.eventEmitter.on('exchange_position', async event => {
-        wss.broadcast(JSON.stringify({ type: 'ExchangePositionEvent', event: event }));
-      });
+    this.eventEmitter.on('exchange_order', async event => {
+      wss.broadcast(JSON.stringify({ type: 'ExchangeOrderEvent', event: event }));
+    });
 
-      server.listen(8999, '127.0.0.1', () => {
-        console.log(`Websocket listening on: ${server.address().address}:${server.address().port}`);
-      });
-    } catch (e) {
-      console.log(e);
-    }
+    this.eventEmitter.on('exchange_position', async event => {
+      wss.broadcast(JSON.stringify({ type: 'ExchangePositionEvent', event: event }));
+    });
+
+    server.listen(8999, '127.0.0.1', () => {
+      console.log(`Websocket listening on: ${server.address().address}:${server.address().port}`);
+    });
 
     app.set('views', `${this.projectDir}/templates`);
     app.set('twig options', {
