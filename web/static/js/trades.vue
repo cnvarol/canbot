@@ -4,7 +4,7 @@
   }
   @keyframes fadeIn {
     from {
-      opacity: 0;
+      opacity: 0.5;
     }
     to {
       opacity: 1;
@@ -15,7 +15,7 @@
       opacity: 1;
     }
     to {
-      opacity: 0;
+      opacity: 0.5;
     }
   }
   .fade-enter-active {
