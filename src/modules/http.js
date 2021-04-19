@@ -131,6 +131,8 @@ module.exports = class Http {
       });
     });
 
+    wss.on('error', console.error);
+
     wss.broadcast = function broadcast(message) {
       wss.clients.forEach(function each(client) {
         client.send(message);
