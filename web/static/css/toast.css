@@ -116,7 +116,7 @@
 }
 .Vue-Toastification__toast-body {
   flex: 1;
-  line-height: 24px;
+  line-height: 18px;
   font-size: 0.9rem;
   font-weight: 400;
   word-break: break-word;
@@ -132,8 +132,8 @@
 
 .Vue-Toastification__close-button {
   font-weight: bold;
-  font-size: 24px;
-  line-height: 24px;
+  font-size: 18px;
+  line-height: 18;
   background: transparent;
   outline: none;
   border: none;
