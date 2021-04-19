@@ -205,6 +205,16 @@ module.exports = class ExchangeOrderWatchdogListener {
     }
   ) {
     const { logger } = this;
+    const { instances } = this;
+
+    const pair = instances.symbols.find(
+      instance => instance.exchange === exchange.getName() && instance.symbol === position.symbol
+    );
+
+    let capital = 1000; // default
+    if (pair.trade && pair.trade.currency_capital) {
+      capital = pair.trade.currency_capital;
+    }
 
     if (
       this.throttler.inTasks('binance_futures_sync_orders') ||
@@ -225,7 +235,7 @@ module.exports = class ExchangeOrderWatchdogListener {
     const currentPositions = await exchange.getPositionForSymbol(symbol);
 
     if (Array.isArray(currentPositions) && options.hedge_position && position.profit < options.hedge_percent) {
-      if (currentPositions.length < 2 && Math.abs(position.amount * position.entry) < 1000) {
+      if (currentPositions.length < 2 && Math.abs(position.amount * position.entry) < capital * 1.5) {
         let amount = Math.abs(position.amount);
         if (position.side === 'long') {
           amount *= -1;
