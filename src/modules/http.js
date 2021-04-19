@@ -121,7 +121,7 @@ module.exports = class Http {
     const wss = new WebSocket.Server({ server });
 
     wss.on('connection', ws => {
-      ws.on('error', {});
+      ws.on('error', err => {});
 
       ws.send(JSON.stringify({ type: 'SocketStateChangedEvent', state: 'connected' }));
 
