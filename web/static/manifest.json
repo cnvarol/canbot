@@ -4,7 +4,7 @@
     "description": "Crypto Trading Bot",
     "icons": [
       {
-        "src": "/img/maskable_icon_x512_rounded.png",
+        "src": "/img/maskable_icon_x512_circle.png",
         "sizes": "512x512",
         "type": "image/png",
         "purpose": "any"
