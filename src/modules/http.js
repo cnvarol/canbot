@@ -131,6 +131,10 @@ module.exports = class Http {
       });
     });
 
+    wss.on('error', e => {
+      console.log(e);
+    });
+
     wss.broadcast = function broadcast(message) {
       wss.clients.forEach(function each(client) {
         client.send(message);
