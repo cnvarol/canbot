@@ -203,7 +203,7 @@ module.exports = {
         draggable: true,
         draggablePercent: 0.6,
         showCloseButtonOnHover: false,
-        hideProgressBar: false,
+        hideProgressBar: true,
         closeButton: "button",
         icon: true,
         rtl: false
