@@ -210,16 +210,16 @@ module.exports = {
       },
       messageOptions: {
         position: "bottom-right",
-        timeout: 5000,
+        timeout: 1500,
         closeOnClick: true,
         pauseOnFocusLoss: true,
         pauseOnHover: true,
-        draggable: true,
+        draggable: false,
         draggablePercent: 0.6,
         showCloseButtonOnHover: false,
-        hideProgressBar: false,
+        hideProgressBar: true,
         closeButton: "button",
-        icon: true,
+        icon: false,
         rtl: false
       },      
       ordersActions: [{
@@ -405,8 +405,9 @@ module.exports = {
     this.fetchPageAsJson();
     this.timer = setInterval(this.fetchPageAsJson, 3000);
     this.toast = VueToastification.createToastInterface({
-        newestOnTop: true,
-        maxToasts: 100,
+        transition: "Vue-Toastification__fade",
+        newestOnTop: false,
+        maxToasts: 10,
         filterToasts: toasts => {
           // Keep track of existing types
           const types = {};
