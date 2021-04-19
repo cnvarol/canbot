@@ -210,6 +210,7 @@
 var title = document.title;
 
 module.exports = {
+  mode: 'production',
   data: function() {
     return {
       positions: [],
@@ -480,7 +481,7 @@ module.exports = {
     async onMessage(event) {
       const data = JSON.parse(event);
 
-      console.log(event);
+      // console.log(event);
       
       switch(data.type) {
         case 'SocketStateChangedEvent':
