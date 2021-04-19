@@ -27,7 +27,7 @@
   .fade-move {
     transition-timing-function: ease-in-out;
     transition-property: all;
-    transition-duration: 200ms;
+    transition-duration: 50ms;
   }
 </style>
 <template>
