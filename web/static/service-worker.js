@@ -1,3 +1,5 @@
+let cacheName = 'Yds55cc-3x';
+
 self.addEventListener('install', e => {
   e.waitUntil(
     caches.open(cacheName).then(function(cache) {
