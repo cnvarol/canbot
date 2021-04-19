@@ -2,6 +2,33 @@
   .table th, .table td {
     border-top: 0 !important;
   }
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes fadeOut {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+  .fade-enter-active {
+    animation-name: fadeIn;
+  }
+  .fade-leave-active {
+    animation-name: fadeOut;
+  }
+  .fade-move {
+    transition-timing-function: ease-in-out;
+    transition-property: all;
+    transition-duration: 200ms;
+  }
 </style>
 <template>
   <div class="vue-root">
@@ -405,7 +432,7 @@ module.exports = {
     this.fetchPageAsJson();
     this.timer = setInterval(this.fetchPageAsJson, 3000);
     this.toast = VueToastification.createToastInterface({
-        transition: "Vue-Toastification__fade",
+        transition: "fade",
         newestOnTop: false,
         maxToasts: 10,
         filterToasts: toasts => {
