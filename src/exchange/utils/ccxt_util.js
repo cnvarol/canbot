@@ -1,4 +1,5 @@
 const ExchangeOrder = require('../../dict/exchange_order');
+const Position = require('../../dict/position');
 
 module.exports = class CcxtUtil {
   static createExchangeOrders(orders) {

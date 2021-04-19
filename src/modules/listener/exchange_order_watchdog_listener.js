@@ -194,6 +194,8 @@ module.exports = class ExchangeOrderWatchdogListener {
     options = {
       hedge_position: false,
       hedge_percent: -1,
+      hedge_profit_mode: false,
+      hedge_take_profit: 3,
       take_profit: 1,
       step_resolution: 25,
       hedge_step_resolution: 5,
@@ -202,8 +204,6 @@ module.exports = class ExchangeOrderWatchdogListener {
       risk_take_profit: 0.75
     }
   ) {
-    // TODO(semihalev): currently no limit for steps, limit this.
-
     const { logger } = this;
 
     if (
@@ -250,13 +250,28 @@ module.exports = class ExchangeOrderWatchdogListener {
     let { profit } = position;
     let amount = Math.abs(position.amount);
 
+    let hedgeProfitFound = false;
+    let hedgePosition = null;
+
     if (Array.isArray(currentPositions)) {
       profit = 0;
       amount = 0;
       let pnl = 0;
 
       currentPositions.forEach(p => {
-        amount += Math.abs(p.amount) * p.entry;
+        const pamount = Math.abs(p.amount);
+        if (
+          options.hedge_profit_mode &&
+          p.side !== position.side &&
+          position.profit < 0 &&
+          Math.abs(position.amount) * 1.5 > pamount &&
+          p.profit >= options.hedge_take_profit
+        ) {
+          hedgeProfitFound = true;
+          hedgePosition = p;
+        }
+
+        amount += pamount * p.entry;
         if (p.raw && p.raw.unRealizedProfit) {
           pnl += parseFloat(p.raw.unRealizedProfit);
         }
@@ -282,6 +297,21 @@ module.exports = class ExchangeOrderWatchdogListener {
           symbol: symbol,
           exchange: exchange.getName(),
           profit: profit.toFixed(2)
+        })}`
+      );
+
+      return;
+    }
+
+    if (hedgeProfitFound && hedgePosition) {
+      const marketOrder = Order.createMarketOrder(symbol, hedgePosition.amount, hedgePosition.side, { close: true });
+      await this.orderExecutor.executeOrder(exchange.getName(), marketOrder);
+
+      logger.info(
+        `Grid Trading: hedge take profit closing: ${JSON.stringify({
+          symbol: symbol,
+          exchange: exchange.getName(),
+          position: hedgePosition
         })}`
       );
 
