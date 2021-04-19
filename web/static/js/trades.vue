@@ -25,7 +25,7 @@
     animation-name: fadeOut;
   }
   .fade-move {
-    transition: all 0.05s 0s ease-in-out;
+    transition: all 0.1s 0s ease;
   }
 </style>
 <template>
