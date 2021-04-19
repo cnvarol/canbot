@@ -484,9 +484,9 @@ module.exports = {
       
       switch(data.type) {
         case 'SocketStateChangedEvent':
-          if (data.state === 'connected') {
+          /* if (data.state === 'connected') {
             this.toast.success('Websocket connected.', this.messageOptions);
-          }
+          } */
           break;
         case 'ExchangeOrderEvent':
           let status = data.event.order.status.toLowerCase();
