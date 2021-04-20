@@ -226,7 +226,7 @@ module.exports = class StrategyManager {
           validateLookbacks &&
           !this.technicalAnalysisValidator.isValidCandleStickLookback(lookbacks[exchange].slice(), period)
         ) {
-          this.logger.info(
+          this.logger.debug(
             `Strategy skipped: outdated candle sticks: ${JSON.stringify([period, strategyName, exchange, symbol])}`
           );
 

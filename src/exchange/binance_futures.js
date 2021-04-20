@@ -658,7 +658,9 @@ module.exports = class BinanceFutures {
         if (message.e && message.e.toUpperCase() === 'ORDER_TRADE_UPDATE') {
           const order = BinanceFutures.createRestOrderFromWebsocket(message.o);
 
-          me.logger.info(`Binance Futures: ORDER_TRADE_UPDATE event: ${JSON.stringify([message.e, message.o, order])}`);
+          me.logger.debug(
+            `Binance Futures: ORDER_TRADE_UPDATE event: ${JSON.stringify([message.e, message.o, order])}`
+          );
           me.throttler.addTask(
             'binance_futures_sync_orders',
             async () => {
