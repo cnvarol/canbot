@@ -162,44 +162,6 @@
             <template slot="no-sort-icon"><i class="fas fa-sort"></i></template>
             <template slot="empty-results">No open any order.</template>
           </vue-bootstrap4-table>
-          <!-- table class="table table-sm table-hover">
-            <thead>
-            <tr>
-              <th scope="col" title="Exchange" style="width:30px">Ex</th>
-              <th scope="col">Symbol</th>
-              <th scope="col">Type</th>
-              <th scope="col">Price</th>
-              <th scope="col">Amount</th>
-              <th scope="col">Retry</th>
-              <th scope="col">Created</th>
-              <th scope="col">Updated</th>
-              <th scope="col">Status</th>
-              <th scope="col" title="Side">S</th>
-              <th scope="col" title="Action">A</th>
-            </tr>
-
-            </thead>
-            <tbody>
-            <tr v-for='order in orders' :key="`${order.exchange}-${order.order.symbol}-${order.order.id}`">
-              <td><img :src="`/img/exchanges/${order.exchange}.png`" :alt="order.exchange" :title="order.exchange" width="16px" height="16px"></td>
-              <td><a target="blank" :href="'/tradingview/' + order.exchange + ':' + order.order.symbol">{{ order.order.symbol }}</a></td>
-              <td>{{ order.order.type }}</td>
-              <td>{{ order.order.price }}<span class="text-muted" v-if="order.percent_to_price" title="Percent to current price"> {{ order.percent_to_price|round(1) }} %</span></td>
-              <td v-bind:class="{ 'text-success': order.order.amount > 0, 'text-danger': order.order.amount < 0 }">{{ order.order.amount }}</td>
-              <td>{{ order.order.retry }}</td>
-              <td>{{ order.order.createdAt|date('d.m.y H:i') }}</td>
-              <td>{{ order.order.updatedAt|date('d.m.y H:i') }}</td>
-              <td>{{ order.order.status }}</td>
-              <td>
-                <i v-if="order.order.side === 'sell'" class="fas fa-chevron-circle-down text-danger" title="short"></i>
-                <i v-if="order.order.side === 'buy'" class="fas fa-chevron-circle-up text-success" title="long"></i>
-              </td>
-              <td>
-                <a title="cancel" :href="'/order/' + order.exchange + '/' + order.order.id"><i class="fas fa-window-close"></i></a>
-              </td>
-            </tr>
-            </tbody>
-          </table -->
         </div>
       </div>
     </div>
@@ -485,9 +447,9 @@ module.exports = {
       
       switch(data.type) {
         case 'SocketStateChangedEvent':
-          /* if (data.state === 'connected') {
-            this.toast.success('Websocket connected.', this.messageOptions);
-          } */
+          if (data.state === 'connected') {
+            this.ws.send(JSON.stringify({type: 'AuthEvent', key: 'ddca32ea-5154-40b8-a829-b6cc8d62aee'}));
+          }
           break;
         case 'ExchangeOrderEvent':
           let status = data.event.order.status.toLowerCase();

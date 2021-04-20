@@ -119,23 +119,58 @@ module.exports = class Http {
     const server = http.createServer(app);
 
     const wss = new WebSocket.Server({ server });
+    const userMap = new Map();
+
+    const uuidv4 = function() {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
+    };
 
     wss.on('connection', ws => {
-      ws.on('error', err => {});
+      ws.on('error', err => {
+        ws.close();
+      });
+
+      const userId = uuidv4();
 
       ws.send(JSON.stringify({ type: 'SocketStateChangedEvent', state: 'connected' }));
 
+      let data;
       ws.on('message', message => {
-        const data = JSON.parse(message);
+        try {
+          data = JSON.parse(message);
+        } catch (e) {
+          console.log(userId, e);
+          ws.close();
+
+          return;
+        }
+
+        if (data.type === 'AuthEvent' && data.key && data.key === 'ddca32ea-5154-40b8-a829-b6cc8d62aee') {
+          userMap.set(userId, ws);
+          ws.send(JSON.stringify({ type: 'AuthEvent', authentication: true }));
+          return;
+        }
+
+        if (!userMap.get(userId)) {
+          ws.close();
+        }
+
         if (data.type === 'SocketStateChangedEvent' && data.state === 'alive') {
           ws.send(JSON.stringify({ type: 'SocketStateChangedEvent', state: 'ok' }));
         }
       });
+
+      ws.on('close', () => {
+        userMap.delete(userId);
+      });
     });
 
     wss.broadcast = function broadcast(message) {
-      wss.clients.forEach(function each(client) {
-        client.send(message);
+      userMap.forEach((ws, userId) => {
+        ws.send(message);
       });
     };
 
