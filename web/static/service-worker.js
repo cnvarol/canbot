@@ -63,6 +63,8 @@ self.addEventListener('fetch', event => {
             return preloadResponse;
           }
 
+          event.request.credentials = 'same-origin';
+
           // Always try the network first.
           const networkResponse = await fetch(event.request);
           return networkResponse;
