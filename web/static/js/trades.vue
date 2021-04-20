@@ -425,7 +425,7 @@ module.exports = {
       };
 
       ws.onopen = (e) => {
-        setTimeout(this.webSocketPing, 1000);
+        setTimeout(this.webSocketPing, 5000);
       }
 
       ws.onclose = (e) => {
