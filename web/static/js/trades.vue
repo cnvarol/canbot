@@ -396,6 +396,12 @@ module.exports = {
         transition: "fade",
         newestOnTop: false,
         maxToasts: 10,
+        filterBeforeCreate: (toast, toasts) => {
+          if (toasts.filter(t => t.type === toast.type).length >= 5) {
+            return false;
+          }
+          return toast;
+        },
         filterToasts: toasts => {
           // Keep track of existing types
           const types = {};
@@ -403,12 +409,7 @@ module.exports = {
             // Check if type was not seen before
             if (!types[toast.type]) {
               aggToasts.push(toast);
-              types[toast.type] = 1;
-            } else {
-              types[toast.type]++;
-              if (types[toast.type] >= 3) {
-                aggToasts.pop();
-              }
+              types[toast.type] = true;
             }
             return aggToasts;
           }, []);
