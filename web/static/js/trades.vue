@@ -403,7 +403,12 @@ module.exports = {
             // Check if type was not seen before
             if (!types[toast.type]) {
               aggToasts.push(toast);
-              types[toast.type] = true;
+              types[toast.type] = 1;
+            } else {
+              types[toast.type]++;
+              if (types[toast.type] >= 3) {
+                aggToasts.pop();
+              }
             }
             return aggToasts;
           }, []);
@@ -462,16 +467,16 @@ module.exports = {
           }
 
           if (data.event.order.type === 'LIMIT' || data.event.order.type === 'MARKET') {
-            this.toast.success(`${data.event.order.symbol} ${data.event.order.side.toLowerCase()} ${data.event.order.type.toLowerCase()} order ${status}`, this.messageOptions);
+            this.toast.info(`${data.event.order.symbol} ${data.event.order.side.toLowerCase()} ${data.event.order.type.toLowerCase()} order ${status}`, this.messageOptions);
           } else if (data.event.order.type === 'STOP') {
             this.toast.error(`${data.event.order.symbol} ${data.event.order.side.toLowerCase()} ${data.event.order.type.toLowerCase()} order ${status}`, this.messageOptions);
           }
           break;
         case 'ExchangePositionEvent':
           if (data.event.state === 'opened') {
-            this.toast.success(`${data.event.position.symbol} ${data.event.position.side} position ${data.event.state} size ${(data.event.position.amount * data.event.position.entry).toFixed(2)} USDT`, this.messageOptions);
+            this.toast.info(`${data.event.position.symbol} ${data.event.position.side} position ${data.event.state} size ${(data.event.position.amount * data.event.position.entry).toFixed(2)} USDT`, this.messageOptions);
           } else if (data.event.state === 'updated') {
-            this.toast.warning(`${data.event.position.symbol} ${data.event.position.side} position ${data.event.state} size ${(data.event.position.amount * data.event.position.entry).toFixed(2)} USDT`, this.messageOptions);
+            // this.toast.warning(`${data.event.position.symbol} ${data.event.position.side} position ${data.event.state} size ${(data.event.position.amount * data.event.position.entry).toFixed(2)} USDT`, this.messageOptions);
           } else {
             this.toast.error(`${data.event.position.symbol} ${data.event.position.side} position ${data.event.state} size ${(data.event.position.amount * data.event.position.entry).toFixed(2)} USDT`, this.messageOptions);
           }
