@@ -1,3 +1,4 @@
+/* eslint-disable prefer-destructuring */
 const compression = require('compression');
 const express = require('express');
 const twig = require('twig');
@@ -250,8 +251,13 @@ module.exports = class Http {
     });
 
     app.get('/tradingview/:symbol', (req, res) => {
+      const { symbol } = req.params;
+      const split = symbol.split(':');
+
       res.render('../templates/tradingview.html.twig', {
-        symbol: this.buildTradingViewSymbol(req.params.symbol)
+        symbol: this.buildTradingViewSymbol(req.params.symbol),
+        exchange: split[0],
+        pair: split[1]
       });
     });
 
@@ -391,6 +397,34 @@ module.exports = class Http {
       res.render('../templates/orders/index.html.twig', {
         pairs: this.ordersHttp.getPairs()
       });
+    });
+
+    app.get('/api/v1/trade/:pair', async (req, res) => {
+      const { pair } = req.params;
+
+      const data = {};
+
+      const split = pair.split('.');
+      if (split.length !== 2) {
+        res.json({ error: 'pair format not correct' });
+        return;
+      }
+
+      data.exchange = split[0];
+      data.symbol = split[1];
+      data.ticker = this.ordersHttp.getTicker(pair);
+      data.orders = await this.ordersHttp.getOrders(pair);
+
+      data.positions = [];
+
+      const position = await this.exchangeManager.getPosition(split[0], split[1]);
+      if (Array.isArray(position)) {
+        data.positions = position;
+      } else {
+        data.positions.push(position);
+      }
+
+      res.json(data);
     });
 
     app.get('/orders/:pair', async (req, res) => {

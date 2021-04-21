@@ -6,6 +6,23 @@
     <div class="content-wrapper">
         <div id="tradingview" style="width: 100%; height: 600px"></div>
     </div>
+    <script>
+        const title = document.title;
+
+        async function  fetchTradeData() {
+            const res = await fetch('/api/v1/trade/{{ exchange }}.{{ pair }}');
+            const data = await res.json();
+
+            if (!('ticker' in data)) {
+                return;
+            }
+
+            document.title = `${data.ticker.bid} USDT | ${title}`;
+        }
+
+        fetchTradeData();
+        setInterval(fetchTradeData, 3000);
+    </script>
 {% endblock %}
 
 
