@@ -1,3 +1,4 @@
+/* eslint-disable prefer-destructuring */
 const moment = require('moment');
 const _ = require('lodash');
 const { Keyboard } = require('telegram-keyboard');
@@ -248,7 +249,7 @@ Margin Risk Ratio: ${riskRatio.toFixed(2)}%`);
   }
 
   async placeStrategyOrders(placedOrder, symbol) {
-    for (const order of placedOrder) {
+    placedOrder.forEach(async order => {
       const amount = await this.orderCalculator.calculateOrderSizeCapital(
         symbol.exchange,
         symbol.symbol,
@@ -262,9 +263,11 @@ Margin Risk Ratio: ${riskRatio.toFixed(2)}%`);
       await this.orderExecutor.executeOrder(symbol.exchange, exchangeOrder);
 
       this.notifier.send(
-        `Order executed for ${symbol.symbol} for ${order.side} position.\nSize: *${parseFloat(order.price*amount).toFixed(2)}* USDT`
+        `Order executed for ${symbol.symbol} for ${order.side} position.\nSize: *${parseFloat(
+          order.price * amount
+        ).toFixed(2)}* USDT`
       );
-    }
+    });
   }
 
   async warnCheckInterval() {
