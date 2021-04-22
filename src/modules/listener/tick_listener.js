@@ -91,7 +91,9 @@ module.exports = class TickListener {
       // console.log('blocked')
     } else {
       this.notified[symbol.exchange + symbol.symbol + strategyKey] = new Date();
-      this.notifier.send(`[${signal} (${strategyKey})] ${symbol.exchange}:${symbol.symbol} - ${ticker.ask}`);
+      this.notifier.send(
+        `Strategy (${strategyKey}) watcher found new opportunity for ${symbol.symbol} for ${signal} side. Current price is ${ticker.ask} USDT`
+      );
 
       // log signal
       this.signalLogger.signal(
@@ -218,7 +220,10 @@ Margin Risk Ratio: ${riskRatio.toFixed(2)}%`);
     this.logger.info(
       [new Date().toISOString(), signal, strategyKey, symbol.exchange, symbol.symbol, ticker.ask].join(' ')
     );
-    // this.notifier.send(`[${signal} (${strategyKey})] ${symbol.exchange}:${symbol.symbol} - ${ticker.ask}`);
+    /* this.notifier.send(
+      `Strategy (${strategyKey}) watcher found new opportunity for ${symbol.symbol} for ${signal} side. Current price is ${ticker.ask} USDT`
+    );
+    this.notifier.send(`[${signal} (${strategyKey})] ${symbol.exchange}:${symbol.symbol} - ${ticker.ask}`); */
     this.signalLogger.signal(
       symbol.exchange,
       symbol.symbol,
