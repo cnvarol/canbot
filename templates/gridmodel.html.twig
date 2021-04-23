@@ -209,7 +209,6 @@
 Vue.filter('filter_price', function(value) {
   if (parseFloat(value) > 0 && parseFloat(value) < 1) {
     return Intl.NumberFormat('en-US', {
-      useGrouping: false,
       style: 'currency',
       currency: 'USD',
       minimumFractionDigits: 2,
@@ -218,7 +217,6 @@ Vue.filter('filter_price', function(value) {
   }
 
   return Intl.NumberFormat('en-US', {
-    useGrouping: false,
     style: 'currency',
     currency: 'USD',
     minimumFractionDigits: 2,
