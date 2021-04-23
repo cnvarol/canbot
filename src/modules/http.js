@@ -209,6 +209,10 @@ module.exports = class Http {
       });
     });
 
+    app.get('/gridmodel', async (req, res) => {
+      res.render('../templates/gridmodel.html.twig');
+    });
+
     app.post('/backtest/submit', async (req, res) => {
       let pairs = req.body.pair;
 
