@@ -211,7 +211,7 @@ Vue.filter('filter_price', function(value) {
     return Intl.NumberFormat('en-US', {
       useGrouping: false,
       style: 'currency',
-      currency: ' ',
+      currency: 'USD',
       minimumFractionDigits: 2,
       maximumFractionDigits: 5
     }).format(value);
@@ -220,7 +220,7 @@ Vue.filter('filter_price', function(value) {
   return Intl.NumberFormat('en-US', {
     useGrouping: false,
     style: 'currency',
-    currency: ' ',
+    currency: 'USD',
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   }).format(value);
