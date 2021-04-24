@@ -19,8 +19,7 @@ module.exports = class PairsHttp {
         const strategiesTrade = symbol.trade && symbol.trade.strategies ? symbol.trade.strategies : [];
         const strategies = symbol.strategies || [];
 
-        const leverage =
-          symbol.extra && symbol.extra.binance_futures_leverage ? symbol.extra.binance_futures_leverage : 0;
+        const leverage = _.get(symbol, 'extra.binance_futures_leverage', 0);
 
         const tradeCapital = _.get(symbol, 'trade.capital', 0);
         const tradeCurrencyCapital = _.get(symbol, 'trade.currency_capital', 0);
@@ -64,9 +63,7 @@ module.exports = class PairsHttp {
       })
     );
 
-    return pairs
-      .sort((a, b) => `${a.exchange}.${a.symbol}`.localeCompare(`${b.exchange}.${b.symbol}`))
-      .sort((a, b) => b.weight - a.weight);
+    return pairs.sort((a, b) => a.tradeCurrencyCapital - b.tradeCurrencyCapital).sort((a, b) => b.weight - a.weight);
   }
 
   async triggerOrder(exchangeName, symbol, positionSide, action) {
