@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-syntax */
 const _ = require('lodash');
 const ExchangePosition = require('../../dict/exchange_position');
 

@@ -1,3 +1,6 @@
+/* eslint-disable no-restricted-syntax */
+/* eslint-disable no-bitwise */
+/* eslint-disable no-param-reassign */
 /* eslint-disable prefer-destructuring */
 const compression = require('compression');
 const express = require('express');
@@ -42,7 +45,7 @@ module.exports = class Http {
   }
 
   start() {
-    twig.extendFilter('price_format', function(value) {
+    twig.extendFilter('price_format', value => {
       if (parseFloat(value) < 1) {
         return Intl.NumberFormat('en-US', {
           useGrouping: false,
@@ -58,39 +61,44 @@ module.exports = class Http {
       }).format(value);
     });
 
+    twig.extendFilter('json_pretty', value => {
+      return JSON.stringify(value, null, 2);
+    });
+
     const assetVersion = crypto
       .createHash('md5')
       .update(String(Math.floor(Date.now() / 1000)))
       .digest('hex')
       .substring(0, 8);
-    twig.extendFunction('asset_version', function() {
+
+    twig.extendFunction('asset_version', () => {
       return assetVersion;
     });
 
     const desks = this.systemUtil.getConfig('desks', []).map(desk => desk.name);
-    twig.extendFunction('desks', function() {
+    twig.extendFunction('desks', () => {
       return desks;
     });
 
-    twig.extendFunction('node_version', function() {
+    twig.extendFunction('node_version', () => {
       return process.version;
     });
 
     const hedge_mode = this.systemUtil.getConfig('exchanges.binance_futures.hedge');
-    twig.extendFunction('hedge_mode', function() {
+    twig.extendFunction('hedge_mode', () => {
       return hedge_mode;
     });
 
-    twig.extendFunction('memory_usage', function() {
+    twig.extendFunction('memory_usage', () => {
       return Math.round((process.memoryUsage().heapUsed / 1024 / 1024) * 100) / 100;
     });
 
     const up = new Date();
-    twig.extendFunction('uptime', function() {
+    twig.extendFunction('uptime', () => {
       return moment(up).toNow(true);
     });
 
-    twig.extendFilter('format_json', function(value) {
+    twig.extendFilter('format_json', value => {
       return JSON.stringify(value, null, '\t');
     });
 
@@ -124,7 +132,8 @@ module.exports = class Http {
 
     const uuidv4 = function() {
       return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-        var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+        const r = (Math.random() * 16) | 0;
+        const v = c === 'x' ? r : (r & 0x3) | 0x8;
         return v.toString(16);
       });
     };
@@ -509,7 +518,7 @@ module.exports = class Http {
     });
 
     app.get('/orders/:pair/cancel/:id', async (req, res) => {
-      const foo = await this.ordersHttp.cancel(req.params.pair, req.params.id);
+      await this.ordersHttp.cancel(req.params.pair, req.params.id);
       res.redirect(`/orders/${req.params.pair}`);
     });
 
@@ -528,8 +537,8 @@ module.exports = class Http {
       let balances = {};
 
       const exchanges = exchangeManager.all();
-      for (const key in exchanges) {
-        const exchange = exchanges[key];
+
+      for (const exchange of exchanges) {
         const exchangeName = exchange.getName();
 
         if (exchangeName.includes('binance_futures')) {
@@ -540,7 +549,6 @@ module.exports = class Http {
         myPositions.forEach(position => {
           // simply converting of asset to currency value
           let currencyValue;
-          let currencyProfit;
 
           if (
             (exchangeName.includes('bitmex') && ['XBTUSD', 'ETHUSD'].includes(position.symbol)) ||

@@ -73,8 +73,6 @@ module.exports = {
    * @returns {number}
    */
   getPercentDifferent: (orderPrice, currentPrice) => {
-    return orderPrice > currentPrice
-      ? 100 - (currentPrice / orderPrice) * 100
-      : 100 - (orderPrice / currentPrice) * 100;
+    return ((orderPrice - currentPrice) / currentPrice) * 100;
   }
 };
