@@ -298,8 +298,8 @@ var app = new Vue({
             const last_model = this.short_model[this.short_model.length-1];
 
             const price = last_model.entry * (1 + Math.sqrt(last_model.size / this.resolution) / 100);
-            const changes = (price / last_model.price - 1) * 100;
-            const cumulative = (price / first_model.price - 1) * 100;
+            const changes = (price - last_model.price) / last_model.price * 100;
+            const cumulative = (price - first_model.price) / first_model.price * 100;
             const entry = (price + last_model.entry) / 2;
             const amount = Math.pow(2, i) * first_model.amount;
             const size = last_model.size + (amount * price);
@@ -324,8 +324,8 @@ var app = new Vue({
             const last_model = this.long_model[this.long_model.length-1];
 
             const price = last_model.entry * (1 - Math.sqrt(last_model.size / this.resolution) / 100);
-            const changes = (1 - last_model.price / price) * 100;
-            const cumulative = (1 - first_model.price / price) * 100;
+            const changes = (price - last_model.price) / last_model.price * 100;
+            const cumulative = (price - first_model.price) / first_model.price * 100;
             const entry = (price + last_model.entry) / 2;
             const amount = Math.pow(2, i) * first_model.amount;
             const size = last_model.size + (amount * price);
@@ -350,8 +350,8 @@ var app = new Vue({
             const last_model = this.short_hedge_model[this.short_hedge_model.length-1];
 
             const price = last_model.entry * (1 - Math.sqrt(last_model.size / this.hedge_resolution) / 100);
-            const changes = (last_model.price / price - 1) * 100;
-            const cumulative = (first_model.price / price - 1) * 100;
+            const changes = (price - last_model.price) / last_model.price * 100;
+            const cumulative = (price - first_model.price) / first_model.price * 100;
             const entry = (price + last_model.entry) / 2;
             const amount = Math.pow(2, i) * first_model.amount;
             const size = last_model.size + (amount * price);
@@ -376,8 +376,8 @@ var app = new Vue({
             const last_model = this.long_hedge_model[this.long_hedge_model.length-1];
 
             const price = last_model.entry * (1 + Math.sqrt(last_model.size / this.hedge_resolution) / 100);
-            const changes = (price / last_model.price - 1) * 100;
-            const cumulative = (price / first_model.price - 1) * 100;
+            const changes = (price - last_model.price) / last_model.price * 100;
+            const cumulative = (price - first_model.price) / first_model.price * 100;
             const entry = (price + last_model.entry) / 2;
             const amount = Math.pow(2, i) * first_model.amount;
             const size = last_model.size + (amount * price);
