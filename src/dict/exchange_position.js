@@ -26,4 +26,8 @@ module.exports = class ExchangePosition {
   getSymbol() {
     return this.position.symbol;
   }
+
+  getSide() {
+    return this.position.side;
+  }
 };

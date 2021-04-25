@@ -97,6 +97,7 @@ module.exports = class ExchangeOrderWatchdogListener {
 
     const exchangeName = positionStateChangeEvent.getExchange();
     const symbol = positionStateChangeEvent.getSymbol();
+    const side = positionStateChangeEvent.getSide();
 
     const pair = this.instances.symbols.find(
       instance => instance.exchange === exchangeName && instance.symbol === symbol
@@ -113,8 +114,8 @@ module.exports = class ExchangeOrderWatchdogListener {
       return;
     }
 
-    this.logger.info(`Watchdog: position closed cleanup orders: ${JSON.stringify([exchangeName, symbol])}`);
-    await this.orderExecutor.cancelAll(exchangeName, positionStateChangeEvent.getSymbol());
+    this.logger.info(`Watchdog: position closed cleanup orders: ${JSON.stringify([exchangeName, symbol, side])}`);
+    await this.orderExecutor.cancelSide(exchangeName, positionStateChangeEvent.getSymbol(), side);
   }
 
   /**

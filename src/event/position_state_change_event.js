@@ -38,6 +38,10 @@ module.exports = class PositionStateChangeEvent {
     return this._exchangePosition.getSymbol();
   }
 
+  getSide() {
+    return this._exchangePosition.getSide();
+  }
+
   static createOpened(exchangePosition) {
     return new PositionStateChangeEvent('opened', exchangePosition);
   }

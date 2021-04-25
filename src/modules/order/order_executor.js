@@ -225,6 +225,23 @@ module.exports = class OrderExecutor {
     }
   }
 
+  async cancelSide(exchangeName, symbol, side) {
+    const exchange = this.exchangeManager.get(exchangeName);
+
+    const orders = exchange.getOrdersForSymbol(symbol);
+    if (orders.length) {
+      orders
+        .filter(o => o.positionSide.toLowerCase() === side)
+        .forEach(async order => {
+          try {
+            await exchange.cancelOrder(order.id);
+          } catch (err) {
+            this.logger.error(`Order cancel error: ${JSON.stringify([symbol, side, err])}`);
+          }
+        });
+    }
+  }
+
   async cancelAll(exchangeName, symbol) {
     const exchange = this.exchangeManager.get(exchangeName);
 
