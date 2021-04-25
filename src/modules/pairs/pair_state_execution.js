@@ -118,7 +118,7 @@ module.exports = class PairStateExecution {
         newOrders
           .filter(o => state.id !== o.id && state.id !== o.id)
           .forEach(async order => {
-            if (state.positionSide !== order.positionSide) {
+            if (order.getType() === Order.TYPE_MARKET || state.positionSide !== order.positionSide) {
               return;
             }
 
@@ -231,7 +231,7 @@ module.exports = class PairStateExecution {
         newOrders
           .filter(o => state.id !== o.id && state.id !== o.id)
           .forEach(async order => {
-            if (state.positionSide !== order.positionSide) {
+            if (order.getType() === Order.TYPE_MARKET || state.positionSide !== order.positionSide) {
               return;
             }
             this.logger.info(`Pair State: Clear invalid orders:${JSON.stringify([order])}`);
