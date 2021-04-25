@@ -227,6 +227,7 @@ module.exports = class OrderExecutor {
 
   async cancelSide(exchangeName, symbol, side) {
     const exchange = this.exchangeManager.get(exchangeName);
+    console.log('cancel side orders', exchangeName, symbol, side);
 
     const orders = exchange.getOrdersForSymbol(symbol);
     if (orders.length) {
@@ -234,6 +235,7 @@ module.exports = class OrderExecutor {
         .filter(o => o.positionSide.toLowerCase() === side)
         .forEach(async order => {
           try {
+            console.log('cancel side order', order.id, order.positionSide, side);
             await exchange.cancelOrder(order.id);
           } catch (err) {
             this.logger.error(`Order cancel error: ${JSON.stringify([symbol, side, err])}`);
