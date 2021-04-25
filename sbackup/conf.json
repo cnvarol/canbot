@@ -1,0 +1,79 @@
+{
+    "exchanges": {
+        "bitfinex": {
+            "key": null,
+            "secret": null
+        },
+        "bitmex": {
+            "key": null,
+            "secret": null
+        },
+        "binance": {
+            "key": null,
+            "secret": null
+        },
+        "binance_futures": {
+            "key": "oGBPJ5rWoQLYtb5ghDfG5qeFRrz9t53lWmKFt8X2kPi3T7EMqAAuIYMiYVdXzwML",
+            "secret": "0dd7eeXNCYrmEv7jLFemPO5wWMZUGAuyzmuSGiNPLfpG0aiNTaC3Km4dZxRujyX9",
+            "rateLimit": 150,
+            "hedge": true
+        },
+        "binance_margin": {
+            "key": null,
+            "secret": null
+        },
+        "coinbase_pro": {
+            "key": null,
+            "secret": null,
+            "passphrase": null
+        },
+        "bybit": {
+            "key": null,
+            "secret": null
+        },
+        "ftx": {
+            "key": null,
+            "secret": null
+        }
+    },
+    "notify": {
+        "slack": {
+            "webhook": null,
+            "name": "crypto-bot",
+            "icon_emoji": ":ghost:"
+        },
+        "mail": {
+            "to": "example@example.de",
+            "username": "foo@foo.de",
+            "password": "bar",
+            "server": null,
+            "port": 465
+        },
+        "telegram" : {
+            "chat_id": "758892821",
+            "token": "1588273302:AAG_k-jQ9GGqy1fajdSjiFYij-CHpcRT_DE"
+        }
+    },
+    "webserver": {
+        "ip": "127.0.0.1",
+        "port": 8068,
+        "username": "admin",
+        "password": "Cu35Olev"
+    },
+    "tick": {
+        "default": null,
+        "warmup": null,
+        "signal": null,
+        "watchdog": null,
+        "ordering": null,
+        "pair_signal_concurrency": null
+    },
+    "order": {
+        "retry": 3,
+        "retry_ms": 500
+    },
+    "dashboard":{
+        "periods": ["1h", "4h"]
+    },
+    "desks": []
+}
