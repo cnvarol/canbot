@@ -231,6 +231,7 @@ module.exports = class OrderExecutor {
 
     const orders = exchange.getOrdersForSymbol(symbol);
     if (orders.length) {
+      console.log(orders);
       orders
         .filter(o => o.positionSide.toLowerCase() === side)
         .forEach(async order => {
