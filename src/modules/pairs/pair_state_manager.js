@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-syntax */
 const PairState = require('../../dict/pair_state');
 const OrderCapital = require('../../dict/order_capital');
 const PairInterval = require('./pair_interval');

@@ -1,4 +1,7 @@
-const _ = require('lodash');
+/* eslint-disable no-restricted-syntax */
+/* eslint-disable no-await-in-loop */
+/* eslint-disable no-plusplus */
+/* eslint-disable no-param-reassign */
 const moment = require('moment');
 const Order = require('../../dict/order');
 const PairState = require('../../dict/pair_state');
@@ -158,8 +161,8 @@ module.exports = class OrderExecutor {
 
           this.logger.error(`OrderAdjust: replacing canceled order: ${JSON.stringify(retryOrder)}`);
 
-          const exchangeOrder = await this.executeOrder(pairState.getOrder(), retryOrder);
-          pairState.setExchangeOrder(exchangeOrder);
+          const newExchangeOrder = await this.executeOrder(pairState.getOrder(), retryOrder);
+          pairState.setExchangeOrder(newExchangeOrder);
         } else {
           this.logger.info(`OrderAdjust: Unknown order state: ${JSON.stringify([pairState, updatedOrder])}`);
         }
@@ -227,15 +230,13 @@ module.exports = class OrderExecutor {
 
   async cancelSide(exchangeName, symbol, side) {
     const exchange = this.exchangeManager.get(exchangeName);
-    console.log('cancel side orders', exchangeName, symbol, side);
 
     const orders = await exchange.getOrdersForSymbol(symbol);
     if (orders.length) {
       orders
-        .filter(o => o.positionSide.toLowerCase() === side)
+        .filter(o => o.positionSide.toLowerCase() === side && o.getType() !== Order.TYPE_MARKET)
         .forEach(async order => {
           try {
-            console.log('cancel side order', symbol, order.id, order.positionSide, side);
             await exchange.cancelOrder(order.id);
           } catch (err) {
             this.logger.error(`Order cancel error: ${JSON.stringify([symbol, side, err])}`);

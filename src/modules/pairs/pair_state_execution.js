@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-syntax */
 const moment = require('moment');
 const Order = require('../../dict/order');
 const ExchangeOrder = require('../../dict/exchange_order');
