@@ -381,11 +381,6 @@ module.exports = class ExchangeOrderWatchdogListener {
         );
 
         try {
-          if (size >= options.risk_size) {
-            await exchange.cancelAll(symbol);
-            return;
-          }
-
           await exchange.cancelOrder(orderChange.id);
         } catch (e) {
           logger.info(
