@@ -229,7 +229,7 @@ module.exports = class OrderExecutor {
     const exchange = this.exchangeManager.get(exchangeName);
     console.log('cancel side orders', exchangeName, symbol, side);
 
-    const orders = exchange.getOrdersForSymbol(symbol);
+    const orders = await exchange.getOrdersForSymbol(symbol);
     if (orders.length) {
       console.log(orders);
       orders
