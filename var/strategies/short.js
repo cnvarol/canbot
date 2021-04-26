@@ -11,6 +11,7 @@ module.exports = class {
   async period(indicatorPeriod) {
     const debug = { short: true };
 
+    const lastSignal = indicatorPeriod.getLastSignal();
     if (!lastSignal) {
       return SignalResult.createSignal('short', debug);
     }
