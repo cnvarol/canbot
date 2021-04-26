@@ -2,6 +2,19 @@
 
 {% block title %}Signals | Crypto Bot{% endblock %}
 
+{% block head %}
+<style>
+pre {
+    padding: 0 !important;
+    color: #e83e8c !important;
+}
+
+.dark-mode pre {
+    color: rgb(165, 214, 255) !important;
+}
+</style>
+{% endblock %}
+
 {% block content %}
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">
@@ -65,7 +78,7 @@
                                             <td>{{ signal.strategy }}</td>
                                             <td>{{ signal.income_at|date('d.m.y H:i') }}</td>
                                             <td>{{ signal.state }}</td>
-                                            <td class="text-muted"><span class="span-md">{{ signal.options }}</span></td>
+                                            <td><span class="span-md"><code><pre>{{ signal.options | json_replace | json_pretty }}</pre></code></span></td>
                                         </tr>
                                     {% endfor %}
                                     </tbody>

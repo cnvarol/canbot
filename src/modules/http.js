@@ -65,6 +65,14 @@ module.exports = class Http {
       return JSON.stringify(value, null, 2);
     });
 
+    twig.extendFilter('json_replace', value => {
+      const json = value
+        .replace(/\\/g, '')
+        .replace('"{', '{')
+        .replace('}"', '}');
+      return JSON.parse(json);
+    });
+
     const assetVersion = crypto
       .createHash('md5')
       .update(String(Math.floor(Date.now() / 1000)))
@@ -276,7 +284,7 @@ module.exports = class Http {
 
     app.get('/signals', async (req, res) => {
       res.render('../templates/signals.html.twig', {
-        signals: await this.signalHttp.getSignals(Math.floor(Date.now() / 1000) - 60 * 60 * 48)
+        signals: await this.signalHttp.getSignals(Math.floor(Date.now() / 1000) - 60 * 60 * 96)
       });
     });
 
