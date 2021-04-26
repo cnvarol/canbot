@@ -28,7 +28,7 @@ module.exports = class ExchangeOrder {
   }
 
   static get TYPE_TAKE_PROFIT() {
-    return 'take_profit';
+    return 'takeprofit';
   }
 
   // think use market
