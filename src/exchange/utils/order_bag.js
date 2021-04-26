@@ -1,3 +1,5 @@
+/* eslint-disable no-async-promise-executor */
+/* eslint-disable no-restricted-syntax */
 const ExchangeOrder = require('../../dict/exchange_order');
 
 module.exports = class OrderBag {
@@ -29,6 +31,10 @@ module.exports = class OrderBag {
       break;
     }
 
+    if (order.raw && order.raw.status === 'PARTIALLY_FILLED') {
+      console.log('PARTIALLY_FILLED', order);
+    }
+
     this.orders[String(order.id)] = order;
   }
 
@@ -48,7 +54,7 @@ module.exports = class OrderBag {
 
   findOrderById(id) {
     return new Promise(async resolve => {
-      resolve((await this.getOrders()).find(order => order.id === id || order.id == id));
+      resolve((await this.getOrders()).find(order => order.id === id));
     });
   }
 

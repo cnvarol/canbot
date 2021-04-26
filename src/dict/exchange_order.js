@@ -1,3 +1,4 @@
+/* eslint-disable default-case */
 /**
  * Order that coming from exchange that is placed there
  */
@@ -75,7 +76,7 @@ module.exports = class ExchangeOrder {
     options = {}
   ) {
     if (side !== 'buy' && side !== 'sell') {
-      throw `Invalid order direction given:${side}`;
+      throw Error(`Invalid order direction given:${side}`);
     }
 
     if (
@@ -88,7 +89,7 @@ module.exports = class ExchangeOrder {
         ExchangeOrder.TYPE_TRAILING_STOP
       ].includes(type)
     ) {
-      throw `Invalid order type: ${type}`;
+      throw Error(`Invalid order type: ${type}`);
     }
 
     this.id = id;
@@ -147,7 +148,7 @@ module.exports = class ExchangeOrder {
         return 'short';
     }
 
-    throw `Invalid side:${this.side}`;
+    throw Error(`Invalid side:${this.side}`);
   }
 
   getPositionSide() {

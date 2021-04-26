@@ -234,6 +234,17 @@ module.exports = class BinanceFutures {
   }
 
   async cancelOrder(id) {
+    const currentOrder = await this.findOrderById(id);
+    if (!currentOrder) {
+      console.log('Order cancel stopped because the order not found');
+      return undefined;
+    }
+
+    if (currentOrder.raw && currentOrder.raw.status === 'PARTIALLY_FILLED') {
+      console.log('Order cancel stopped because the order still in process', currentOrder.raw);
+      return undefined;
+    }
+
     const result = this.ccxtExchangeOrder.cancelOrder(id);
     this.throttler.addTask(
       'binance_futures_sync_orders',

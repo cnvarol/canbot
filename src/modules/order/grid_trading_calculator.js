@@ -99,9 +99,9 @@ module.exports = class GridTradingCalculator {
       const stopOrder = stopOrders[0];
 
       // order is in execute period, don't change anything
-      if (stopOrder.raw && stopOrder.raw.status === 'PARTIALLY_FILLED') {
+      /* if (stopOrder.raw && stopOrder.raw.status === 'PARTIALLY_FILLED') {
         return {};
-      }
+      } */
 
       // only +1% amount change is important for us
       if (OrderUtil.isPercentDifferentGreaterThen(position.amount, stopOrder.amount, 1)) {
@@ -141,9 +141,9 @@ module.exports = class GridTradingCalculator {
       const targetOrder = targetOrders[0];
 
       // order is in execute period, don't change anything
-      if (targetOrder.raw && targetOrder.raw.status === 'PARTIALLY_FILLED') {
+      /* if (targetOrder.raw && targetOrder.raw.status === 'PARTIALLY_FILLED') {
         return {};
-      }
+      } */
 
       // only +1% amount change is important for us
       if (OrderUtil.isPercentDifferentGreaterThen(position.amount, targetOrder.amount, 1)) {
