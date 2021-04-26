@@ -62,7 +62,11 @@ module.exports = class GridTradingCalculator {
     entryPrice = Math.abs(entryPrice);
 
     const step_percent = Math.sqrt(size / options.step_resolution);
-    const hedge_step_percent = Math.sqrt(size / options.hedge_step_resolution);
+    let hedge_step_percent = Math.sqrt(size / options.hedge_step_resolution);
+
+    if (options.hedge_profit_mode) {
+      hedge_step_percent = options.hedge_take_profit;
+    }
 
     if (position.side === 'long') {
       result.targetPrice = entryPrice * (1 - step_percent / 100);
