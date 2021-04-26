@@ -12,11 +12,9 @@ module.exports = class CcxtUtil {
     let status;
     const orderStatus = order.status.toLowerCase();
 
-    if (
-      ['new', 'open', 'partiallyfilled', 'partially_filled', 'pendingnew', 'doneforday', 'stopped'].includes(
-        orderStatus
-      )
-    ) {
+    console.log(order.symbol, order.side, order.id, status);
+
+    if (['new', 'open', 'partiallyfilled', 'pendingnew', 'doneforday', 'stopped'].includes(orderStatus)) {
       status = 'open';
     } else if (orderStatus === 'filled') {
       status = 'done';
