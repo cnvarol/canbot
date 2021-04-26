@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-syntax */
 const moment = require('moment');
 
 module.exports = {
@@ -7,7 +8,7 @@ module.exports = {
     }
 
     if (!['short', 'long'].includes(side)) {
-      throw Error(`Invalid entry side: ${side}`);
+      throw new Error(`Invalid entry side: ${side}`);
     }
 
     const result = {

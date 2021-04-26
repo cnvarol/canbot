@@ -142,8 +142,8 @@
           <vue-bootstrap4-table :rows="orders" :classes="dataTableClasses" :columns="ordersColumns" :config="dataTableConfig" :total-rows="orders.length" :actions="ordersActions" @on-cancelall="onCancelAll">
             <template slot="exchange" slot-scope="props"><img :src="`/img/exchanges/${props.cell_value}.png`" :alt="props.cell_value" :title="props.cell_value" width="16px" height="16px"></template>
             <template slot="symbol" slot-scope="props">
-              <span v-if="props.row.order.side === 'sell'" class="badge badge-danger">short</span>
-              <span v-if="props.row.order.side === 'buy'" class="badge badge-success">long</span>
+              <span v-if="sideShortOrLong(props.row.order) === 'short'" class="badge badge-danger">short</span>
+              <span v-if="sideShortOrLong(props.row.order) === 'long'" class="badge badge-success">long</span>
               <a target="blank" :href="'/tradingview/' + props.row.exchange + ':' + props.cell_value">{{ props.cell_value }}</a> 
             </template>
             <template slot="status" slot-scope="props">{{ capitalizeFirstLetter(props.cell_value) }}</template>
@@ -486,7 +486,20 @@ module.exports = {
       }
     },
     capitalizeFirstLetter(string) {
-      return string.charAt(0).toUpperCase() + string.slice(1);
+      string = string.replace('_', ' ');
+      const words = string.split(" ");
+      for (let i = 0; i < words.length; i++) {
+        words[i] = words[i][0].toUpperCase() + words[i].substr(1);
+      }
+
+      return words.join(" ");
+    },
+    sideShortOrLong(order) {
+      if (order.positionSide) {
+        return order.positionSide.toLowerCase();
+      }
+
+      return order.side === 'buy' ? 'long' : 'short';
     },
     createExchangeName(name) {
       const split = name.split('_');

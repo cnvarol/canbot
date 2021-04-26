@@ -221,13 +221,13 @@ module.exports = class BinanceFutures {
   getLeverage(symbol) {
     const config = this.symbols.find(cSymbol => cSymbol.symbol === symbol);
     if (!config) {
-      throw Error(`Binance Futures: Invalid leverage config for:${symbol}`);
+      throw new Error(`Binance Futures: Invalid leverage config for:${symbol}`);
     }
 
     // use default leverage to "5"
     const leverageSize = _.get(config, 'extra.binance_futures_leverage', 5);
     if (leverageSize < 0 || leverageSize > 125) {
-      throw Error(`Invalid leverage size for: ${leverageSize} ${symbol}`);
+      throw new Error(`Invalid leverage size for: ${leverageSize} ${symbol}`);
     }
 
     return leverageSize;
@@ -240,7 +240,7 @@ module.exports = class BinanceFutures {
     }
 
     if (currentOrder.raw && currentOrder.raw.info && currentOrder.raw.info.status === 'PARTIALLY_FILLED') {
-      throw Error(
+      throw new Error(
         `Binance Futures: Cancelling order stopped because the order still in process: ${currentOrder.symbol}, ${currentOrder.id}, ${currentOrder.side}`
       );
     }
@@ -731,7 +731,10 @@ module.exports = class BinanceFutures {
         order.symbol = order.symbol.replace('/USDT', 'USDT');
 
         // ccxt does not pipe the stopPrice
-        if (['trailing_stop_market', 'stop_market'].includes(order.type) && order.info.stopPrice) {
+        if (
+          ['trailing_stop_market', 'stop_market', 'take_profit_market'].includes(order.type) &&
+          order.info.stopPrice
+        ) {
           order.price = parseFloat(order.info.stopPrice);
         }
       },
@@ -756,6 +759,16 @@ module.exports = class BinanceFutures {
         }
 
         if (order.getType() === Order.TYPE_STOP) {
+          request.args.stopPrice = order.getPrice();
+        }
+
+        if (order.getType() === Order.TYPE_TAKE_PROFIT) {
+          if (config.hedge) {
+            order.side = order.side === Order.SIDE_SHORT ? 'long' : 'short';
+            request.args.positionSide = order.side.toUpperCase();
+          } else {
+            request.args.reduceOnly = true;
+          }
           request.args.stopPrice = order.getPrice();
         }
 

@@ -33,6 +33,7 @@ module.exports = class CcxtExchangeOrder {
 
     let promise;
     switch (order.getType()) {
+      case Order.TYPE_TAKE_PROFIT:
       case Order.TYPE_STOP:
       case Order.TYPE_LIMIT:
         promise = this.ccxtClient.createOrder(

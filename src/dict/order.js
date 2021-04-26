@@ -21,6 +21,10 @@ module.exports = class Order {
     return 'stop';
   }
 
+  static get TYPE_TAKE_PROFIT() {
+    return 'take_profit';
+  }
+
   static get TYPE_MARKET() {
     return 'market';
   }
@@ -135,6 +139,22 @@ module.exports = class Order {
       amount,
       Order.TYPE_STOP,
       options
+    );
+  }
+
+  static createTakeProfitOrder(symbol, side, price, amount, options) {
+    if (![Order.SIDE_SHORT, Order.SIDE_LONG].includes(side)) {
+      throw new Error(`Invalid order side:${side} - ${JSON.stringify([symbol, side, price, amount, options])}`);
+    }
+
+    return new Order(
+      Math.round(new Date().getTime().toString() * Math.random()),
+      symbol,
+      side,
+      price,
+      amount,
+      Order.TYPE_TAKE_PROFIT,
+      { close: true }
     );
   }
 

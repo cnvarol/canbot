@@ -14,7 +14,7 @@ module.exports = class OrderBag {
    */
   triggerOrder(order) {
     if (!(order instanceof ExchangeOrder)) {
-      throw Error('Invalid order given');
+      throw new Error('Invalid order given');
     }
 
     // dont overwrite state closed order
@@ -69,7 +69,7 @@ module.exports = class OrderBag {
 
     orders.forEach(o => {
       if (!(o instanceof ExchangeOrder)) {
-        throw Error('Invalid order given');
+        throw new Error('Invalid order given');
       }
 
       ourOrder[String(o.id)] = o;

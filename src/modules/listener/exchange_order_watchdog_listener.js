@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 /* eslint-disable no-await-in-loop */
 const moment = require('moment');
 const orderUtil = require('../../utils/order_util');
@@ -407,6 +408,11 @@ module.exports = class ExchangeOrderWatchdogListener {
         return;
       }
 
+      if (options.hedge_profit_mode && orderChange.type === 'stop') {
+        orderChange.type = 'take_profit';
+        orderChange.price *= -1;
+      }
+
       const price = exchange.calculatePrice(orderChange.price, symbol);
       if (!price) {
         logger.error(
@@ -438,12 +444,14 @@ module.exports = class ExchangeOrderWatchdogListener {
         })}`
       );
 
-      // const ourOrder = Order.createLimitPostOnlyOrder(symbol, position.side, orderChange.price, orderChange.amount);
-
-      const ourOrder =
-        orderChange.type === 'stop'
-          ? Order.createStopOrder(symbol, position.side, orderChange.price, orderChange.amount)
-          : Order.createLimitPostOnlyOrder(symbol, position.side, orderChange.price, orderChange.amount);
+      let ourOrder;
+      if (orderChange.type === 'take_profit') {
+        ourOrder = Order.createTakeProfitOrder(symbol, position.side, orderChange.price, orderChange.amount);
+      } else if (orderChange.type === 'stop') {
+        ourOrder = Order.createStopOrder(symbol, position.side, orderChange.price, orderChange.amount);
+      } else {
+        ourOrder = Order.createLimitPostOnlyOrder(symbol, position.side, orderChange.price, orderChange.amount);
+      }
 
       ourOrder.price = price;
 

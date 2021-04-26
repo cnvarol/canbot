@@ -78,7 +78,7 @@ module.exports = class TickListener {
     }
 
     if (!['close_short', 'close_long', 'close', 'short', 'long'].includes(signal)) {
-      throw Error(`Invalid signal: ${JSON.stringify(signal, strategy)}`);
+      throw new Error(`Invalid signal: ${JSON.stringify(signal, strategy)}`);
     }
 
     const signalWindow = moment()
@@ -204,7 +204,7 @@ Margin Risk Ratio: ${riskRatio.toFixed(2)}%`);
     }
 
     if (!['close', 'close_short', 'close_long', 'short', 'long'].includes(signal)) {
-      throw Error(`Invalid signal: ${JSON.stringify(signal, strategy)}`);
+      throw new Error(`Invalid signal: ${JSON.stringify(signal, strategy)}`);
     }
 
     /* const signalWindow = moment()
@@ -397,7 +397,7 @@ Margin Risk Ratio: ${riskRatio.toFixed(2)}%`);
         myUnit = 60;
         break;
       default:
-        throw Error(`Unsupported period unit: ${period}`);
+        throw new Error(`Unsupported period unit: ${period}`);
     }
 
     const number = parseInt(period.substring(0, period.length - 1), 10);

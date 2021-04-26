@@ -27,6 +27,10 @@ module.exports = class ExchangeOrder {
     return 'stop';
   }
 
+  static get TYPE_TAKE_PROFIT() {
+    return 'take_profit';
+  }
+
   // think use market
   static get TYPE_STOP_LIMIT() {
     return 'stop_limit';
@@ -76,7 +80,7 @@ module.exports = class ExchangeOrder {
     options = {}
   ) {
     if (side !== 'buy' && side !== 'sell') {
-      throw Error(`Invalid order direction given:${side}`);
+      throw new Error(`Invalid order direction given:${side}`);
     }
 
     if (
@@ -86,10 +90,11 @@ module.exports = class ExchangeOrder {
         ExchangeOrder.TYPE_MARKET,
         ExchangeOrder.TYPE_UNKNOWN,
         ExchangeOrder.TYPE_STOP,
+        ExchangeOrder.TYPE_TAKE_PROFIT,
         ExchangeOrder.TYPE_TRAILING_STOP
       ].includes(type)
     ) {
-      throw Error(`Invalid order type: ${type}`);
+      throw new Error(`Invalid order type: ${type}`);
     }
 
     this.id = id;
@@ -148,7 +153,7 @@ module.exports = class ExchangeOrder {
         return 'short';
     }
 
-    throw Error(`Invalid side:${this.side}`);
+    throw new Error(`Invalid side:${this.side}`);
   }
 
   getPositionSide() {

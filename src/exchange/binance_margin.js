@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-syntax */
 'use strict';
 
 const BinanceClient = require('binance-api-node').default;
@@ -381,7 +382,7 @@ module.exports = class BinanceMargin {
 
   async updateOrder(id, order) {
     if (!order.amount && !order.price) {
-      throw 'Invalid amount / price for update';
+      throw Error('Invalid amount / price for update');
     }
 
     const currentOrder = await this.findOrderById(id);

@@ -11,12 +11,12 @@ module.exports = class GridTradingCalculator {
     if (position.raw && position.raw.positionSide !== 'BOTH') {
       ordersCheck = orders.filter(
         order =>
-          (order.type === ExchangeOrder.TYPE_LIMIT || order.type === ExchangeOrder.TYPE_STOP) &&
+          order.type === (ExchangeOrder.TYPE_LIMIT || ExchangeOrder.TYPE_STOP || ExchangeOrder.TYPE_TAKE_PROFIT) &&
           order.positionSide === position.raw.positionSide
       );
     } else {
       ordersCheck = orders.filter(
-        order => order.type === ExchangeOrder.TYPE_LIMIT || order.type === ExchangeOrder.TYPE_STOP
+        order => order.type === (ExchangeOrder.TYPE_LIMIT || ExchangeOrder.TYPE_STOP || ExchangeOrder.TYPE_TAKE_PROFIT)
       );
     }
 
@@ -77,10 +77,12 @@ module.exports = class GridTradingCalculator {
     let stopOrders;
     if (position.raw && position.raw.positionSide !== 'BOTH') {
       stopOrders = orders.filter(
-        order => order.type === ExchangeOrder.TYPE_STOP && order.positionSide === position.raw.positionSide
+        order =>
+          order.type === (ExchangeOrder.TYPE_STOP || ExchangeOrder.TYPE_TAKE_PROFIT) &&
+          order.positionSide === position.raw.positionSide
       );
     } else {
-      stopOrders = orders.filter(order => order.type === ExchangeOrder.TYPE_STOP);
+      stopOrders = orders.filter(order => order.type === (ExchangeOrder.TYPE_STOP || ExchangeOrder.TYPE_TAKE_PROFIT));
     }
 
     if (stopOrders.length === 0) {
@@ -97,11 +99,6 @@ module.exports = class GridTradingCalculator {
     } else {
       // update order
       const stopOrder = stopOrders[0];
-
-      // order is in execute period, don't change anything
-      /* if (stopOrder.raw && stopOrder.raw.status === 'PARTIALLY_FILLED') {
-        return {};
-      } */
 
       // only +1% amount change is important for us
       if (OrderUtil.isPercentDifferentGreaterThen(position.amount, stopOrder.amount, 1)) {
@@ -139,11 +136,6 @@ module.exports = class GridTradingCalculator {
     } else {
       // update order
       const targetOrder = targetOrders[0];
-
-      // order is in execute period, don't change anything
-      /* if (targetOrder.raw && targetOrder.raw.status === 'PARTIALLY_FILLED') {
-        return {};
-      } */
 
       // only +1% amount change is important for us
       if (OrderUtil.isPercentDifferentGreaterThen(position.amount, targetOrder.amount, 1)) {
