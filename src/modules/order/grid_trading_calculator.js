@@ -11,12 +11,17 @@ module.exports = class GridTradingCalculator {
     if (position.raw && position.raw.positionSide !== 'BOTH') {
       ordersCheck = orders.filter(
         order =>
-          order.type === (ExchangeOrder.TYPE_LIMIT || ExchangeOrder.TYPE_STOP || ExchangeOrder.TYPE_TAKE_PROFIT) &&
+          (order.type === ExchangeOrder.TYPE_LIMIT ||
+            order.type === ExchangeOrder.TYPE_STOP ||
+            order.type === ExchangeOrder.TYPE_TAKE_PROFIT) &&
           order.positionSide === position.raw.positionSide
       );
     } else {
       ordersCheck = orders.filter(
-        order => order.type === (ExchangeOrder.TYPE_LIMIT || ExchangeOrder.TYPE_STOP || ExchangeOrder.TYPE_TAKE_PROFIT)
+        order =>
+          order.type === ExchangeOrder.TYPE_LIMIT ||
+          order.type === ExchangeOrder.TYPE_STOP ||
+          order.type === ExchangeOrder.TYPE_TAKE_PROFIT
       );
     }
 
@@ -78,11 +83,13 @@ module.exports = class GridTradingCalculator {
     if (position.raw && position.raw.positionSide !== 'BOTH') {
       stopOrders = orders.filter(
         order =>
-          order.type === (ExchangeOrder.TYPE_STOP || ExchangeOrder.TYPE_TAKE_PROFIT) &&
+          (order.type === ExchangeOrder.TYPE_STOP || order.type === ExchangeOrder.TYPE_TAKE_PROFIT) &&
           order.positionSide === position.raw.positionSide
       );
     } else {
-      stopOrders = orders.filter(order => order.type === (ExchangeOrder.TYPE_STOP || ExchangeOrder.TYPE_TAKE_PROFIT));
+      stopOrders = orders.filter(
+        order => order.type === ExchangeOrder.TYPE_STOP || order.type === ExchangeOrder.TYPE_TAKE_PROFIT
+      );
     }
 
     if (stopOrders.length === 0) {
