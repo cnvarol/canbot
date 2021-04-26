@@ -394,7 +394,7 @@ module.exports = class ExchangeOrderWatchdogListener {
         try {
           await exchange.cancelOrder(orderChange.id);
         } catch (e) {
-          logger.info(
+          logger.error(
             `Grid Trading: order cancel error: ${JSON.stringify({
               orderChange: orderChange,
               symbol: symbol,

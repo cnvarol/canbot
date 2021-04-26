@@ -236,14 +236,10 @@ module.exports = class BinanceFutures {
   async cancelOrder(id) {
     const currentOrder = await this.findOrderById(id);
     if (!currentOrder) {
-      console.log('Cancelling order stopped because the order not found:', id);
-
-      throw Error(`Binance Futures: Cancelling order stopped because the order not found: ${id}`);
+      return undefined;
     }
 
     if (currentOrder.raw && currentOrder.raw.info && currentOrder.raw.info.status === 'PARTIALLY_FILLED') {
-      console.log('Cancelling order stopped because the order still in process:', currentOrder);
-
       throw Error(
         `Binance Futures: Cancelling order stopped because the order still in process: ${currentOrder.symbol}, ${currentOrder.id}, ${currentOrder.side}`
       );
