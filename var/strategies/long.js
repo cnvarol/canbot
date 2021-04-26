@@ -5,8 +5,7 @@ module.exports = class {
     return 'long';
   }
 
-  buildIndicator(indicatorBuilder) {
-  }
+  buildIndicator(indicatorBuilder) {}
 
   async period(indicatorPeriod) {
     const debug = { long: true };
@@ -15,6 +14,8 @@ module.exports = class {
     if (!lastSignal) {
       return SignalResult.createSignal('long', debug);
     }
+
+    return SignalResult.createEmptySignal(debug);
   }
 
   getOptions() {
