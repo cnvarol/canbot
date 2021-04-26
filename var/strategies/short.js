@@ -5,7 +5,9 @@ module.exports = class {
     return 'short';
   }
 
-  buildIndicator(indicatorBuilder) {}
+  buildIndicator(indicatorBuilder) {
+    indicatorBuilder.add('rsi', 'rsi', '1m');
+  }
 
   async period(indicatorPeriod) {
     const debug = { short: true };
