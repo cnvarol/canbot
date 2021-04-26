@@ -356,7 +356,18 @@ module.exports = class ExchangeOrderWatchdogListener {
           exchange: exchange.getName()
         })}`
       );
-      await exchange.cancelOrder(order.id);
+      try {
+        await exchange.cancelOrder(order.id);
+      } catch (e) {
+        logger.error(
+          `Grid Trading: duplicate order cancel error: ${JSON.stringify({
+            order: order,
+            symbol: symbol,
+            exchange: exchange.getName(),
+            error: e
+          })}`
+        );
+      }
     });
 
     const orderChanges = await this.gridTradingCalculator.createGridTradingOrders(position, orders, options);
