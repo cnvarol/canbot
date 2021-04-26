@@ -31,10 +31,6 @@ module.exports = class OrderBag {
       break;
     }
 
-    if (order.raw && order.raw.info && order.raw.info.status === 'PARTIALLY_FILLED') {
-      console.log('PARTIALLY_FILLED', order);
-    }
-
     this.orders[String(order.id)] = order;
   }
 
