@@ -240,7 +240,7 @@ module.exports = class BinanceFutures {
       return undefined;
     }
 
-    if (currentOrder.raw && currentOrder.raw.status === 'PARTIALLY_FILLED') {
+    if (currentOrder.raw && currentOrder.raw.info && currentOrder.raw.info.status === 'PARTIALLY_FILLED') {
       console.log('Order cancel stopped because the order still in process', currentOrder.raw);
       return undefined;
     }

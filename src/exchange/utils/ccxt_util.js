@@ -12,8 +12,6 @@ module.exports = class CcxtUtil {
     let status;
     const orderStatus = order.status.toLowerCase();
 
-    console.log(order.symbol, order.side, order.id, orderStatus);
-
     if (['new', 'open', 'partiallyfilled', 'pendingnew', 'doneforday', 'stopped'].includes(orderStatus)) {
       status = 'open';
     } else if (orderStatus === 'filled') {
