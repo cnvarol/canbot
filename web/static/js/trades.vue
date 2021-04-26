@@ -507,7 +507,7 @@ module.exports = {
         return '';
       }
 
-      return `${capitalizeFirstLetter(split[0])} ${capitalizeFirstLetter(split[1])}`;
+      return `${this.capitalizeFirstLetter(split[0])} ${this.capitalizeFirstLetter(split[1])}`;
     },
     async onCancelAll() {
       if (!confirm(`Do you really want to cancel all orders?`)) {
