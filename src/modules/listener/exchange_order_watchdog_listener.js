@@ -207,7 +207,7 @@ module.exports = class ExchangeOrderWatchdogListener {
     }
   ) {
     const { logger } = this;
-    const { instances } = this;
+    /* const { instances } = this;
 
     const pair = instances.symbols.find(
       instance => instance.exchange === exchange.getName() && instance.symbol === position.symbol
@@ -216,7 +216,7 @@ module.exports = class ExchangeOrderWatchdogListener {
     let capital = 1000; // default
     if (pair.trade && pair.trade.currency_capital) {
       capital = pair.trade.currency_capital;
-    }
+    } */
 
     if (
       this.throttler.inTasks('binance_futures_sync_orders') ||
@@ -235,9 +235,11 @@ module.exports = class ExchangeOrderWatchdogListener {
     const symbol = position.getSymbol();
     const orders = await exchange.getOrdersForSymbol(symbol);
     const currentPositions = await exchange.getPositionForSymbol(symbol);
+    const size = Math.abs(position.amount * position.entry).toFixed(2);
 
     if (Array.isArray(currentPositions) && options.hedge_position && position.profit < options.hedge_percent) {
-      if (currentPositions.length < 2 && Math.abs(position.amount * position.entry) < capital * 1.5) {
+      // if (currentPositions.length < 2 && Math.abs(position.amount * position.entry) < capital * 1.5) {
+      if (currentPositions.length < 2 && size < options.risk_size) {
         let amount = Math.abs(position.amount);
         if (position.side === 'long') {
           amount *= -1;
@@ -262,8 +264,8 @@ module.exports = class ExchangeOrderWatchdogListener {
     let { profit } = position;
     let amount = Math.abs(position.amount);
 
-    let hedgeProfitFound = false;
-    let hedgePosition = null;
+    /* let hedgeProfitFound = false;
+    let hedgePosition = null; */
 
     if (Array.isArray(currentPositions)) {
       profit = 0;
@@ -272,7 +274,7 @@ module.exports = class ExchangeOrderWatchdogListener {
 
       currentPositions.forEach(p => {
         const pamount = Math.abs(p.amount);
-        if (
+        /* if (
           options.hedge_profit_mode &&
           p.side !== position.side &&
           position.profit < 0 &&
@@ -281,7 +283,7 @@ module.exports = class ExchangeOrderWatchdogListener {
         ) {
           hedgeProfitFound = true;
           hedgePosition = p;
-        }
+        } */
 
         amount += pamount * p.entry;
         if (p.raw && p.raw.unRealizedProfit) {
@@ -315,7 +317,7 @@ module.exports = class ExchangeOrderWatchdogListener {
       return;
     }
 
-    if (hedgeProfitFound && hedgePosition) {
+    /* if (hedgeProfitFound && hedgePosition) {
       const marketOrder = Order.createMarketOrder(symbol, hedgePosition.amount, hedgePosition.side, { close: true });
       await this.orderExecutor.executeOrder(exchange.getName(), marketOrder);
 
@@ -328,9 +330,8 @@ module.exports = class ExchangeOrderWatchdogListener {
       );
 
       return;
-    }
+    } */
 
-    const size = Math.abs(position.amount * position.entry).toFixed(2);
     if (options.risk_notify && size >= options.risk_size) {
       const warnWindow = moment()
         .subtract(180, 'minutes')
