@@ -28,9 +28,9 @@ c.symbols.push({
     'currency_capital': 5000,
     'strategies': [
       {
-          'strategy': 'fast',
+          'strategy': 'long',
           'options': {
-              'period': '15m'
+              'period': '1m'
           }
       }
     ]
@@ -49,7 +49,7 @@ c.symbols.push({
           'hedge_position': true,
           'hedge_percent': -0.5,
           'hedge_profit_mode': true,
-          'hedge_take_profit': 1.5,
+          'hedge_take_profit': 2,
           'step_resolution': 750,
           'hedge_step_resolution': 150,
           'take_profit': 1,
@@ -63,9 +63,9 @@ c.symbols.push({
     'currency_capital': 2500,
     'strategies': [
       {
-          'strategy': 'fast',
+          'strategy': 'long',
           'options': {
-              'period': '15m'
+              'period': '1m'
           }
       }
     ]
@@ -103,7 +103,7 @@ trade1m.forEach((pair) => {
                 'hedge_position': true,
                 'hedge_percent': -0.75,
                 'hedge_profit_mode': true,
-                'hedge_take_profit': 2,
+                'hedge_take_profit': 2.5,
                 'step_resolution': 100,
                 'hedge_step_resolution': 20,
                 'take_profit': 1,
@@ -117,9 +117,9 @@ trade1m.forEach((pair) => {
           'currency_capital': 1000,
           'strategies': [
             {
-                'strategy': 'fast',
+                'strategy': 'long',
                 'options': {
-                    'period': '15m'
+                    'period': '1m'
                 }
             }
           ]
@@ -220,7 +220,7 @@ trade100k.forEach((pair) => {
                 'hedge_position': true,
                 'hedge_percent': -1,
 		'hedge_profit_mode': true,
-      		'hedge_take_profit': 2.5,
+      		'hedge_take_profit': 3,
                 'step_resolution': 30,
                 'hedge_step_resolution': 6,
                 'take_profit': 1,
@@ -234,9 +234,9 @@ trade100k.forEach((pair) => {
           'currency_capital': 400,
           'strategies': [
             {
-                'strategy': 'fast',
+                'strategy': 'long',
                 'options': {
-                    'period': '15m'
+                    'period': '1m'
                 }
             }
           ]
