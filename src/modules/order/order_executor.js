@@ -239,7 +239,7 @@ module.exports = class OrderExecutor {
           try {
             await exchange.cancelOrder(order.id);
           } catch (err) {
-            this.logger.error(`Order cancel error: ${JSON.stringify([symbol, side, err])}`);
+            this.logger.error(`Order cancel error: ${JSON.stringify([symbol, side, err.message])}`);
           }
         });
     }
@@ -251,7 +251,7 @@ module.exports = class OrderExecutor {
     try {
       await exchange.cancelAll(symbol);
     } catch (err) {
-      this.logger.error(`Order cancel all error: ${JSON.stringify([symbol, err])}`);
+      this.logger.error(`Order cancel all error: ${JSON.stringify([symbol, err.message])}`);
     }
   }
 

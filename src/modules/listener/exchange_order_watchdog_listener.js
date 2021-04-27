@@ -365,7 +365,7 @@ module.exports = class ExchangeOrderWatchdogListener {
             order: order,
             symbol: symbol,
             exchange: exchange.getName(),
-            error: e
+            error: e.message
           })}`
         );
       }
@@ -400,7 +400,7 @@ module.exports = class ExchangeOrderWatchdogListener {
               orderChange: orderChange,
               symbol: symbol,
               exchange: exchange.getName(),
-              message: e
+              error: e.message
             })}`
           );
         }
