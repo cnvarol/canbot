@@ -270,7 +270,7 @@ risklist.forEach((pair) => {
                 'take_profit': 1,
                 'risk_notify': true,
                 'risk_size': 6000,
-                'risk_take_profit': 0.00001
+                'risk_take_profit': 0.1
            }
         ],
         'exchange': 'binance_futures',
