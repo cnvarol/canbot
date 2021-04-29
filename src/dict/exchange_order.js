@@ -19,6 +19,10 @@ module.exports = class ExchangeOrder {
     return 'rejected';
   }
 
+  static get STATUS_PARTIALLY_FILLED() {
+    return 'partially_filled';
+  }
+
   static get TYPE_LIMIT() {
     return 'limit';
   }

@@ -12,14 +12,16 @@ module.exports = class CcxtUtil {
     let status;
     const orderStatus = order.status.toLowerCase();
 
-    if (['new', 'open', 'partiallyfilled', 'pendingnew', 'doneforday', 'stopped'].includes(orderStatus)) {
-      status = 'open';
+    if (['new', 'open', 'pendingnew', 'doneforday', 'stopped'].includes(orderStatus)) {
+      status = ExchangeOrder.STATUS_OPEN;
+    } else if (orderStatus === 'partiallyfilled') {
+      status = ExchangeOrder.STATUS_PARTIALLY_FILLED;
     } else if (orderStatus === 'filled') {
-      status = 'done';
+      status = ExchangeOrder.STATUS_DONE;
     } else if (orderStatus === 'canceled') {
-      status = 'canceled';
+      status = ExchangeOrder.STATUS_CANCELED;
     } else if (orderStatus === 'rejected' || orderStatus === 'expired') {
-      status = 'rejected';
+      status = ExchangeOrder.STATUS_REJECTED;
       retry = true;
     }
 

@@ -39,7 +39,10 @@ module.exports = class OrderBag {
       const orders = [];
 
       for (const key in this.orders) {
-        if (this.orders[key].status === 'open') {
+        if (
+          this.orders[key].status === ExchangeOrder.STATUS_OPEN ||
+          this.orders[key].status === ExchangeOrder.STATUS_PARTIALLY_FILLED
+        ) {
           orders.push(this.orders[key]);
         }
       }

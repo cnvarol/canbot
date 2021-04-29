@@ -1,4 +1,4 @@
-const _ = require('lodash');
+/* eslint-disable no-restricted-syntax */
 const PositionStateChangeEvent = require('../../event/position_state_change_event');
 
 module.exports = class ExchangePositionWatcher {

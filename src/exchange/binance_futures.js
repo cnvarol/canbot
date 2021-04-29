@@ -15,6 +15,7 @@ const Position = require('../dict/position');
 const CcxtExchangeOrder = require('./ccxt/ccxt_exchange_order');
 const ExchangeOrderEvent = require('../event/exchange_order_event');
 const ExchangePositionEvent = require('../event/exchange_position_event');
+const ExchangeOrder = require('../dict/exchange_order');
 
 module.exports = class BinanceFutures {
   constructor(eventEmitter, requestClient, candlestickResample, logger, queue, candleImporter, throttler) {
@@ -239,7 +240,7 @@ module.exports = class BinanceFutures {
       return undefined;
     }
 
-    if (currentOrder.raw && currentOrder.raw.info && currentOrder.raw.info.status === 'PARTIALLY_FILLED') {
+    if (currentOrder.status === ExchangeOrder.STATUS_PARTIALLY_FILLED) {
       throw new Error(
         `Binance Futures: Cancelling order stopped because the order still in process: ${currentOrder.symbol}, ${currentOrder.id}, ${currentOrder.side}`
       );
