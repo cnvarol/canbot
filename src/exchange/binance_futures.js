@@ -816,7 +816,8 @@ module.exports = class BinanceFutures {
       X: 'status',
       i: 'orderId',
       T: 'updateTime',
-      z: 'executedQty'
+      z: 'executedQty',
+      ps: 'positionSide'
       // n: 'cumQuote' // not fully sure about commision
     };
 
