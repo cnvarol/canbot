@@ -486,8 +486,7 @@ module.exports = {
       }
     },
     capitalizeFirstLetter(string) {
-      string = string.replace('_', ' ');
-      const words = string.split(" ");
+      const words = string.split('_');
       for (let i = 0; i < words.length; i++) {
         words[i] = words[i][0].toUpperCase() + words[i].substr(1);
       }

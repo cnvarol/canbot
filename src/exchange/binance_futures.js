@@ -763,7 +763,7 @@ module.exports = class BinanceFutures {
           request.args.stopPrice = order.getPrice();
         }
 
-        if (order.getType() === Order.TYPE_TAKE_PROFIT) {
+        if (order.getType() === Order.TYPE_TAKE_PROFIT || order.getType() === Order.TYPE_TAKE_PROFIT_MARKET) {
           if (config.hedge) {
             order.side = order.side === Order.SIDE_SHORT ? 'long' : 'short';
             request.args.positionSide = order.side.toUpperCase();

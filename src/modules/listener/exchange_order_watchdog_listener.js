@@ -447,7 +447,7 @@ module.exports = class ExchangeOrderWatchdogListener {
 
       let ourOrder;
       if (orderChange.type === 'take_profit') {
-        ourOrder = Order.createTakeProfitOrder(symbol, position.side, orderChange.price, orderChange.amount);
+        ourOrder = Order.createTakeProfitMarketOrder(symbol, position.side, orderChange.price, orderChange.amount);
       } else if (orderChange.type === 'stop') {
         ourOrder = Order.createStopOrder(symbol, position.side, orderChange.price, orderChange.amount);
       } else {

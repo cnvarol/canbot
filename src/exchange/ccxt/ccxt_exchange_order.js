@@ -46,6 +46,7 @@ module.exports = class CcxtExchangeOrder {
         );
         break;
       case Order.TYPE_MARKET:
+      case Order.TYPE_TAKE_PROFIT_MARKET:
         promise = this.ccxtClient.createOrder(
           order.getSymbol(),
           order.getType(),

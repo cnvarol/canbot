@@ -13,7 +13,7 @@ module.exports = class GridTradingCalculator {
         order =>
           (order.type === ExchangeOrder.TYPE_LIMIT ||
             order.type === ExchangeOrder.TYPE_STOP ||
-            order.type === ExchangeOrder.TYPE_TAKE_PROFIT) &&
+            order.type === ExchangeOrder.TYPE_TAKE_PROFIT_MARKET) &&
           order.positionSide === position.raw.positionSide
       );
     } else {
@@ -21,7 +21,7 @@ module.exports = class GridTradingCalculator {
         order =>
           order.type === ExchangeOrder.TYPE_LIMIT ||
           order.type === ExchangeOrder.TYPE_STOP ||
-          order.type === ExchangeOrder.TYPE_TAKE_PROFIT
+          order.type === ExchangeOrder.TYPE_TAKE_PROFIT_MARKET
       );
     }
 
@@ -87,12 +87,12 @@ module.exports = class GridTradingCalculator {
     if (position.raw && position.raw.positionSide !== 'BOTH') {
       stopOrders = orders.filter(
         order =>
-          (order.type === ExchangeOrder.TYPE_STOP || order.type === ExchangeOrder.TYPE_TAKE_PROFIT) &&
+          (order.type === ExchangeOrder.TYPE_STOP || order.type === ExchangeOrder.TYPE_TAKE_PROFIT_MARKET) &&
           order.positionSide === position.raw.positionSide
       );
     } else {
       stopOrders = orders.filter(
-        order => order.type === ExchangeOrder.TYPE_STOP || order.type === ExchangeOrder.TYPE_TAKE_PROFIT
+        order => order.type === ExchangeOrder.TYPE_STOP || order.type === ExchangeOrder.TYPE_TAKE_PROFIT_MARKET
       );
     }
 

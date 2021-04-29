@@ -35,6 +35,10 @@ module.exports = class ExchangeOrder {
     return 'take_profit';
   }
 
+  static get TYPE_TAKE_PROFIT_MARKET() {
+    return 'take_profit_market';
+  }
+
   // think use market
   static get TYPE_STOP_LIMIT() {
     return 'stop_limit';
@@ -95,6 +99,7 @@ module.exports = class ExchangeOrder {
         ExchangeOrder.TYPE_UNKNOWN,
         ExchangeOrder.TYPE_STOP,
         ExchangeOrder.TYPE_TAKE_PROFIT,
+        ExchangeOrder.TYPE_TAKE_PROFIT_MARKET,
         ExchangeOrder.TYPE_TRAILING_STOP
       ].includes(type)
     ) {
