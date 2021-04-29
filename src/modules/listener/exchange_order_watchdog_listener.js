@@ -195,7 +195,8 @@ module.exports = class ExchangeOrderWatchdogListener {
     position,
     options = {
       hedge_position: false,
-      hedge_percent: -1,
+      hedge_min_percent: -1,
+      hedge_max_percent: -10,
       hedge_profit_mode: false,
       hedge_take_profit: 3,
       take_profit: 1,
@@ -237,7 +238,12 @@ module.exports = class ExchangeOrderWatchdogListener {
     const currentPositions = await exchange.getPositionForSymbol(symbol);
     const size = Math.abs(position.amount * position.entry).toFixed(2);
 
-    if (Array.isArray(currentPositions) && options.hedge_position && position.profit < options.hedge_percent) {
+    if (
+      Array.isArray(currentPositions) &&
+      options.hedge_position &&
+      position.profit < options.hedge_min_percent &&
+      position.profit > options.hedge_max_percent
+    ) {
       // if (currentPositions.length < 2 && Math.abs(position.amount * position.entry) < capital * 1.5) {
       if (currentPositions.length < 2 && size < options.risk_size) {
         let amount = Math.abs(position.amount);
