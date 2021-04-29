@@ -31,6 +31,10 @@ module.exports = class ExchangeOrder {
     return 'stop';
   }
 
+  static get TYPE_STOP_MARKET() {
+    return 'stop_market';
+  }
+
   static get TYPE_TAKE_PROFIT() {
     return 'take_profit';
   }
@@ -98,6 +102,7 @@ module.exports = class ExchangeOrder {
         ExchangeOrder.TYPE_MARKET,
         ExchangeOrder.TYPE_UNKNOWN,
         ExchangeOrder.TYPE_STOP,
+        ExchangeOrder.TYPE_STOP_MARKET,
         ExchangeOrder.TYPE_TAKE_PROFIT,
         ExchangeOrder.TYPE_TAKE_PROFIT_MARKET,
         ExchangeOrder.TYPE_TRAILING_STOP

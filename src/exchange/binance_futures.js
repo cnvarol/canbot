@@ -759,7 +759,7 @@ module.exports = class BinanceFutures {
           }
         }
 
-        if (order.getType() === Order.TYPE_STOP) {
+        if (order.getType() === Order.TYPE_STOP || order.getType() === Order.TYPE_STOP_MARKET) {
           request.args.stopPrice = order.getPrice();
         }
 
@@ -771,10 +771,6 @@ module.exports = class BinanceFutures {
             request.args.reduceOnly = true;
           }
           request.args.stopPrice = order.getPrice();
-        }
-
-        if (order.getType() === Order.TYPE_MARKET) {
-          // request.args.side = order.side === Order.SIDE_SHORT ? 'BUY' : 'SELL';
         }
 
         if (order.options && order.options.close && config.hedge) {

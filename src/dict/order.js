@@ -21,6 +21,10 @@ module.exports = class Order {
     return 'stop';
   }
 
+  static get TYPE_STOP_MARKET() {
+    return 'stop_market';
+  }
+
   static get TYPE_TAKE_PROFIT() {
     return 'take_profit';
   }
@@ -142,6 +146,22 @@ module.exports = class Order {
       price,
       amount,
       Order.TYPE_STOP,
+      options
+    );
+  }
+
+  static createStopMarketOrder(symbol, side, price, amount, options) {
+    if (![Order.SIDE_SHORT, Order.SIDE_LONG].includes(side)) {
+      throw new Error(`Invalid order side:${side} - ${JSON.stringify([symbol, side, price, amount, options])}`);
+    }
+
+    return new Order(
+      Math.round(new Date().getTime().toString() * Math.random()),
+      symbol,
+      side,
+      price,
+      amount,
+      Order.TYPE_STOP_MARKET,
       options
     );
   }
@@ -279,7 +299,19 @@ module.exports = class Order {
       price < 0 || amount < 0 ? Order.SIDE_SHORT : Order.SIDE_LONG,
       price,
       amount,
-      'stop',
+      Order.TYPE_STOP,
+      { close: true }
+    );
+  }
+
+  static createStopLossMarketOrder(symbol, price, amount) {
+    return new Order(
+      Math.round(new Date().getTime().toString() * Math.random()),
+      symbol,
+      price < 0 || amount < 0 ? Order.SIDE_SHORT : Order.SIDE_LONG,
+      price,
+      amount,
+      Order.TYPE_STOP_MARKET,
       { close: true }
     );
   }
