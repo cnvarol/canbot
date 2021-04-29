@@ -10,7 +10,10 @@ module.exports = class CcxtUtil {
     let retry = false;
 
     let status;
-    const orderStatus = order.status.toLowerCase().replace(/[\W_]+/g, '');
+    let orderStatus = order.status.toLowerCase().replace(/[\W_]+/g, '');
+    if (order.info && order.info.status) {
+      orderStatus = order.info.status.toLowerCase().replace(/[\W_]+/g, '');
+    }
 
     if (['new', 'open', 'pendingnew', 'doneforday', 'stopped'].includes(orderStatus)) {
       status = ExchangeOrder.STATUS_OPEN;
