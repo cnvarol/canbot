@@ -399,7 +399,7 @@ module.exports = class Http {
         await exchange.cancelOrder(id);
         res.json({ status: 'success' });
       } catch (e) {
-        res.json({ status: 'error', error: e });
+        res.json({ status: 'error', error: String(e.message) });
       }
     });
 
@@ -410,7 +410,7 @@ module.exports = class Http {
         await this.ordersHttp.cancelAllOrders(exchangeName);
         res.json({ status: 'success' });
       } catch (e) {
-        res.json({ status: 'error', error: e });
+        res.json({ status: 'error', error: String(e.message) });
       }
     });
 
@@ -490,14 +490,14 @@ module.exports = class Http {
 
       try {
         result = await this.ordersHttp.createOrder(pair, form);
-        message = JSON.stringify(result);
+        // message = JSON.stringify(result);
 
         if (!result || result.shouldCancelOrderProcess()) {
           success = false;
         }
       } catch (e) {
         success = false;
-        message = String(e);
+        message = String(e.message);
       }
 
       let positions = [];
@@ -518,7 +518,7 @@ module.exports = class Http {
         form: form,
         tradingview: this.buildTradingViewSymbol(`${tradingview[0]}:${tradingview[1]}`),
         alert: {
-          title: success ? 'Order Placed' : 'Place Error',
+          title: success ? 'Order created successfuly' : 'Occurred error while creating order',
           type: success ? 'success' : 'danger',
           message: message
         }
