@@ -494,11 +494,23 @@ module.exports = {
       return words.join(" ");
     },
     sideShortOrLong(order) {
-      if (order.positionSide) {
-        return order.positionSide.toLowerCase();
+      let prefix;
+      if (order.raw && order.raw.info) {
+        switch(order.raw.info.reduceOnly) {
+          case true:
+            prefix = 'close ';
+            break;
+          case false:
+            prefix = 'open ';
+            break;
+        }
       }
 
-      return order.side === 'buy' ? 'long' : 'short';
+      if (order.positionSide) {
+        return prefix+order.positionSide.toLowerCase();
+      }
+
+      return order.side === 'buy' ? `${prefix}long` : `${prefix}short`;
     },
     createExchangeName(name) {
       const split = name.split('_');
