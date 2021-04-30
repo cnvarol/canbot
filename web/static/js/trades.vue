@@ -493,7 +493,7 @@ module.exports = {
       return words.join(" ");
     },
     sideShortOrLong(order) {
-      let prefix;
+      let prefix = '';
       if (order.raw && order.raw.info) {
         switch(order.raw.info.reduceOnly) {
           case true:
