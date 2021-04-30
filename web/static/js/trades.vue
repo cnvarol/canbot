@@ -142,8 +142,8 @@
           <vue-bootstrap4-table :rows="orders" :classes="dataTableClasses" :columns="ordersColumns" :config="dataTableConfig" :total-rows="orders.length" :actions="ordersActions" @on-cancelall="onCancelAll">
             <template slot="exchange" slot-scope="props"><img :src="`/img/exchanges/${props.cell_value}.png`" :alt="props.cell_value" :title="props.cell_value" width="16px" height="16px"></template>
             <template slot="symbol" slot-scope="props">
-              <span v-if="sideShortOrLong(props.row.order).include('short')" class="badge badge-danger">short</span>
-              <span v-if="sideShortOrLong(props.row.order).include('long')" class="badge badge-success">long</span>
+              <span v-if="sideShortOrLong(props.row.order).includes('short')" class="badge badge-danger">short</span>
+              <span v-if="sideShortOrLong(props.row.order).includes('long')" class="badge badge-success">long</span>
               <a target="blank" :href="'/tradingview/' + props.row.exchange + ':' + props.cell_value">{{ props.cell_value }}</a> 
             </template>
             <template slot="status" slot-scope="props">{{ capitalizeFirstLetter(props.cell_value) }}</template>
