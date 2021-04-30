@@ -142,7 +142,7 @@
           <vue-bootstrap4-table :rows="orders" :classes="dataTableClasses" :columns="ordersColumns" :config="dataTableConfig" :total-rows="orders.length" :actions="ordersActions" @on-cancelall="onCancelAll">
             <template slot="exchange" slot-scope="props"><img :src="`/img/exchanges/${props.cell_value}.png`" :alt="props.cell_value" :title="props.cell_value" width="16px" height="16px"></template>
             <template slot="symbol" slot-scope="props">
-              <span class="badge" v-bind:class="{'badge-danger': props.row.sideStatus.includes('short'), 'badge-success': props.row.sideStatus.includes('long')}">{{capitalizeFirstLetter(props.row.sideStatus)}}</span>
+              <span class="badge" v-bind:class="{'badge-danger': props.row.sideStatus.includes('Short'), 'badge-success': props.row.sideStatus.includes('Long')}">{{props.row.sideStatus}}</span>
               <a target="blank" :href="'/tradingview/' + props.row.exchange + ':' + props.cell_value">{{ props.cell_value }}</a> 
             </template>
             <template slot="status" slot-scope="props">{{ capitalizeFirstLetter(props.cell_value) }}</template>
@@ -497,19 +497,19 @@ module.exports = {
       if (order.raw && order.raw.info) {
         switch(order.raw.info.reduceOnly) {
           case true:
-            prefix = 'close ';
+            prefix = 'Close ';
             break;
           case false:
-            prefix = 'open ';
+            prefix = 'Open ';
             break;
         }
       }
 
       if (order.positionSide) {
-        return prefix+order.positionSide.toLowerCase();
+        return prefix+this.capitalizeFirstLetter(order.positionSide.toLowerCase());
       }
 
-      return order.side === 'buy' ? `${prefix}long` : `${prefix}short`;
+      return order.side === 'buy' ? `${prefix}Long` : `${prefix}Short`;
     },
     createExchangeName(name) {
       const split = name.split('_');
