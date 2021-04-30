@@ -494,8 +494,8 @@ module.exports = {
     },
     sideShortOrLong(order) {
       let prefix = '';
-      if (order.raw && order.raw.info) {
-        switch(order.raw.info.reduceOnly) {
+      if (order.reduceOnly !== undefined) {
+        switch(order.reduceOnly) {
           case true:
             prefix = 'Close ';
             break;

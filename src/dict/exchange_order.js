@@ -124,10 +124,12 @@ module.exports = class ExchangeOrder {
     this.updatedAt = updatedAt;
     this.raw = raw;
     this.positionSide = undefined;
+    this.reduceOnly = undefined;
     this.options = options;
 
     if (this.raw && this.raw.info) {
       this.positionSide = this.raw.info.positionSide;
+      this.reduceOnly = this.raw.info.reduceOnly;
     }
   }
 
