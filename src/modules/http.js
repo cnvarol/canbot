@@ -27,6 +27,7 @@ module.exports = class Http {
     ordersHttp,
     tickers,
     eventEmitter,
+    influxDB,
     projectDir
   ) {
     this.systemUtil = systemUtil;
@@ -42,6 +43,7 @@ module.exports = class Http {
     this.projectDir = projectDir;
     this.tickers = tickers;
     this.eventEmitter = eventEmitter;
+    this.influxDB = influxDB;
   }
 
   start() {
@@ -213,8 +215,12 @@ module.exports = class Http {
     const { ta } = this;
 
     app.get('/', async (req, res) => {
+      res.render('../templates/dashboard.html.twig');
+    });
+
+    app.get('/indicators', async (req, res) => {
       res.render(
-        '../templates/base.html.twig',
+        '../templates/indicators.html.twig',
         await ta.getTaForPeriods(this.systemUtil.getConfig('dashboard.periods', ['15m', '1h']))
       );
     });
@@ -418,6 +424,18 @@ module.exports = class Http {
       res.render('../templates/orders/index.html.twig', {
         pairs: this.ordersHttp.getPairs()
       });
+    });
+
+    app.get('/api/v1/chartData/:measurement/:field', async (req, res) => {
+      const { measurement, field } = req.params;
+      const { start, stop, every, fn, createEmpty } = req.query;
+
+      try {
+        const data = await this.influxDB.queryAggr(measurement, field, start, stop, every, fn, createEmpty);
+        res.json(data);
+      } catch (e) {
+        res.status(400).json({ error: e });
+      }
     });
 
     app.get('/api/v1/trade/:pair', async (req, res) => {

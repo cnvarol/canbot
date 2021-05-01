@@ -7,6 +7,7 @@ const WebSocket = require('ws');
 const ccxt = require('ccxt');
 const moment = require('moment');
 const _ = require('lodash');
+const Decimal = require('decimal');
 const Ticker = require('../dict/ticker');
 const Order = require('../dict/order');
 const TickerEvent = require('../event/ticker_event');
@@ -18,12 +19,14 @@ const ExchangePositionEvent = require('../event/exchange_position_event');
 const ExchangeOrder = require('../dict/exchange_order');
 
 module.exports = class BinanceFutures {
-  constructor(eventEmitter, requestClient, candlestickResample, logger, queue, candleImporter, throttler) {
+  constructor(eventEmitter, requestClient, candlestickResample, logger, queue, candleImporter, throttler, influxDB) {
     this.eventEmitter = eventEmitter;
     this.logger = logger;
     this.queue = queue;
     this.candleImporter = candleImporter;
     this.throttler = throttler;
+    this.influxDB = influxDB;
+
     this.exchange = null;
 
     this.ccxtExchangeOrder = CcxtExchangeOrder.createEmpty(logger);
@@ -34,6 +37,8 @@ module.exports = class BinanceFutures {
     this.symbols = [];
     this.intervals = [];
     this.balances = {};
+    this.wsbalances = {};
+
     this.ccxtClient = undefined;
   }
 
@@ -377,11 +382,29 @@ module.exports = class BinanceFutures {
   /**
    * Websocket position updates
    */
-  accountUpdate(message) {
+  async accountUpdate(message) {
     if (message.a && message.a.B) {
-      message.a.B.forEach(asset => {
+      message.a.B.forEach(async asset => {
         if (asset.a === 'USDT') {
-          this.balances.info.totalWalletBalance = asset.wb;
+          if (!this.wsbalances.wb) {
+            return;
+          }
+
+          const currentBalance = Decimal(this.wsbalances.wb);
+          const walletBalance = Decimal(asset.wb);
+          const balanceChange = Decimal(asset.bc);
+
+          this.wsbalances = {
+            wb: asset.wb
+          };
+
+          const PNL = walletBalance.sub(currentBalance).sub(balanceChange);
+
+          await this.influxDB.writeFloat('account', 'pnl', PNL.toNumber());
+
+          if (this.balances.info) {
+            this.balances.info.totalWalletBalance = asset.wb;
+          }
         }
       });
     }
@@ -455,6 +478,19 @@ module.exports = class BinanceFutures {
 
     delete response.info.positions;
     this.balances = response;
+
+    if (!this.wsbalances.wb) {
+      this.wsbalances.wb = this.balances.info.totalWalletBalance;
+    }
+
+    const walletBalance = Decimal(this.balances.info.totalWalletBalance);
+    const marginBalance = Decimal(this.balances.info.totalMarginBalance);
+    const maintMargin = Decimal(this.balances.info.totalMaintMargin);
+
+    const riskRatio = maintMargin.div(marginBalance).mul(100);
+
+    await this.influxDB.writeFloat('account', 'balance', walletBalance.toNumber());
+    await this.influxDB.writeFloat('account', 'riskratio', riskRatio.toNumber());
 
     this.logger.debug(`Binance Futures: balances updates`);
   }
@@ -685,10 +721,14 @@ module.exports = class BinanceFutures {
         }
 
         if (message.e && message.e.toUpperCase() === 'ACCOUNT_UPDATE') {
-          me.accountUpdate(message);
+          await me.accountUpdate(message);
 
           me.throttler.addTask('binance_futures_sync_positions', me.syncPositionViaRestApi.bind(me), 3000);
           me.throttler.addTask('binance_futures_sync_balances', me.syncBalancesViaRestApi.bind(me), 5000);
+        }
+
+        if (message.e && message.e.toUpperCase() === 'MARGIN_CALL') {
+          console.log(message.p);
         }
       }
     };

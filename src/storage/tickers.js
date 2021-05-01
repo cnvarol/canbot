@@ -15,19 +15,20 @@ module.exports = class Tickers {
 
   getIfUpToDate(exchange, symbol, lastUpdatedSinceMs) {
     if (!lastUpdatedSinceMs) {
-      throw 'Invalid ms argument given';
+      throw new Error('Invalid ms argument given');
     }
 
-    if (!`${exchange}.${symbol}` in this.tickers) {
+    const tickerName = `${exchange}.${symbol}`;
+    if (!(tickerName in this.tickers)) {
       return undefined;
     }
 
-    return this.tickers[`${exchange}.${symbol}`] &&
-      this.tickers[`${exchange}.${symbol}`].createdAt >
+    return this.tickers[tickerName] &&
+      this.tickers[tickerName].createdAt >
         moment()
           .subtract(lastUpdatedSinceMs, 'ms')
           .toDate()
-      ? this.tickers[`${exchange}.${symbol}`]
+      ? this.tickers[tickerName]
       : undefined;
   }
 
