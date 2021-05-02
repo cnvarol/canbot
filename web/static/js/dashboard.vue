@@ -236,24 +236,24 @@ module.exports = {
       this.walletBalance = data[0]._value;
     },
     async fetchTodaysPNL() {
-      const res = await fetch(`/api/v1/chartData/account/pnl?start=-2d&every=1d&fn=sum&createEmpty=false`);
+      const res = await fetch(`/api/v1/chartData/account/pnl?start=-2d&every=1d&fn=sum&createEmpty=true`);
       const data = await res.json();
 
-      if (!data.length) {
+      if (!data.length !== 2) {
           return
       }
 
-      this.todaysPNL = data[0]._value;
+      this.todaysPNL = data[1]._value;
     },
     async fetchTodaysChanges() {
-      const res = await fetch(`/api/v1/chartData/account/changes?start=-2d&every=1d&fn=sum&createEmpty=false`);
+      const res = await fetch(`/api/v1/chartData/account/changes?start=-2d&every=1d&fn=sum&createEmpty=true`);
       const data = await res.json();
 
-      if (!data.length) {
+      if (!data.length !== 2) {
           return
       }
 
-      this.todaysChanges = data[0]._value;
+      this.todaysChanges = data[1]._value;
     },
     async fetchDailyData() {
       const res = await fetch(`/api/v1/chartData/account/pnl,changes?start=-30d&every=1d&fn=sum&createEmpty=false`);
