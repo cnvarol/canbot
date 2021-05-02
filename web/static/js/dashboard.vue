@@ -236,7 +236,7 @@ module.exports = {
       this.walletBalance = data[0]._value;
     },
     async fetchTodaysPNL() {
-      const res = await fetch(`/api/v1/chartData/account/pnl?start=-1d&every=2d&fn=sum&createEmpty=false`);
+      const res = await fetch(`/api/v1/chartData/account/pnl?start=-2d&every=1d&fn=sum&createEmpty=false`);
       const data = await res.json();
 
       if (!data.length) {
@@ -246,7 +246,7 @@ module.exports = {
       this.todaysPNL = data[0]._value;
     },
     async fetchTodaysChanges() {
-      const res = await fetch(`/api/v1/chartData/account/changes?start=-1d&every=2d&fn=sum&createEmpty=false`);
+      const res = await fetch(`/api/v1/chartData/account/changes?start=-2d&every=1d&fn=sum&createEmpty=false`);
       const data = await res.json();
 
       if (!data.length) {
