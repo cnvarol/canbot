@@ -274,7 +274,7 @@ module.exports = {
 
       this.dailyData = {};
 
-      Object.keys(rows).sort().reverse().forEach((key, obj) => {
+      Object.keys(rows).sort().reverse().forEach(key=> {
           this.dailyData[key] = rows[key];
       });
     },
