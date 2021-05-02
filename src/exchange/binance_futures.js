@@ -401,6 +401,7 @@ module.exports = class BinanceFutures {
           const PNL = walletBalance.sub(currentBalance).sub(balanceChange);
 
           await this.influxDB.writeFloat('account', 'pnl', PNL.toNumber());
+          await this.influxDB.writeFloat('account', 'changes', balanceChange.toNumber());
 
           if (this.balances.info) {
             this.balances.info.totalWalletBalance = asset.wb;
