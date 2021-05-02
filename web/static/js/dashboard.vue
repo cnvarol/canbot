@@ -239,7 +239,7 @@ module.exports = {
       const res = await fetch(`/api/v1/chartData/account/pnl?start=-2d&every=1d&fn=sum&createEmpty=true`);
       const data = await res.json();
 
-      if (!data.length !== 2) {
+      if (!data.length) {
           return
       }
 
@@ -249,7 +249,7 @@ module.exports = {
       const res = await fetch(`/api/v1/chartData/account/changes?start=-2d&every=1d&fn=sum&createEmpty=true`);
       const data = await res.json();
 
-      if (!data.length !== 2) {
+      if (!data.length) {
           return
       }
 
