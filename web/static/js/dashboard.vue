@@ -216,24 +216,24 @@ module.exports = {
       this.fetchTodaysChanges();       
     },
     async fetchLastRiskRatio() {
-      const res = await fetch(`/api/v1/chartData/account/riskratio?start=-2m&every=4m&fn=last&createEmpty=false`);
+      const res = await fetch(`/api/v1/chartData/account/riskratio?start=-2m&fn=last&createEmpty=false`);
       const data = await res.json();
 
       if (!data.length) {
           return
       }
 
-      this.riskRatio = data[0]._value;
+      this.riskRatio = data[data.length-1]._value;
     },
     async fetchLastWalletBalance() {
-      const res = await fetch(`/api/v1/chartData/account/balance?start=-2m&every=4m&fn=last&createEmpty=false`);
+      const res = await fetch(`/api/v1/chartData/account/balance?start=-2m&fn=last&createEmpty=false`);
       const data = await res.json();
 
       if (!data.length) {
           return
       }
 
-      this.walletBalance = data[0]._value;
+      this.walletBalance = data[data.length-1]._value;
     },
     async fetchTodaysPNL() {
       const res = await fetch(`/api/v1/chartData/account/pnl?start=-1d&every=1d&fn=sum&createEmpty=true`);
