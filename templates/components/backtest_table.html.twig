@@ -21,17 +21,17 @@
             <td class="no-wrap">{{ row.price|default }}</td>
             <td class="no-wrap">
                 {% if row.profit is defined %}
-                    <span class="{{ row.profit > 0 ? 'text-success' : 'text-danger' }} {{ 'close' in row.result.signal|default ? ' font-weight-bold' : '' }}">{{ row.profit|round(2) }} %</span>
+                    <span class="{{ row.profit > 0 ? 'text-teal' : 'text-danger' }} {{ 'close' in row.result.signal|default ? ' font-weight-bold' : '' }}">{{ row.profit|round(2) }} %</span>
                 {% endif %}
 
                 {% if row.lastPriceClosed is defined %}
-                    <span style="opacity: 0.4;" class="{{ row.lastPriceClosed > 0 ? 'text-success' : 'text-danger' }}">{{ row.lastPriceClosed|round(2) }} %</span>
+                    <span style="opacity: 0.4;" class="{{ row.lastPriceClosed > 0 ? 'text-teal' : 'text-danger' }}">{{ row.lastPriceClosed|round(2) }} %</span>
                 {% endif %}
             </td>
             <td>
                 {% if row.result is defined %}
                     {% if row.result.signal == 'long' %}
-                        <i class="fas fa-chevron-circle-up text-success"></i>
+                        <i class="fas fa-chevron-circle-up text-teal"></i>
                     {% elseif row.result.signal == 'short' %}
                         <i class="fas fa-chevron-circle-down text-danger"></i>
                     {% elseif row.result.signal == 'close' %}
@@ -49,7 +49,7 @@
                     {% set color = '' %}
 
                     {% if column.state == 'over' %}
-                        {% set color = 'text-success' %}
+                        {% set color = 'text-teal' %}
                     {% elseif column.state == 'below' %}
                         {% set color = 'text-danger' %}
                     {% endif %}
@@ -61,7 +61,7 @@
                     {% if column.state == 'over' %}
                         {% set color = 'text-danger' %}
                     {% elseif column.state == 'below' %}
-                        {% set color = 'text-success' %}
+                        {% set color = 'text-teal' %}
                     {% endif %}
 
                     <td class="{{ color|default }}">{{ column.value }}</td>

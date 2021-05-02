@@ -75,6 +75,15 @@ module.exports = class Http {
       return JSON.parse(json);
     });
 
+    twig.extendFilter('capitalizeFirstLetter', value => {
+      const words = value.split('_');
+      for (let i = 0; i < words.length; i++) {
+        words[i] = words[i][0].toUpperCase() + words[i].substr(1);
+      }
+
+      return words.join(' ');
+    });
+
     const assetVersion = crypto
       .createHash('md5')
       .update(String(Math.floor(Date.now() / 1000)))

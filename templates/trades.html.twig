@@ -3,7 +3,7 @@
 {% block title %}Trades | Crypto Bot{% endblock %}
 
 {% block javascript %}
-    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
     <script src="https://unpkg.com/http-vue-loader"></script>
     <script src="/js/trades.js?v={{ asset_version() }}" type="module"></script>
 
@@ -24,23 +24,17 @@
         <!-- Content Header (Page header) -->
         <section class="content-header">
             <div class="container-fluid">
-                <div class="row mb-2">
-                    <div class="col-sm-6">
+                <div class="row">
+                    <div class="col-md-12">
                         <h1>Trades</h1>
                     </div>
-                    <!-- div class="col-sm-6">
-                        <ol class="breadcrumb float-sm-right">
-                            <li class="breadcrumb-item"><a href="{{ '/' }}">Dashboard</a></li>
-                            <li class="breadcrumb-item active">Trades</li>
-                        </ol>
-                    </div -->
                 </div>
             </div><!-- /.container-fluid -->
         </section>
         <!-- /.Content Header (Page header) -->
 
         <!-- Main content -->
-        <div class="content" id="vue-trades">
+        <div class="content" id="app">
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-md-12">

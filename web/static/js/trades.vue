@@ -2,6 +2,14 @@
   .table th, .table td {
     border-top: 0 !important;
   }
+  .bar {
+    width: 4px;
+    flex-shrink: 0;
+    margin-top: -6px;
+    margin-bottom: -6px;
+    margin-right: 1px;
+    font-size: 18px;
+  }
   @keyframes fadeIn {
     from {
       opacity: 0;
@@ -27,38 +35,47 @@
   .fade-move {
     transition: all 0.1s 0s ease;
   }
+  .slide-fade-enter-active {
+    transition: all .3s ease;
+  }
+  .slide-fade-leave-active {
+    transition: all .6s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+  }
+  .slide-fade-enter, .slide-fade-leave-to {
+    opacity: 0.3;
+  }
 </style>
 <template>
   <div class="vue-root">
     <template v-if="!!balances.info">
       <div class="row">
         <div class="col-md-4">
-          <div class="card card-outline card-success">
+          <div class="card card-outline card-teal">
             <div class="card-header border-bottom-0"><h3 class="card-title">Margin Risk Ratio</h3></div>
             <div class="card-body">
               <div class="row">
                 <div class="col-md-12">
-                  <h1 class="text-success" style="font-size:50px">%{{ Math.round((balances.info.totalMaintMargin/balances.info.totalMarginBalance) * 100 * 100)/100 }}</h1>
+                  <h1 class="text-teal" style="font-size:50px">%{{ Math.round((balances.info.totalMaintMargin/balances.info.totalMarginBalance) * 100 * 100)/100 }}</h1>
                 </div>
               </div>
             </div>
           </div>
         </div>
         <div class="col-md-4">
-          <div class="card card-outline card-success">
+          <div class="card card-outline card-teal">
             <div class="card-header border-bottom-0"><h3 class="card-title">Margin Status</h3></div>
             <div class="card-body">
               <div class="row justify-content-md-center">
                 <div class="col-md-4 border-right text-center">
-                  <h5 class="text-success">Maint.</h5>
+                  <h5 class="text-teal">Maint.</h5>
                   <h5>{{ balances.info.totalMaintMargin|round }} <small>USDT</small></h5>
                 </div>
                 <div class="col-md-4 border-right text-center">
-                  <h5 class="text-success">Balance</h5>
+                  <h5 class="text-teal">Balance</h5>
                   <h5>{{ balances.info.totalMarginBalance|round }} <small>USDT</small></h5>
                 </div>
                 <div class="col-md-4 text-center">
-                  <h5 class="text-success">Available</h5>
+                  <h5 class="text-teal">Available</h5>
                   <h5>{{ balances.info.availableBalance|round }} <small>USDT</small></h5>
                 </div>
               </div>
@@ -66,20 +83,20 @@
           </div>
         </div>
         <div class="col-md-4">
-          <div class="card card-outline card-success">
+          <div class="card card-outline card-teal">
             <div class="card-header border-bottom-0"><h3 class="card-title">Assets</h3></div>
             <div class="card-body" id="memory">
               <div class="row justify-content-md-center">
                 <div class="col-md-4 border-right text-center">
-                  <h5 class="text-success">Wallet</h5>
+                  <h5 class="text-teal">Wallet</h5>
                   <h5>{{ balances.info.totalWalletBalance|round }} <small>USDT</small></h5>
                 </div>
                 <div class="col-md-4 border-right text-center">
-                  <h5 class="text-success">Curr PNL</h5>
+                  <h5 class="text-teal">Curr PNL</h5>
                   <h5>{{ balances.info.totalUnrealizedProfit|round }} <small>USDT</small></h5>
                 </div>
                 <div class="col-md-4 text-center">
-                  <h5 class="text-success">BNB</h5>
+                  <h5 class="text-teal">BNB</h5>
                   <h5>{{ balances.BNB.total|filter_price }} <small>BNB</small><br></h5>
                 </div>
               </div>
@@ -89,17 +106,19 @@
       </div>
     </template>
     <template>
-      <div class="card card-outline card-success">
+      <div class="card card-outline card-teal">
       <div class="card-header border-bottom-0">
-        <h3 class="card-title">Positions ({{ positions.length }}) - <span class="text-success">Open long: {{ totalLongPosition.toFixed(0) }} <small>USDT</small></span> - <span class="text-danger">Open short: {{ totalShortPosition.toFixed(0) }} <small>USDT</small></span></h3> <span class="text-muted float-right"><transition name="slide-fade" mode="out-in"><div :key="positionsUpdatedAt">{{ positionsUpdatedAt }}</div></transition></span>
+        <h3 class="card-title">Positions ({{ positions.length }}) - <span class="text-teal">Open long: {{ totalLongPosition.toFixed(0) }} <small>USDT</small></span> - <span class="text-danger">Open short: {{ totalShortPosition.toFixed(0) }} <small>USDT</small></span></h3> <span class="text-muted float-right"><transition name="slide-fade" mode="out-in"><div :key="positionsUpdatedAt">{{ positionsUpdatedAt }}</div></transition></span>
       </div>
       <div class="card-body">
       <div class="table-responsive">
       <vue-bootstrap4-table :rows="positions" :classes="dataTableClasses" :columns="positionsColumns" :config="dataTableConfig" :total-rows="positions.length">
         <template slot="exchange" slot-scope="props"><img :src="`/img/exchanges/${props.cell_value}.png`" :alt="props.cell_value" :title="props.cell_value" width="16px" height="16px"></template>
         <template slot="symbol" slot-scope="props">
-          <span v-if="props.row.position.side === 'short'" class="badge badge-danger">short</span>
-          <span v-if="props.row.position.side === 'long'" class="badge badge-success">long</span>
+          <span v-if="props.row.position.side === 'short'" class="bar bg-danger">&nbsp;</span>
+          <span v-if="props.row.position.side === 'long'" class="bar bg-teal">&nbsp;</span>
+          <!-- <span v-if="props.row.position.side === 'short'" class="badge badge-danger">short</span>
+          <span v-if="props.row.position.side === 'long'" class="badge badge-success">long</span> -->
           <a target="blank" :href="'/tradingview/' + props.row.exchange + ':' + props.cell_value">{{ props.cell_value }}</a> 
           <small class="text-warning">[{{ props.row.position.raw.leverage }}x]</small>
         </template>
@@ -111,7 +130,7 @@
           (<small>{{ props.cell_value }}</small>)
         </template>
         <template slot="pnl" slot-scope="props">
-          <span v-if="typeof props.row.position.profit !== 'undefined'" v-bind:class="{ 'text-success': props.row.position.profit > 0, 'text-danger': props.row.position.profit < 0 }">
+          <span v-if="typeof props.row.position.profit !== 'undefined'" v-bind:class="{ 'text-teal': props.row.position.profit > 0, 'text-danger': props.row.position.profit < 0 }">
             {{ props.row.position.raw.unRealizedProfit|filter_price }}({{ props.row.position.profit|round(2) }}%)
           </span>
         </template>
@@ -133,7 +152,7 @@
       </div>
     </template>
 
-    <div class="card card-outline card-success">
+    <div class="card card-outline card-teal">
       <div class="card-header border-bottom-0">
         <h3 class="card-title">Orders ({{ orders.length }})</h3> <span class="text-muted float-right"><transition name="slide-fade" mode="out-in"><div :key="positionsUpdatedAt">{{ ordersUpdatedAt }}</div></transition></span>
       </div>
@@ -141,18 +160,23 @@
         <div class="table-responsive">
           <vue-bootstrap4-table :rows="orders" :classes="dataTableClasses" :columns="ordersColumns" :config="dataTableConfig" :total-rows="orders.length" :actions="ordersActions" @on-cancelall="onCancelAll">
             <template slot="exchange" slot-scope="props"><img :src="`/img/exchanges/${props.cell_value}.png`" :alt="props.cell_value" :title="props.cell_value" width="16px" height="16px"></template>
+            <template slot="updatedAt" slot-scope="props">{{ new Date(props.cell_value).toLocaleString('tr-TR') }}</template>
             <template slot="symbol" slot-scope="props">
-              <span class="badge" v-bind:class="{'badge-danger': props.row.sideStatus.includes('Short'), 'badge-success': props.row.sideStatus.includes('Long')}">{{props.row.sideStatus}}</span>
               <a target="blank" :href="'/tradingview/' + props.row.exchange + ':' + props.cell_value">{{ props.cell_value }}</a> 
             </template>
             <template slot="status" slot-scope="props">{{ capitalizeFirstLetter(props.cell_value) }}</template>
             <template slot="type" slot-scope="props">{{ capitalizeFirstLetter(props.cell_value) }}</template>
+            <template slot="side" slot-scope="props">
+              <span class="badge" v-bind:class="{'badge-danger': props.row.sideStatus.includes('Short'), 'badge-success': props.row.sideStatus.includes('Long')}">{{props.row.sideStatus}}</span>
+            </template>
             <template slot="currency" slot-scope="props">{{ props.cell_value|filter_price }} <small>USDT</small></template>
             <template slot="price" slot-scope="props">
               {{ props.cell_value|filter_price }} <small>USDT</small> 
-              <span v-if="props.row.percent_to_price" title="Percent to current price" v-bind:class="{ 'text-success': props.row.percent_to_price > 0, 'text-danger': props.row.percent_to_price < 0 }">({{ props.row.percent_to_price|round(2) }}%)</span>
+              <span v-if="props.row.percent_to_price" title="Percent to current price" v-bind:class="{ 'text-teal': props.row.percent_to_price > 0, 'text-danger': props.row.percent_to_price < 0 }">({{ props.row.percent_to_price|round(2) }}%)</span>
             </template>
-            <template slot="updatedAt" slot-scope="props">{{ new Date(props.cell_value).toLocaleString('tr-TR') }}</template>
+            <template slot="retry" slot-scope="props">
+              {{ props.cell_value === true ? 'Yes' : 'No' }}
+            </template>
             <template slot="actions" slot-scope="props">
               <button name="cancel" class="btn btn-outline-danger btn-xs" v-on:click="cancelOrder(props.row.exchange, props.row.order.symbol, props.row.order.type, props.row.order.side, props.row.order.id)"><i class="fa fa-times"></i> Cancel</button>
             </template>
@@ -171,7 +195,6 @@
 var title = document.title;
 
 module.exports = {
-  mode: 'production',
   data: function() {
     return {
       positions: [],
@@ -225,6 +248,16 @@ module.exports = {
               column_text_alignment:  "text-left",
           },
           {
+              label: "Date",
+              name: "order.updatedAt",
+              slot_name: "updatedAt",
+              sort: true,
+              initial_sort: true,
+              initial_sort_order: "desc",
+              row_text_alignment:  "text-left",
+              column_text_alignment:  "text-left"
+          },
+          {
               label: "Symbol",
               name: "order.symbol",
               slot_name: "symbol",
@@ -233,27 +266,17 @@ module.exports = {
               column_text_alignment:  "text-left"
           },
           {
-              label: "Size",
-              name: "currency",
-              slot_name: "currency",
-              row_text_alignment:  "text-left",
-              column_text_alignment:  "text-left",
-              sort: true,
-              initial_sort: true,
-              initial_sort_order: "desc"
-          },
-          {
-              label: "Status",
-              name: "order.status",
-              slot_name: "status",
+              label: "Type",
+              name: "order.type",
+              slot_name: "type",
               sort: true,
               row_text_alignment:  "text-left",
               column_text_alignment:  "text-left"
           },
           {
-              label: "Type",
-              name: "order.type",
-              slot_name: "type",
+              label: "Side",
+              name: "sideStatus",
+              slot_name: "side",
               sort: true,
               row_text_alignment:  "text-left",
               column_text_alignment:  "text-left"
@@ -275,18 +298,26 @@ module.exports = {
               column_text_alignment:  "text-left"
           },
           {
-              label: "Retry",
-              name: "order.retry",
-              slot_name: "retry",
-              sort: false,
+              label: "Size",
+              name: "currency",
+              slot_name: "currency",
+              row_text_alignment:  "text-left",
+              column_text_alignment:  "text-left",
+              sort: true,
+          },
+          {
+              label: "Status",
+              name: "order.status",
+              slot_name: "status",
+              sort: true,
               row_text_alignment:  "text-left",
               column_text_alignment:  "text-left"
           },
           {
-              label: "Updated",
-              name: "order.updatedAt",
-              slot_name: "updatedAt",
-              sort: true,
+              label: "Retry",
+              name: "order.retry",
+              slot_name: "retry",
+              sort: false,
               row_text_alignment:  "text-left",
               column_text_alignment:  "text-left"
           },
@@ -466,10 +497,10 @@ module.exports = {
             return;
           }
 
-          if (data.event.order.type === 'LIMIT' || data.event.order.type === 'MARKET') {
-            this.toast.info(`${data.event.order.symbol} ${data.event.order.side.toLowerCase()} ${data.event.order.type.toLowerCase()} order ${status}`, this.messageOptions);
-          } else if (data.event.order.type === 'STOP') {
-            this.toast.error(`${data.event.order.symbol} ${data.event.order.side.toLowerCase()} ${data.event.order.type.toLowerCase()} order ${status}`, this.messageOptions);
+          if (['MARKET', 'LIMIT'].includes(data.event.order.type.toUpperCase())) {
+            this.toast.info(`${data.event.order.symbol} ${this.sideShortOrLong(data.event.order, false).toLowerCase()} ${this.capitalizeFirstLetter(data.event.order.type).toLowerCase()} order ${status}`, this.messageOptions);
+          } else if (['STOP', 'STOP_MARKET', 'TAKE_PROFIT', 'TAKE_PROFIT_MARKET'].includes(data.event.order.type.toUpperCase())) {
+            this.toast.error(`${data.event.order.symbol} ${this.sideShortOrLong(data.event.order, false).toLowerCase()} ${this.capitalizeFirstLetter(data.event.order.type).toLowerCase()} order ${status}`, this.messageOptions);
           }
           break;
         case 'ExchangePositionEvent':
@@ -492,9 +523,9 @@ module.exports = {
 
       return words.join(" ");
     },
-    sideShortOrLong(order) {
+    sideShortOrLong(order, addPrefix = true) {
       let prefix = '';
-      if (order.reduceOnly !== undefined) {
+      if (addPrefix && order.reduceOnly !== undefined) {
         switch(order.reduceOnly) {
           case true:
             prefix = 'Close ';
@@ -583,11 +614,11 @@ module.exports = {
       const data = await res.json();
 
       if ('status' in data && data.status === 'success') {
-        this.toast.success(`Successfuly cancelled ${symbol} ${side} ${type} order`, this.toastOptions);
+        this.toast.success(`Successfuly cancelled ${symbol} ${side} ${this.capitalizeFirstLetter(type).toLowerCase()} order`, this.toastOptions);
       } else if ('status' in data && data.status === 'error') {
-        this.toast.error(`Error occurred while cancelling ${symbol} ${side} ${type} order Error: ${data.error}`, this.toastOptions);
+        this.toast.error(`Error occurred while cancelling ${symbol} ${side} ${this.capitalizeFirstLetter(type).toLowerCase()} order Error: ${data.error}`, this.toastOptions);
       } else {
-        this.toast.error(`Error occurred while cancelling ${symbol} ${side} ${type} order`, this.toastOptions);
+        this.toast.error(`Error occurred while cancelling ${symbol} ${side} ${this.capitalizeFirstLetter(type).toLowerCase()} order`, this.toastOptions);
       }
     },
     async closePosition(exchange, symbol, action, side) {
@@ -615,17 +646,4 @@ module.exports = {
     clearInterval(this.timer);
   },
 }
-
 </script>
-
-<style>
-.slide-fade-enter-active {
-  transition: all .3s ease;
-}
-.slide-fade-leave-active {
-  transition: all .6s cubic-bezier(1.0, 0.5, 0.8, 1.0);
-}
-.slide-fade-enter, .slide-fade-leave-to {
-  opacity: 0.3;
-}
-</style>

@@ -1,20 +1,21 @@
 {% extends './layout.html.twig' %}
 
-{% block head %}
-<style>
-h3 {
-    font-weight: 500 !important;
-}
-</style>
+{% block javascript %}
+<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://unpkg.com/http-vue-loader"></script>
+<script src="https://unpkg.com/highcharts-vue"></script>
+<script src="/js/dashboard.js?v={{ asset_version() }}" type="module"></script>
 {% endblock %}
+
 {% block content %}
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">
         <!-- Content Header (Page header) -->
         <section class="content-header">
             <div class="container-fluid">
-                <div class="row mb-2">
-                    <div class="col-sm-6">
+                <div class="row">
+                    <div class="col-md-12">
                         <h1>Dashboard</h1>
                     </div>
                 </div>
@@ -23,86 +24,17 @@ h3 {
         <!-- /.Content Header (Page header) -->
 
         <!-- Main content -->
-        <div class="content"><!--
+        <div class="content" id="app">
             <div class="container-fluid">
                 <div class="row">
-                    <div class="col-md-3">
-                        <div class="small-box bg-green">
-                        <div class="inner">
-                            <h3>1,023,334 <small style="font-size: 16px">USDT</small></h3>
-
-                            <p>Wallet Balance</p>
-                        </div>
-                        <div class="icon">
-                            <i class="fas fa-wallet"></i>
-                        </div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-3">
-                        <div class="small-box bg-info">
-                        <div class="inner">
-                            <h3>2424 <small style="font-size: 16px">USDT</small></h3>
-
-                            <p>Today's PNL</p>
-                        </div>
-                        <div class="icon">
-                            <i class="fas fa-hand-holding-usd"></i>
-                        </div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-3">
-                        <div class="small-box bg-red">
-                        <div class="inner">
-                            <h3>1.03<small style="font-size: 16px">%</small></h3>
-
-                            <p>Margin Risk Ratio</p>
-                        </div>
-                        <div class="icon">
-                            <i class="fas fa-radiation"></i>
-                        </div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-3">
-                        <div class="small-box bg-yellow">
-                        <div class="inner">
-                            <h3>142</h3>
-
-                            <p>Total Pairs</p>
-                        </div>
-                        <div class="icon">
-                            <i class="fas fa-stream"></i>
-                        </div>
-                        </div>
+                    <div class="col-md-12">
+                        <dashboard></dashboard>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-header border-bottom-0">
-                                <h3 class="card-title">PNL Report</h3>
-                                <div class="card-tools">
-
-                                </div>
-                            </div>
-                            <div class="card-body">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-header border-bottom-0">
-                                <h3 class="card-title">Balance Report</h3>
-                            </div>
-                            <div class="card-body">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div> --><!-- /.container-fluid -->
+                <!-- /.row -->
+            </div><!-- /.container-fluid -->
         </div>
         <!-- /.content -->
     </div>
-{% endblock content %}
+    <!-- /.content-wrapper -->
+{% endblock %}

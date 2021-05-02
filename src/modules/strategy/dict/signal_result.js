@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 const _ = require('lodash');
 
 const Order = require('../../../dict/order');
@@ -15,7 +16,7 @@ module.exports = class SignalResult {
 
   setSignal(signal) {
     if (!['close_long', 'close_short', 'long', 'short', 'close'].includes(signal)) {
-      throw `Invalid signal:${signal}`;
+      throw new Error(`Invalid signal:${signal}`);
     }
 
     this._signal = signal;
@@ -23,7 +24,7 @@ module.exports = class SignalResult {
 
   addDebug(key, value) {
     if (typeof key !== 'string') {
-      throw 'Invalid key';
+      throw new Error('Invalid key');
     }
 
     this._debug[key] = value;

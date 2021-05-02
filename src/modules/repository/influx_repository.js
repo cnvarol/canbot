@@ -31,15 +31,24 @@ module.exports = class InfluxRepository {
     fn = 'sum',
     createEmpty = true
   ) {
+    const fields = fieldName.split(',');
+
+    let fluxFields;
+    for (let i = 0; i < fields.length; i++) {
+      if (i === 0) {
+        fluxFields = `r["_field"] == "${fields[i]}"`;
+      } else {
+        fluxFields += ` or r["_field"] == "${fields[i]}"`;
+      }
+    }
+
     const query = `from(bucket: "${this.bucket}")
     |> range(start: ${rangeStart}, stop: ${rangeStop})
     |> filter(fn: (r) => r["_measurement"] == "${measurement}")
-    |> filter(fn: (r) => r["_field"] == "${fieldName}")
+    |> filter(fn: (r) => ${fluxFields})
     |> aggregateWindow(every: ${every}, fn: ${fn}, createEmpty: ${createEmpty})
     |> fill(value: 0.0)
-    |> keep(columns: ["_time", "_value"])
-    |> rename(columns: {"_time": "time", "_value": "value"})
-    |> yield(name: "${measurement}.${fieldName}")`;
+    |> yield(name: "${fn}")`;
 
     try {
       const data = await this.queryApi.collectRows(query);

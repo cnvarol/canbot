@@ -8,7 +8,7 @@
         </div>
     {% endif %}
     <div class="col-md-12">
-        <div class="small-box bg-info">
+        <div class="small-box bg-teal">
             <div class="inner">
                 <h3>{% if ticker is defined %}{{ ticker.ask|price_format }} / {{ ticker.bid|price_format }}{% else %}{% endif %}</h3>
                 <p>Price{% if ticker is defined %} - {{ ticker.createdAt|date('y-m-d H:i:s') }}{% endif %}</p>
@@ -28,7 +28,7 @@
     <div class="col-md-7">
         <div class="card card-default">
             <div class="card-header">
-                <h3 class="card-title">Order - {{ pair }}</h3>
+                <h3 class="card-title">Order - {{ pair | split('.', 2) | last() }}</h3>
             </div>
 
             <form action="/orders/{{ pair|url_encode }}" method="post" role="form">
@@ -109,12 +109,12 @@
                         <tbody>
                         {% for order in orders %}
                             <tr>
-                                <td>{{ order.type }}</td>
+                                <td>{{ order.type|capitalizeFirstLetter }}</td>
                                 <td>{{ order.price|price_format }}</td>
                                 <td>{{ order.amount }}</td>
                                 <td>
                                     {% if order.side == 'buy' %}
-                                        <i class="fas fa-chevron-circle-up text-success"></i>
+                                        <i class="fas fa-chevron-circle-up text-teal"></i>
                                     {% elseif order.side == 'sell' %}
                                         <i class="fas fa-chevron-circle-down text-danger"></i>
                                     {% endif %}
@@ -142,12 +142,12 @@
                         <tbody>
                         {% for position in positions %}
                         <tr>
-                            <td class="{{ position.amount < 0 ? 'text-danger' : 'text-success' }}">
+                            <td class="{{ position.amount < 0 ? 'text-danger' : 'text-teal' }}">
                                 {{ position.amount|price_format }}
                             </td>
                             <td>
                                 {% if position.profit is defined %}
-                                    <span class="{{ position.profit < 0 ? 'text-danger' : 'text-success' }}">{{ position.profit|round(2) }} %</span>
+                                    <span class="{{ position.profit < 0 ? 'text-danger' : 'text-teal' }}">{{ position.profit|round(2) }} %</span>
                                 {% endif %}
                             </td>
                             <td>{{ position.entry|price_format }}</td>
@@ -165,7 +165,7 @@
                                 {% if position.side == 'short' %}
                                     <i class="fas fa-chevron-circle-down text-danger"></i>
                                 {% elseif position.side == 'long' %}
-                                    <i class="fas fa-chevron-circle-up text-success"></i>
+                                    <i class="fas fa-chevron-circle-up text-teal"></i>
                                 {% endif %}
                             </td>
                         </tr>
@@ -186,12 +186,25 @@
 <script src="/js/orders.js"></script>
 <script src="https://s3.tradingview.com/tv.js"></script>
 <script>
+$('#themeSwitch').on('change', function() {
+    if (!$(this).is(':checked') && !$('body').hasClass('dark-mode')) {
+        $('#tradingview').empty();
+        tradingView('dark');   
+    }
+
+    if ($(this).is(':checked') && $('body').hasClass('dark-mode')) {
+        $('#tradingview').empty();
+        tradingView('light');
+    }
+});
+
+function tradingView(theme) {
   new TradingView.widget(
     {
       "autosize": true,
       "symbol": "{{ tradingview }}",
             "interval": "15",
-            "theme": localStorage.getItem('darkMode') === 'enabled' ? "dark" : "light",
+            "theme": theme,
             "style": "60",
             "locale": "en",
             "toolbar_bg": "#f1f3f6",
@@ -204,5 +217,8 @@
             ],
         }
     );
+}
+
+tradingView(localStorage.getItem('darkMode') === 'enabled' ? "dark" : "light");
 </script>
 {% endblock javascript %}

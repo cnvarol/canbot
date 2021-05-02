@@ -90,13 +90,13 @@
                                     <tbody>
                                         <tr v-for="model in short_model">
                                             <td>[[ model.price | filter_price ]] <small>USDT</small></td>
-                                            <td><span v-bind:class="{ 'text-success': model.changes > 0, 'text-danger': model.changes < 0 }">[[ model.changes | round(2) ]]%</span></td>
-                                            <td><span v-bind:class="{ 'text-success': model.cumulative > 0, 'text-danger': model.cumulative < 0 }">[[ model.cumulative | round(2)  ]]%</span></td>
+                                            <td><span v-bind:class="{ 'text-teal': model.changes > 0, 'text-danger': model.changes < 0 }">[[ model.changes | round(2) ]]%</span></td>
+                                            <td><span v-bind:class="{ 'text-teal': model.cumulative > 0, 'text-danger': model.cumulative < 0 }">[[ model.cumulative | round(2)  ]]%</span></td>
                                             <td>[[ model.entry | filter_price ]] <small>USDT</small></td>
                                             <td>[[ model.amount ]]</td>
                                             <td>[[ model.size | filter_price ]] <small>USDT</small></td>
-                                            <td><span v-bind:class="{ 'text-success': model.net_pnl > 0, 'text-danger': model.net_pnl < 0 }">[[ model.net_pnl | round(2) ]]%</span></td>
-                                            <td><span v-bind:class="{ 'text-success': model.unrealized_pnl > 0, 'text-danger': model.unrealized_pnl < 0 }">[[ model.unrealized_pnl | filter_price ]] <small>USDT</small></span></td>
+                                            <td><span v-bind:class="{ 'text-teal': model.net_pnl > 0, 'text-danger': model.net_pnl < 0 }">[[ model.net_pnl | round(2) ]]%</span></td>
+                                            <td><span v-bind:class="{ 'text-teal': model.unrealized_pnl > 0, 'text-danger': model.unrealized_pnl < 0 }">[[ model.unrealized_pnl | filter_price ]] <small>USDT</small></span></td>
                                         </tr>
                                     <tbody>
                                 </table>
@@ -105,7 +105,7 @@
                     </div>
 
                     <div class="col-md-12" v-if="long_model.length">
-                        <div class="card card-outline card-success">
+                        <div class="card card-outline card-teal">
                             <div class="card-header border-bottom-0"><h3 class="card-title">Long Position</h3></div>
                             <div class="card-body">
                                 <table class="table table-sm table-hover">
@@ -122,13 +122,13 @@
                                     <tbody>
                                         <tr v-for="model in long_model">
                                             <td>[[ model.price | filter_price ]] <small>USDT</small></td>
-                                            <td><span v-bind:class="{ 'text-success': model.changes > 0, 'text-danger': model.changes < 0 }">[[ model.changes | round(2) ]]%</span></td>
-                                            <td><span v-bind:class="{ 'text-success': model.cumulative > 0, 'text-danger': model.cumulative < 0 }">[[ model.cumulative | round(2)  ]]%</span></td>
+                                            <td><span v-bind:class="{ 'text-teal': model.changes > 0, 'text-danger': model.changes < 0 }">[[ model.changes | round(2) ]]%</span></td>
+                                            <td><span v-bind:class="{ 'text-teal': model.cumulative > 0, 'text-danger': model.cumulative < 0 }">[[ model.cumulative | round(2)  ]]%</span></td>
                                             <td>[[ model.entry | filter_price ]] <small>USDT</small></td>
                                             <td>[[ model.amount ]]</td>
                                             <td>[[ model.size | filter_price ]] <small>USDT</small></td>
-                                            <td><span v-bind:class="{ 'text-success': model.net_pnl > 0, 'text-danger': model.net_pnl < 0 }">[[ model.net_pnl | round(2) ]]%</span></td>
-                                            <td><span v-bind:class="{ 'text-success': model.unrealized_pnl > 0, 'text-danger': model.unrealized_pnl < 0 }">[[ model.unrealized_pnl | filter_price ]] <small>USDT</small></span></td>
+                                            <td><span v-bind:class="{ 'text-teal': model.net_pnl > 0, 'text-danger': model.net_pnl < 0 }">[[ model.net_pnl | round(2) ]]%</span></td>
+                                            <td><span v-bind:class="{ 'text-teal': model.unrealized_pnl > 0, 'text-danger': model.unrealized_pnl < 0 }">[[ model.unrealized_pnl | filter_price ]] <small>USDT</small></span></td>
                                         </tr>
                                     <tbody>
                                 </table>
@@ -154,13 +154,13 @@
                                     <tbody>
                                         <tr v-for="model in short_hedge_model">
                                             <td>[[ model.price | filter_price ]] <small>USDT</small></td>
-                                            <td><span v-bind:class="{ 'text-success': model.changes > 0, 'text-danger': model.changes < 0 }">[[ model.changes | round(2) ]]%</span></td>
-                                            <td><span v-bind:class="{ 'text-success': model.cumulative > 0, 'text-danger': model.cumulative < 0 }">[[ model.cumulative | round(2)  ]]%</span></td>
+                                            <td><span v-bind:class="{ 'text-teal': model.changes > 0, 'text-danger': model.changes < 0 }">[[ model.changes | round(2) ]]%</span></td>
+                                            <td><span v-bind:class="{ 'text-teal': model.cumulative > 0, 'text-danger': model.cumulative < 0 }">[[ model.cumulative | round(2)  ]]%</span></td>
                                             <td>[[ model.entry | filter_price ]] <small>USDT</small></td>
                                             <td>[[ model.amount ]]</td>
                                             <td>[[ model.size | filter_price ]] <small>USDT</small></td>
-                                            <td><span v-bind:class="{ 'text-success': model.net_pnl > 0, 'text-danger': model.net_pnl < 0 }">[[ model.net_pnl | round(2) ]]%</span></td>
-                                            <td><span v-bind:class="{ 'text-success': model.unrealized_pnl > 0, 'text-danger': model.unrealized_pnl < 0 }">[[ model.unrealized_pnl | filter_price ]] <small>USDT</small></span></td>
+                                            <td><span v-bind:class="{ 'text-teal': model.net_pnl > 0, 'text-danger': model.net_pnl < 0 }">[[ model.net_pnl | round(2) ]]%</span></td>
+                                            <td><span v-bind:class="{ 'text-teal': model.unrealized_pnl > 0, 'text-danger': model.unrealized_pnl < 0 }">[[ model.unrealized_pnl | filter_price ]] <small>USDT</small></span></td>
                                         </tr>
                                     <tbody>
                                 </table>
@@ -169,7 +169,7 @@
                     </div>
 
                     <div class="col-md-12" v-if="long_hedge_model.length">
-                        <div class="card card-outline card-success">
+                        <div class="card card-outline card-teal">
                             <div class="card-header border-bottom-0"><h3 class="card-title">Long Hedge Position</h3></div>
                             <div class="card-body">
                                 <table class="table table-sm table-hover">
@@ -186,13 +186,13 @@
                                     <tbody>
                                         <tr v-for="model in long_hedge_model">
                                             <td>[[ model.price | filter_price ]] <small>USDT</small></td>
-                                            <td><span v-bind:class="{ 'text-success': model.changes > 0, 'text-danger': model.changes < 0 }">[[ model.changes | round(2) ]]%</span></td>
-                                            <td><span v-bind:class="{ 'text-success': model.cumulative > 0, 'text-danger': model.cumulative < 0 }">[[ model.cumulative | round(2)  ]]%</span></td>
+                                            <td><span v-bind:class="{ 'text-teal': model.changes > 0, 'text-danger': model.changes < 0 }">[[ model.changes | round(2) ]]%</span></td>
+                                            <td><span v-bind:class="{ 'text-teal': model.cumulative > 0, 'text-danger': model.cumulative < 0 }">[[ model.cumulative | round(2)  ]]%</span></td>
                                             <td>[[ model.entry | filter_price ]] <small>USDT</small></td>
                                             <td>[[ model.amount ]]</td>
                                             <td>[[ model.size | filter_price ]] <small>USDT</small></td>
-                                            <td><span v-bind:class="{ 'text-success': model.net_pnl > 0, 'text-danger': model.net_pnl < 0 }">[[ model.net_pnl | round(2) ]]%</span></td>
-                                            <td><span v-bind:class="{ 'text-success': model.unrealized_pnl > 0, 'text-danger': model.unrealized_pnl < 0 }">[[ model.unrealized_pnl | filter_price ]] <small>USDT</small></span></td>
+                                            <td><span v-bind:class="{ 'text-teal': model.net_pnl > 0, 'text-danger': model.net_pnl < 0 }">[[ model.net_pnl | round(2) ]]%</span></td>
+                                            <td><span v-bind:class="{ 'text-teal': model.unrealized_pnl > 0, 'text-danger': model.unrealized_pnl < 0 }">[[ model.unrealized_pnl | filter_price ]] <small>USDT</small></span></td>
                                         </tr>
                                     <tbody>
                                 </table>

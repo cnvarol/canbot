@@ -2,16 +2,16 @@
 /* eslint-disable no-undef */
 
 Vue.filter('filter_price', function(value) {
-  if (parseFloat(value) > 0 && parseFloat(value) < 10) {
+  if (parseFloat(value) > 1000) {
     return Intl.NumberFormat('en-US', {
-      useGrouping: false,
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 5
+      useGrouping: true,
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
     }).format(value);
   }
 
   return Intl.NumberFormat('en-US', {
-    useGrouping: false,
+    useGrouping: true,
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   }).format(value);
@@ -25,10 +25,13 @@ Vue.filter('date', function(value) {
   return new Date(value).toLocaleString();
 });
 
+const { Chart } = HighchartsVue;
+
+Vue.component('highcharts', Chart);
+
 new Vue({
   el: '#app',
   components: {
-    trades: httpVueLoader('js/trades.vue'),
-    VueBootstrap4Table
+    dashboard: httpVueLoader('js/dashboard.vue')
   }
 });
