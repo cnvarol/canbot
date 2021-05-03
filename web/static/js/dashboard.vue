@@ -47,7 +47,7 @@
                             <span class="info-box-text"><i class="fas fa-ellipsis-v"></i> Wallet Balance</span>
                             <span class="info-box-number text-teal" style="font-size:30px; font-size:3vw;">
                                 <svg width="100%" height="100%" viewBox="0 0 500 80" xmlns="http://www.w3.org/2000/svg">
-                                    <text y="75" fill="rgb(32, 201, 151)" font-size="65">{{ walletBalance | filter_price }} USDT</text>
+                                    <text y="75" fill="rgb(32, 201, 151)" font-size="65">${{ walletBalance | filter_price }}</text>
                                 </svg>
                             </span>
                         </div>
@@ -59,7 +59,7 @@
                             <span class="info-box-text"><i class="fas fa-ellipsis-v"></i> Today's PNL</span>
                             <span class="info-box-number text-teal" style="font-size:30px; font-size:3vw;">
                                 <svg width="100%" height="100%" viewBox="0 0 500 80" xmlns="http://www.w3.org/2000/svg">
-                                    <text y="75" fill="rgb(32, 201, 151)" font-size="65">{{ todaysPNL | filter_price }} USDT</text>
+                                    <text y="75" fill="rgb(32, 201, 151)" font-size="65">${{ todaysPNL | filter_price }}</text>
                                 </svg>
                             </span>
                         </div>
@@ -71,7 +71,7 @@
                             <span class="info-box-text"><i class="fas fa-ellipsis-v"></i> Today's Balance Changes</span>
                             <span class="info-box-number text-teal" style="font-size:30px; font-size:3vw;">
                                 <svg width="100%" height="100%" viewBox="0 0 500 80" xmlns="http://www.w3.org/2000/svg">
-                                    <text y="75" fill="rgb(32, 201, 151)" font-size="65">{{ todaysChanges | filter_price }} USDT</text>
+                                    <text y="75" fill="rgb(32, 201, 151)" font-size="65">${{ todaysChanges | filter_price }}</text>
                                 </svg>
                             </span>
                         </div>
