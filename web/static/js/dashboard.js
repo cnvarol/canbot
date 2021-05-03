@@ -2,7 +2,7 @@
 /* eslint-disable no-undef */
 
 Vue.filter('filter_price', function(value) {
-  if (parseFloat(value) > 1000) {
+  if (parseFloat(value) > 100000) {
     return Intl.NumberFormat('en-US', {
       useGrouping: true,
       minimumFractionDigits: 0,
