@@ -107,7 +107,6 @@
                                     <i class="fas fa-sync-alt"></i>
                                     <span> Refresh</span>
                                 </button>
-                                <button type="button" class="btn btn-tool" data-card-widget="maximize"><i class="fas fa-expand"></i></button>
                                 <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button>
                             </div>
                         </div>
@@ -166,7 +165,7 @@ module.exports = {
         chartOptions: {
             title: false,
             chart: {
-                height: '100%',
+                height: '250',
                 animation: false,
             },
             credits: {
