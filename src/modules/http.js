@@ -200,7 +200,7 @@ module.exports = class Http {
 
     app.use((req, res, next) => {
       if (!req.session.username) {
-        return res.redirect('/login');
+        return res.status(403).send(`<html><head><script>window.location.href='/login';</script></head></html>`);
       }
 
       return next();

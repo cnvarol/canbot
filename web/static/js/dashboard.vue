@@ -288,6 +288,11 @@ module.exports = {
       this.chartEvery = every;
 
       const res = await fetch(`/api/v1/chartData/account/pnl?start=${duration}&every=${every}&fn=sum&createEmpty=true`);
+      if (res.status === 403) {
+        window.location.href = '/login';
+        return;
+      }
+
       const data = await res.json();
 
       if (!data.length) {
