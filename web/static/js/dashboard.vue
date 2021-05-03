@@ -247,7 +247,7 @@ module.exports = {
 
       this.todaysPNL = data[1]._value;
 
-      document.title = `Today's PNL ${todaysPNL.toFixed(2)} | ${title}`;
+      document.title = `Today's PNL ${this.todaysPNL.toFixed(2)} | ${title}`;
     },
     async fetchTodaysChanges() {
       const res = await fetch(`/api/v1/chartData/account/changes?start=-1d&every=1d&fn=sum&createEmpty=true`);
