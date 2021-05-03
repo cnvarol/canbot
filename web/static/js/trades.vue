@@ -192,7 +192,7 @@
 </template>
 
 <script>
-var title = document.title;
+let title = document.title;
 
 module.exports = {
   data: function() {
@@ -581,7 +581,7 @@ module.exports = {
       this.orders = data.orders || [];
       this.balances = data.balances || {};
       if (this.balances.info) {
-        document.title = `PNL ${parseFloat(this.balances.info.totalUnrealizedProfit).toFixed(2)} USDT | ${title}`;
+        document.title = `uPNL ${parseFloat(this.balances.info.totalUnrealizedProfit).toFixed(2)} | ${title}`;
       }
 
       this.totalLongPosition = 0;
