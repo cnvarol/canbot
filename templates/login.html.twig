@@ -1,0 +1,104 @@
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="apple-touch-fullscreen" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="dark-translucent">
+    <link rel="apple-touch-icon" href="/img/bitcoin.png"/>
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Crypto Bot">
+    <link rel="shortcut icon" sizes="512x512" href="/img/bitcoin.png">
+    <link rel="manifest" href="/manifest.json" crossorigin="use-credentials">
+
+    <title>Login | Crypto Bot</title>
+
+    <link rel="icon" href="/favicon.ico"/>
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="/css/adminlte.css?v={{ asset_version() }}">
+    <!-- style -->
+    <link rel="stylesheet" href="/css/style.css?v={{ asset_version() }}">
+
+    <script>
+        let asset_version = '{{ asset_version() }}';
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/service-worker.js', {
+                scope: '.'
+            })
+            .then(function(registration) {
+                console.log('Registration successful, scope is:', registration.scope);
+            })
+            .catch(function(error) {
+                console.log('Service worker registration failed, error:', error);
+            });
+        }
+    </script>
+</head>
+<body class="hold-transition login-page">
+<script>
+    if (localStorage.getItem('darkMode') === 'enabled') {
+        document.body.classList.add('dark-mode');
+    }
+</script>
+<div class="login-box">
+  <div class="login-logo">
+    <h2><b>Crypto Bot</b> | Login</h2>
+  </div>
+  <div class="card shadow-lg">
+    <div class="card-body login-card-body">
+        {% if alert is defined %}
+            <div class="col-md-12">
+                {% include 'components/alert.html.twig' with {'alert': alert} %}
+            </div>
+        {% endif %}
+      <p class="login-box-msg" style="padding:20px 0 20px 0">Type of your username and password</p>
+      <form action="/login" method="post">
+        <div class="input-group mb-3">
+          <input type="username" name="username" class="form-control" placeholder="Username" required>
+          <div class="input-group-append">
+            <div class="input-group-text">
+              <span class="fas fa-user"></span>
+            </div>
+          </div>
+        </div>
+        <div class="input-group mb-3">
+          <input type="password" name="password" class="form-control" placeholder="Password" required>
+          <div class="input-group-append">
+            <div class="input-group-text">
+              <span class="fas fa-lock"></span>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-8">
+          </div>
+          <!-- /.col -->
+          <div class="col-4">
+            <button type="submit" class="btn btn-outline-success btn-block">Sign In</button>
+          </div>
+          <!-- /.col -->
+        </div>
+      </form>
+
+    </div>
+    <!-- /.card-body -->
+  </div>
+  <!-- /.card -->
+</div>
+<!-- /.login-box -->
+
+<!-- jQuery -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<!-- Bootstrap 4 -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
+<!-- AdminLTE App -->
+<script src="/js/adminlte.min.js?v={{ asset_version() }}"></script>
+
+</body>
+</html>

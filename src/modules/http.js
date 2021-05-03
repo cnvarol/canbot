@@ -4,6 +4,7 @@
 /* eslint-disable prefer-destructuring */
 const compression = require('compression');
 const express = require('express');
+const session = require('express-session');
 const twig = require('twig');
 const auth = require('basic-auth');
 const cookieParser = require('cookie-parser');
@@ -47,6 +48,14 @@ module.exports = class Http {
   }
 
   start() {
+    const uuidv4 = function() {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        const r = (Math.random() * 16) | 0;
+        const v = c === 'x' ? r : (r & 0x3) | 0x8;
+        return v.toString(16);
+      });
+    };
+
     twig.extendFilter('price_format', value => {
       if (parseFloat(value) < 1) {
         return Intl.NumberFormat('en-US', {
@@ -128,34 +137,79 @@ module.exports = class Http {
     app.use(compression());
     app.use(express.static(`${this.projectDir}/web/static`, { maxAge: 3600000 * 24 }));
 
-    const username = this.systemUtil.getConfig('webserver.username');
-    const password = this.systemUtil.getConfig('webserver.password');
+    app.set('trust proxy', 1);
+    app.use(
+      session({
+        genid: req => {
+          return uuidv4();
+        },
+        secret: uuidv4(),
+        resave: false,
+        saveUninitialized: false,
+        cookie: { maxAge: 3600000, secure: false }
+      })
+    );
 
-    if (username && password) {
-      app.use((request, response, next) => {
-        const user = auth(request);
+    app.get('/login', async (req, res) => {
+      const { action } = req.query;
 
-        if (!user || !(user.name === username && user.pass === password)) {
-          response.set('WWW-Authenticate', 'Basic realm="Please Login"');
-          return response.status(401).send();
+      if (action) {
+        const alert = {};
+
+        switch (action) {
+          case 'auth':
+            alert.type = 'danger';
+            alert.title = 'That was an invalid username or password';
+            break;
+          case 'logout':
+            alert.type = 'warning';
+            alert.title = 'Your session successfuly destroyed';
+            break;
+          default:
         }
 
-        return next();
-      });
+        return res.render('../templates/login.html.twig', { alert: alert });
+      }
+
+      return res.render('../templates/login.html.twig');
+    });
+
+    app.get('/logout', async (req, res) => {
+      req.session.destroy();
+      res.redirect('/login?action=logout');
+    });
+
+    const systemUsername = this.systemUtil.getConfig('webserver.username');
+    const systemPassword = this.systemUtil.getConfig('webserver.password');
+
+    if (!systemUsername || !systemPassword) {
+      throw new Error('Username or password not found in conf.json! Please set these first.');
     }
+
+    app.post('/login', async (req, res) => {
+      const { username, password } = req.body;
+
+      if (username !== systemUsername || password !== systemPassword) {
+        return res.redirect('/login?action=auth');
+      }
+
+      req.session.username = username;
+
+      return res.redirect('/');
+    });
+
+    app.use((req, res, next) => {
+      if (!req.session.username) {
+        return res.redirect('/login');
+      }
+
+      return next();
+    });
 
     const server = http.createServer(app);
 
     const wss = new WebSocket.Server({ server });
     const userMap = new Map();
-
-    const uuidv4 = function() {
-      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-        const r = (Math.random() * 16) | 0;
-        const v = c === 'x' ? r : (r & 0x3) | 0x8;
-        return v.toString(16);
-      });
-    };
 
     wss.on('connection', ws => {
       ws.on('error', err => {
