@@ -146,7 +146,7 @@ module.exports = class Http {
         secret: uuidv4(),
         resave: false,
         saveUninitialized: false,
-        cookie: { maxAge: 3600000, secure: false }
+        cookie: { secure: false }
       })
     );
 

@@ -242,7 +242,8 @@ module.exports = class ExchangeOrderWatchdogListener {
       Array.isArray(currentPositions) &&
       options.hedge_position &&
       position.profit < options.hedge_min_percent &&
-      position.profit > options.hedge_max_percent
+      position.profit > options.hedge_max_percent &&
+      position.side === 'short' // TODO(semihalev): temprorary protection
     ) {
       // if (currentPositions.length < 2 && Math.abs(position.amount * position.entry) < capital * 1.5) {
       if (currentPositions.length < 2 && size < options.risk_size) {
