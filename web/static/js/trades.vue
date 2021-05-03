@@ -55,7 +55,7 @@
             <div class="card-body">
               <div class="row">
                 <div class="col-md-12">
-                  <h1 class="text-teal" style="font-size:50px">%{{ Math.round((balances.info.totalMaintMargin/balances.info.totalMarginBalance) * 100 * 100)/100 }}</h1>
+                  <h1 class="text-teal" style="font-size:50px">{{ Math.round((balances.info.totalMaintMargin/balances.info.totalMarginBalance) * 100 * 100)/100 }}%</h1>
                 </div>
               </div>
             </div>
