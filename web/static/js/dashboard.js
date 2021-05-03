@@ -32,6 +32,6 @@ Vue.component('highcharts', Chart);
 new Vue({
   el: '#app',
   components: {
-    dashboard: httpVueLoader('js/dashboard.vue')
+    dashboard: httpVueLoader(`js/dashboard.vue?v=${asset_version}`)
   }
 });

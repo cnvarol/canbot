@@ -19,16 +19,17 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
     <title>{% block title %}Dashboard | Crypto Bot{% endblock %}</title>
 
-    <link rel="icon" href="{{ '/favicon.ico' }}"/>
+    <link rel="icon" href="/favicon.ico"/>
 
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css">
     <!-- Theme style -->
-    <link rel="stylesheet" href="{{ '/css/adminlte.css' }}">
+    <link rel="stylesheet" href="/css/adminlte.css?v={{ asset_version() }}">
     <!-- style -->
-    <link rel="stylesheet" href="{{ '/css/style.css' }}">
+    <link rel="stylesheet" href="/css/style.css?v={{ asset_version() }}">
 
     <script>
+        let asset_version = '{{ asset_version() }}';
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('/service-worker.js', {
                 scope: '.'
@@ -166,7 +167,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 <!-- Bootstrap 4 -->
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
 <!-- AdminLTE App -->
-<script src="{{ '/js/adminlte.min.js' }}"></script>
+<script src="/js/adminlte.min.js?v={{ asset_version() }}"></script>
 <script>
     // Add Active Navigation Class Based on URL to Menu Item
     $(function () {
