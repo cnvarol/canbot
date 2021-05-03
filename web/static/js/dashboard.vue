@@ -166,7 +166,7 @@ module.exports = {
         chartOptions: {
             title: false,
             chart: {
-                height: 250,
+                height: '100%',
                 animation: false,
             },
             credits: {
