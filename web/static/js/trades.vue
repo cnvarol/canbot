@@ -572,7 +572,7 @@ module.exports = {
     async fetchPageAsJson() {
       const res = await fetch('/trades.json');
       if (res.status === 403) {
-        window.location.href = '/login';
+        window.location.href = '/login?return=/trades';
         return;
       }
 

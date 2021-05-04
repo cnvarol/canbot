@@ -289,7 +289,7 @@ module.exports = {
 
       const res = await fetch(`/api/v1/chartData/account/pnl?start=${duration}&every=${every}&fn=sum&createEmpty=true`);
       if (res.status === 403) {
-        window.location.href = '/login';
+        window.location.href = '/login?return=/';
         return;
       }
 

@@ -188,19 +188,26 @@ module.exports = class Http {
 
     app.post('/login', async (req, res) => {
       const { username, password } = req.body;
+      const returnPath = req.query.return;
 
       if (username !== systemUsername || password !== systemPassword) {
-        return res.redirect('/login?action=auth');
+        return res.redirect(`/login?action=auth&return=${returnPath}`);
       }
 
       req.session.username = username;
+
+      if (returnPath) {
+        return res.redirect(returnPath);
+      }
 
       return res.redirect('/');
     });
 
     app.use((req, res, next) => {
       if (!req.session.username) {
-        return res.status(403).send(`<html><head><script>window.location.href='/login';</script></head></html>`);
+        return res
+          .status(403)
+          .send(`<html><head><script>window.location.href='/login?return=${req.path}';</script></head></html>`);
       }
 
       return next();
