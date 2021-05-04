@@ -242,7 +242,8 @@ module.exports = class ExchangeOrderWatchdogListener {
       Array.isArray(currentPositions) &&
       options.hedge_position &&
       position.profit < options.hedge_min_percent &&
-      position.profit > options.hedge_max_percent
+      position.profit > options.hedge_max_percent &&
+      position.side === 'short'
     ) {
       // if (currentPositions.length < 2 && Math.abs(position.amount * position.entry) < capital * 1.5) {
       if (currentPositions.length < 2 && size < options.risk_size) {
@@ -346,7 +347,7 @@ module.exports = class ExchangeOrderWatchdogListener {
       const noteKey = position.exchange + position.symbol + position.side + size;
       if (!(noteKey in this.notified) || (noteKey in this.notified && this.notified[noteKey] < warnWindow)) {
         this.notifier.send(
-          `Position size of ${position.symbol} too large.\nPlease await from significant losses.\nCurrent Size: *${size}* USDT`
+          `Position size of ${position.symbol} on ${position.side} side too large.\nPlease await from significant losses.\nCurrent Size: *${size}* USDT`
         );
 
         this.notified[noteKey] = new Date();
