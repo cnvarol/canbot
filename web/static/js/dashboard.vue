@@ -91,17 +91,17 @@
                                     <span>{{ chartDurationText }}</span>
                                 </button>
                                 <div class="dropdown-menu dropdown-menu-right" role="menu">
-                                    <a href="#" class="dropdown-item" v-on:click="fetchChartData('-5m', '3s'); chartDurationText='Past 5m'">Past 5m</a>
-                                    <a href="#" class="dropdown-item" v-on:click="fetchChartData('-15m', '15s'); chartDurationText='Past 15m'">Past 15m</a>
-                                    <a href="#" class="dropdown-item" v-on:click="fetchChartData('-1h', '1m'); chartDurationText='Past 1h'">Past 1h</a>
-                                    <a href="#" class="dropdown-item" v-on:click="fetchChartData('-3h', '4m'); chartDurationText='Past 3h'">Past 3h</a>
-                                    <a href="#" class="dropdown-item" v-on:click="fetchChartData('-6h', '7m'); chartDurationText='Past 6h'">Past 6h</a>
-                                    <a href="#" class="dropdown-item" v-on:click="fetchChartData('-12h', '15m'); chartDurationText='Past 12h'">Past 12h</a>
-                                    <a href="#" class="dropdown-item" v-on:click="fetchChartData('-24h', '30m'); chartDurationText='Past 24h'">Past 24h</a>
-                                    <a href="#" class="dropdown-item" v-on:click="fetchChartData('-2d', '1h'); chartDurationText='Past 2d'">Past 2d</a>
-                                    <a href="#" class="dropdown-item" v-on:click="fetchChartData('-7d', '6h'); chartDurationText='Past 7d'">Past 7d</a>
-                                    <a href="#" class="dropdown-item" v-on:click="fetchChartData('-30d', '1d'); chartDurationText='Past 30d'">Past 30d</a>
-                                    <a href="#" class="dropdown-item" v-on:click="fetchChartData('-90d', '3d'); chartDurationText='Past 90d'">Past 90d</a>
+                                    <a href="#" class="dropdown-item" v-on:click.prevent="fetchChartData('-5m', '3s'); chartDurationText='Past 5m'">Past 5m</a>
+                                    <a href="#" class="dropdown-item" v-on:click.prevent="fetchChartData('-15m', '15s'); chartDurationText='Past 15m'">Past 15m</a>
+                                    <a href="#" class="dropdown-item" v-on:click.prevent="fetchChartData('-1h', '1m'); chartDurationText='Past 1h'">Past 1h</a>
+                                    <a href="#" class="dropdown-item" v-on:click.prevent="fetchChartData('-3h', '4m'); chartDurationText='Past 3h'">Past 3h</a>
+                                    <a href="#" class="dropdown-item" v-on:click.prevent="fetchChartData('-6h', '7m'); chartDurationText='Past 6h'">Past 6h</a>
+                                    <a href="#" class="dropdown-item" v-on:click.prevent="fetchChartData('-12h', '15m'); chartDurationText='Past 12h'">Past 12h</a>
+                                    <a href="#" class="dropdown-item" v-on:click.prevent="fetchChartData('-24h', '30m'); chartDurationText='Past 24h'">Past 24h</a>
+                                    <a href="#" class="dropdown-item" v-on:click.prevent="fetchChartData('-2d', '1h'); chartDurationText='Past 2d'">Past 2d</a>
+                                    <a href="#" class="dropdown-item" v-on:click.prevent="fetchChartData('-7d', '6h'); chartDurationText='Past 7d'">Past 7d</a>
+                                    <a href="#" class="dropdown-item" v-on:click.prevent="fetchChartData('-30d', '1d'); chartDurationText='Past 30d'">Past 30d</a>
+                                    <a href="#" class="dropdown-item" v-on:click.prevent="fetchChartData('-90d', '3d'); chartDurationText='Past 90d'">Past 90d</a>
                                 </div>
                                 <button type="button" class="btn btn-tool" v-on:click="fetchChartData(chartDuration, chartEvery)">
                                     <i class="fas fa-sync-alt"></i>
@@ -174,11 +174,12 @@ module.exports = {
             },
             plotOptions: {
                 areaspline: {
-                    color: {
+                    color: '#20c997',
+                    fillColor : {
                         linearGradient: { x1: 0, x2: 0, y1: 0, y2: 1 },
-                        stops: [
-                            [0, '#20c997'],
-                            [1, '#ffffff']
+                        stops : [
+                            [0, Highcharts.Color('#20c997').setOpacity(0.7).get('rgba')],
+                            [1, Highcharts.Color('#20c997').setOpacity(0).get('rgba')],
                         ]
                     },
                     lineColor: '#20c997',
