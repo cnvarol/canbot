@@ -206,7 +206,8 @@ module.exports = class ExchangeOrderWatchdogListener {
       risk_notify: true,
       risk_size: 5000,
       risk_take_profit: 0.75,
-      short_pump_detection: false
+      pump_detection: false,
+      pump_candle_period: '15m'
     }
   ) {
     const { logger } = this;
@@ -386,7 +387,11 @@ module.exports = class ExchangeOrderWatchdogListener {
         return;
       }
 
-      const result = await this.gridTradingCalculator.pumpPattern(exchange.getName(), position.symbol, '15m');
+      const result = await this.gridTradingCalculator.pumpPattern(
+        exchange.getName(),
+        position.symbol,
+        options.short_pump_candle_period
+      );
 
       if (result.roc_ma) {
         this.quarantine[qKey] = new Date();
