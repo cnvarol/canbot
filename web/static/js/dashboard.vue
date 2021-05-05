@@ -165,7 +165,7 @@ module.exports = {
         chartOptions: {
             title: false,
             chart: {
-                type: 'spline',
+                type: 'area',
                 height: '250',
                 animation: false,
             },
