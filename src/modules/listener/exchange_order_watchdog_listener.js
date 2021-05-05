@@ -386,7 +386,7 @@ module.exports = class ExchangeOrderWatchdogListener {
         return;
       }
 
-      const result = await this.gridTradingCalculator.pumpPattern(exchange.getName(), position.symbol, '3m');
+      const result = await this.gridTradingCalculator.pumpPattern(exchange.getName(), position.symbol, '15m');
 
       if (result.roc_ma) {
         this.quarantine[qKey] = new Date();
