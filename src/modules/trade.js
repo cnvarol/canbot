@@ -57,11 +57,12 @@ module.exports = class Trade {
     });
 
     // TODO (semihalev): open this comment later
-    /* process.on('uncaughtException', (err, origin) => {
-      const message = `UncaughtException (${origin}): ${instanceId} - ${os.hostname()} - ${os.platform()} - ${moment().format()} ${err}`;
+    process.on('uncaughtException', (err, origin) => {
+      const message = `UncaughtException (${origin}): ${instanceId} - ${os.hostname()} - ${os.platform()} - ${moment().format()} 
+      ${err.message}`;
 
       this.notify.send(message);
-    }); */
+    });
 
     /* this.logger.on('error', async err => {
       this.notify.send(err);

@@ -124,11 +124,11 @@ module.exports = class TickListener {
 
       // bot.start(ctx => ctx.reply(`Hey ${ctx.from.first_name} 😜 I'm ready for your commands.`, keyboard));
 
-      bot.on(['sticker', 'photo'], ctx => {
-        return ctx.reply('Cool!');
-      });
-
       this.notifier.get('telegram').send('Hey bro!', keyboard);
+
+      bot.command('start', async ctx => {
+        ctx.reply(`I'm starting again..`, keyboard);
+      });
 
       bot.command('stop', async ctx => {
         const yesno = Keyboard.make([['/yes', '/no']]).reply();
@@ -136,10 +136,7 @@ module.exports = class TickListener {
       });
 
       bot.command('yes', async ctx => {
-        ctx.reply(
-          `${ctx.from.first_name}, you need start me again on terminal.\nI will be stop in 3 seconds..`,
-          keyboard
-        );
+        ctx.reply(`${ctx.from.first_name}, you need start me again.\nI will be stop in 3 seconds..`, keyboard);
 
         setTimeout(() => {
           process.exit(0);
@@ -154,6 +151,10 @@ module.exports = class TickListener {
 
       bot.command('positions', ctx => {
         ctx.reply('Positions will be send soon.');
+      });
+
+      bot.on(['sticker', 'photo'], ctx => {
+        return ctx.reply(`Cool! Let's do better 😁`);
       });
 
       await bot.launch();
