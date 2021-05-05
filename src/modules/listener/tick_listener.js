@@ -140,6 +140,10 @@ module.exports = class TickListener {
         process.exit(0);
       });
 
+      bot.command('no', async ctx => {
+        ctx.reply(`Cancelled`, keyboard);
+      });
+
       bot.command('balances', ctx => this.getBalances(ctx));
 
       bot.command('positions', ctx => {
