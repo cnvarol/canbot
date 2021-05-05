@@ -221,31 +221,6 @@ module.exports = class ExchangeOrderWatchdogListener {
       capital = pair.trade.currency_capital;
     } */
 
-    const size = Math.abs(position.amount * position.entry).toFixed(2);
-
-    if (options.short_pump_detection && position.side === 'short') {
-      const qKey = position.exchange + position.symbol + position.side;
-      if (qKey in this.quarantine) {
-        return;
-      }
-
-      const result = await this.gridTradingCalculator.pumpPattern(exchange.getName(), position.symbol, '1m');
-
-      if (result.roc_ma) {
-        this.quarantine[qKey] = new Date();
-
-        await this.orderExecutor.cancelSide(exchange.getName(), position.symbol, position.side);
-
-        console.log(`Pump detected for position ${position.symbol} on ${position.side} side.`, result);
-
-        this.notifier.send(
-          `Pump detected for position ${position.symbol} on ${position.side} side.\nAll orders cancelled. *Crypto Bot* won't manage this position anymore. You need to check this position status manually.\nCurrent Size: *${size}* USDT`
-        );
-
-        return;
-      }
-    }
-
     if (
       this.throttler.inTasks('binance_futures_sync_orders') ||
       this.throttler.inTasks('binance_futures_sync_positions')
@@ -263,6 +238,7 @@ module.exports = class ExchangeOrderWatchdogListener {
     const symbol = position.getSymbol();
     const orders = await exchange.getOrdersForSymbol(symbol);
     const currentPositions = await exchange.getPositionForSymbol(symbol);
+    const size = Math.abs(position.amount * position.entry).toFixed(2);
 
     if (
       Array.isArray(currentPositions) &&
@@ -403,6 +379,29 @@ module.exports = class ExchangeOrderWatchdogListener {
         );
       }
     });
+
+    if (options.short_pump_detection && position.side === 'short') {
+      const qKey = position.exchange + position.symbol + position.side;
+      if (qKey in this.quarantine) {
+        return;
+      }
+
+      const result = await this.gridTradingCalculator.pumpPattern(exchange.getName(), position.symbol, '1m');
+
+      if (result.roc_ma) {
+        this.quarantine[qKey] = new Date();
+
+        await this.orderExecutor.cancelSide(exchange.getName(), position.symbol, position.side);
+
+        console.log(`Pump detected for position ${position.symbol} on ${position.side} side.`, result);
+
+        this.notifier.send(
+          `Pump detected for position ${position.symbol} on ${position.side} side.\nAll orders cancelled. *Crypto Bot* won't manage this position anymore. You need to check this position status manually.\nCurrent Size: *${size}* USDT`
+        );
+
+        return;
+      }
+    }
 
     const orderChanges = await this.gridTradingCalculator.createGridTradingOrders(position, orders, options);
 
