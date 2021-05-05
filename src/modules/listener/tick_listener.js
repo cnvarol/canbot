@@ -122,7 +122,7 @@ module.exports = class TickListener {
         ['/balances', '/positions'] // Second row
       ]).reply();
 
-      bot.start(ctx => ctx.reply(`Hey ${ctx.from.first_name} 😜 I'm ready for your commands.`, keyboard));
+      // bot.start(ctx => ctx.reply(`Hey ${ctx.from.first_name} 😜 I'm ready for your commands.`, keyboard));
 
       bot.on(['sticker', 'photo'], ctx => {
         return ctx.reply('Cool!');
