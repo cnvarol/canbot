@@ -231,7 +231,7 @@ module.exports = class GridTradingCalculator {
 
       const candleSizeSma = SMA.calculate({
         period: 20,
-        values: candles.slice(-40).map(v => Math.abs(v.open - v.close))
+        values: candles.slice(-40).map(v => v.close - v.open)
       });
 
       const currentCandle = candles.slice(-1)[0];
@@ -243,8 +243,7 @@ module.exports = class GridTradingCalculator {
         volume_v: currentCandle.volume / currentVolumeSma > 5 ? currentCandle.volume / currentVolumeSma : undefined,
         hint: currentCandle.volume / currentVolumeSma > 5,
         price_trigger: currentCandle.high,
-        roc_ma:
-          Math.abs(Math.abs(candles.slice(-1)[0].open - candles.slice(-1)[0].close)) / candleSizeSma.slice(-1)[0] > 4
+        roc_ma: (candles.slice(-1)[0].close - candles.slice(-1)[0].open) / candleSizeSma.slice(-1)[0] > 4
       });
     });
   }
