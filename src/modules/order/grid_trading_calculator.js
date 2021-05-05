@@ -231,7 +231,7 @@ module.exports = class GridTradingCalculator {
 
       const candleSizeSma = SMA.calculate({
         period: 20,
-        values: candles.slice(-40).map(v => v.open - v.close)
+        values: candles.slice(-40).map(v => Math.abs(v.open - v.close))
       });
 
       const currentCandle = candles.slice(-1)[0];
