@@ -30,6 +30,7 @@ module.exports = class ExchangeOrderWatchdogListener {
     this.notifier = notifier;
     this.notified = {};
     this.orders = {};
+    this.quarantine = {};
     this.throttler = throttler;
   }
 
@@ -204,7 +205,8 @@ module.exports = class ExchangeOrderWatchdogListener {
       hedge_step_resolution: 5,
       risk_notify: true,
       risk_size: 5000,
-      risk_take_profit: 0.75
+      risk_take_profit: 0.75,
+      short_pump_detection: false
     }
   ) {
     const { logger } = this;
@@ -218,6 +220,31 @@ module.exports = class ExchangeOrderWatchdogListener {
     if (pair.trade && pair.trade.currency_capital) {
       capital = pair.trade.currency_capital;
     } */
+
+    const size = Math.abs(position.amount * position.entry).toFixed(2);
+
+    if (options.short_pump_detection && position.side === 'short') {
+      const qKey = position.exchange + position.symbol + position.side;
+      if (qKey in this.quarantine) {
+        return;
+      }
+
+      const result = await this.gridTradingCalculator.pumpPattern(exchange.getName(), position.symbol, '1m');
+
+      if (result.roc_ma) {
+        this.quarantine[qKey] = new Date();
+
+        await this.orderExecutor.cancelSide(exchange.getName(), position.symbol, position.side);
+
+        console.log(`Pump detected for position ${position.symbol} on ${position.side} side.`, result);
+
+        this.notifier.send(
+          `Pump detected for position ${position.symbol} on ${position.side} side.\nAll orders cancelled. *Crypto Bot* won't manage this position anymore. You need to check this position status manually.\nCurrent Size: *${size}* USDT`
+        );
+
+        return;
+      }
+    }
 
     if (
       this.throttler.inTasks('binance_futures_sync_orders') ||
@@ -236,7 +263,6 @@ module.exports = class ExchangeOrderWatchdogListener {
     const symbol = position.getSymbol();
     const orders = await exchange.getOrdersForSymbol(symbol);
     const currentPositions = await exchange.getPositionForSymbol(symbol);
-    const size = Math.abs(position.amount * position.entry).toFixed(2);
 
     if (
       Array.isArray(currentPositions) &&

@@ -201,7 +201,7 @@ module.exports = {
       return gridTradingCalculator;
     }
 
-    return (gridTradingCalculator = new GridTradingCalculator(this.getLogger()));
+    return (gridTradingCalculator = new GridTradingCalculator(this.getCandlestickRepository(), this.getLogger()));
   },
 
   getRiskRewardRatioCalculator: function() {
@@ -745,8 +745,7 @@ module.exports = {
     const { token } = config.notify.telegram;
 
     if (!token) {
-      console.log('Telegram: No api token given');
-      return;
+      throw new Error('Telegram: No api token given');
     }
 
     return new Telegraf(token);

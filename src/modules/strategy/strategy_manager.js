@@ -169,7 +169,7 @@ module.exports = class StrategyManager {
     });
 
     if (!strategy) {
-      throw `invalid strategy: ${strategy}`;
+      throw new Error(`invalid strategy: ${strategy}`);
     }
 
     const indicatorBuilder = new IndicatorBuilder();

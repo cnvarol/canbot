@@ -1,9 +1,12 @@
+/* eslint-disable no-async-promise-executor */
+const { SMA } = require('technicalindicators');
 const ExchangeOrder = require('../../dict/exchange_order');
 const OrderUtil = require('../../utils/order_util');
 
 module.exports = class GridTradingCalculator {
-  constructor(logger) {
+  constructor(candlestickRepository, logger) {
     this.logger = logger;
+    this.candlestickRepository = candlestickRepository;
   }
 
   checkDuplicateOrders(position, orders) {
@@ -204,5 +207,45 @@ module.exports = class GridTradingCalculator {
     }
 
     return newOrders;
+  }
+
+  async pumpPattern(exchange, symbol, period) {
+    return new Promise(async resolve => {
+      const allCandles = await this.candlestickRepository.getLookbacksForPair(exchange, symbol, period, 20);
+
+      const candles = allCandles.slice().reverse() || [];
+
+      if (candles.length === 0 || candles.length < 20) {
+        resolve({});
+        return;
+      }
+
+      if (candles.length > 1 && candles[0].time > candles[1].time) {
+        throw new Error('Invalid candlestick order');
+      }
+
+      const volSma = SMA.calculate({
+        period: 20,
+        values: candles.slice(-40).map(b => b.volume)
+      });
+
+      const candleSizeSma = SMA.calculate({
+        period: 20,
+        values: candles.slice(-40).map(v => Math.abs(v.open - v.close))
+      });
+
+      const currentCandle = candles.slice(-1)[0];
+      const currentVolumeSma = volSma.slice(-1)[0];
+
+      resolve({
+        time: new Date(),
+        volume_sd: volSma.slice(-1)[0],
+        volume_v: currentCandle.volume / currentVolumeSma > 5 ? currentCandle.volume / currentVolumeSma : undefined,
+        hint: currentCandle.volume / currentVolumeSma > 5,
+        price_trigger: currentCandle.high,
+        roc_ma:
+          Math.abs(Math.abs(candles.slice(-1)[0].open - candles.slice(-1)[0].close)) / candleSizeSma.slice(-1)[0] > 4
+      });
+    });
   }
 };
