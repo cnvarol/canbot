@@ -136,7 +136,10 @@ module.exports = class TickListener {
       });
 
       bot.command('yes', async ctx => {
-        ctx.reply(`${ctx.from.first_name}, you need start me again on terminal.\nI will be stop in 3 seconds..`);
+        ctx.reply(
+          `${ctx.from.first_name}, you need start me again on terminal.\nI will be stop in 3 seconds..`,
+          keyboard
+        );
 
         setTimeout(() => {
           process.exit(0);
@@ -144,7 +147,7 @@ module.exports = class TickListener {
       });
 
       bot.command('no', async ctx => {
-        ctx.reply(`Cancelled`, keyboard);
+        ctx.reply(`Cancelled!`, keyboard);
       });
 
       bot.command('balances', ctx => this.getBalances(ctx));
