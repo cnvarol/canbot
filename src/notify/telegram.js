@@ -12,14 +12,14 @@ module.exports = class Telegram {
     return 'telegram';
   }
 
-  send(message) {
+  send(message, markup = this.markup) {
     const chatId = this.config.chat_id;
     if (!chatId) {
       console.log('Telegram: No chat id given');
       this.logger.error('Telegram: No chat id given');
       return;
     }
-    this.telegraf.telegram.sendMessage(chatId, message, this.markup).catch(err => {
+    this.telegraf.telegram.sendMessage(chatId, message, markup).catch(err => {
       this.logger.error(`Mailer: ${JSON.stringify(err)}`);
       console.log(err);
     });
