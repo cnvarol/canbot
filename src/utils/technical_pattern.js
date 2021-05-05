@@ -10,7 +10,7 @@ module.exports = {
     }
 
     if (candles.length > 1 && candles[0].time > candles[1].time) {
-      throw 'Invalid candlestick order';
+      throw new Error('Invalid candlestick order');
     }
 
     const volSma = SMA.calculate({
