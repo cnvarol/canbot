@@ -165,7 +165,7 @@ module.exports = {
         chartOptions: {
             title: false,
             chart: {
-                type: 'area',
+                type: 'areaspline',
                 height: '250',
                 animation: false,
             },
@@ -173,13 +173,19 @@ module.exports = {
                 enabled: false
             },
             plotOptions: {
-                line: {
-                    color: '#20c997',
+                areaspline: {
+                    color: {
+                        linearGradient: { x1: 0, x2: 0, y1: 0, y2: 1 },
+                        stops: [
+                            [0, '#20c997'],
+                            [1, '#ffffff']
+                        ]
+                    },
                     lineColor: '#20c997',
                     lineWidth: 3,
                     marker: {
                         lineWidth: 2
-                    },
+                    }
                 }
             },
             xAxis: {
