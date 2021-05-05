@@ -381,7 +381,7 @@ module.exports = class ExchangeOrderWatchdogListener {
       }
     });
 
-    if (options.short_pump_detection && position.side === 'short') {
+    if (options.pump_detection && position.side === 'short') {
       const qKey = position.exchange + position.symbol + position.side;
       if (qKey in this.quarantine) {
         return;
