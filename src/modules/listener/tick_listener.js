@@ -123,6 +123,12 @@ module.exports = class TickListener {
       ]).reply();
 
       bot.start(ctx => ctx.reply(`Welcome ${ctx.from.first_name} 😜 I'm ready for your commands.`, keyboard));
+      bot.on(['sticker', 'photo'], ctx => {
+        return ctx.reply('Cool!');
+      });
+
+      this.notifier.get('telegram').send(keyboard);
+
       bot.command('balances', ctx => this.getBalances(ctx));
 
       bot.command('positions', ctx => {

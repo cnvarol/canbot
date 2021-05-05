@@ -1,4 +1,4 @@
-const extra = require('telegraf/extra')
+const extra = require('telegraf/extra');
 
 module.exports = class Telegram {
   constructor(telegraf, config, logger) {
