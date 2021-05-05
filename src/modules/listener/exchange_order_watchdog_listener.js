@@ -117,7 +117,10 @@ module.exports = class ExchangeOrderWatchdogListener {
     }
 
     this.logger.info(`Watchdog: position closed cleanup orders: ${JSON.stringify([exchangeName, symbol, side])}`);
-    await this.orderExecutor.cancelSide(exchangeName, positionStateChangeEvent.getSymbol(), side);
+    const qKey = exchangeName + symbol + side;
+    delete this.quarantine[qKey];
+
+    await this.orderExecutor.cancelSide(exchangeName, symbol, side);
   }
 
   /**
