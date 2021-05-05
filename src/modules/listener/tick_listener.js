@@ -130,7 +130,12 @@ module.exports = class TickListener {
 
       this.notifier.get('telegram').send('Hey bro!', keyboard);
 
-      bot.command('stopme', async ctx => {
+      bot.command('stop', async ctx => {
+        const yesno = Keyboard.make([['/yes', '/no']]).reply();
+        ctx.reply('Are you sure?', yesno);
+      });
+
+      bot.command('yes', async ctx => {
         await ctx.reply(`${ctx.from.first_name}, you need start me again on terminal.\nStopping..`);
         process.exit(0);
       });
