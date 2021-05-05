@@ -123,7 +123,7 @@ module.exports = class TickListener {
       ]).reply();
 
       bot.start(ctx => ctx.reply(`Hey ${ctx.from.first_name} 😜 I'm ready for your commands.`, keyboard));
-      bot.stop(ctx => {
+      bot.command('stop', ctx => {
         ctx.reply(`${ctx.from.first_name}, you need start me again on terminal.\nStopping..`);
         process.exit(0);
       });
