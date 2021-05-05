@@ -587,7 +587,7 @@ module.exports = {
       this.orders = data.orders || [];
       this.balances = data.balances || {};
       if (this.balances.info) {
-        document.title = `uPNL ${parseFloat(this.balances.info.totalUnrealizedProfit).toFixed(2)} | ${title}`;
+        document.title = `Unrealized PNL ${parseFloat(this.balances.info.totalUnrealizedProfit).toFixed(2)} | ${title}`;
       }
 
       this.totalLongPosition = 0;
