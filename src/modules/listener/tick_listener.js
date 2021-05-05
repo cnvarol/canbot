@@ -118,7 +118,7 @@ module.exports = class TickListener {
       const bot = telegram.telegraf;
 
       const keyboard = Keyboard.make([
-        ['/start', '/stopme'], // First row
+        ['/start', '/stop'], // First row
         ['/balances', '/positions'] // Second row
       ]).reply();
 
