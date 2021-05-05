@@ -123,16 +123,17 @@ module.exports = class TickListener {
       ]).reply();
 
       bot.start(ctx => ctx.reply(`Hey ${ctx.from.first_name} 😜 I'm ready for your commands.`, keyboard));
-      bot.command('stop', async ctx => {
-        await ctx.reply(`${ctx.from.first_name}, you need start me again on terminal.\nStopping..`);
-        process.exit(0);
-      });
 
       bot.on(['sticker', 'photo'], ctx => {
         return ctx.reply('Cool!');
       });
 
       this.notifier.get('telegram').send('Hey bro!', keyboard);
+
+      bot.command('stop', async ctx => {
+        await ctx.reply(`${ctx.from.first_name}, you need start me again on terminal.\nStopping..`);
+        process.exit(0);
+      });
 
       bot.command('balances', ctx => this.getBalances(ctx));
 
