@@ -136,7 +136,10 @@ module.exports = class TickListener {
       });
 
       bot.command('yes', async ctx => {
-        ctx.reply(`${ctx.from.first_name}, you need start me again.\nI will be stop in 3 seconds..`, keyboard);
+        ctx.reply(
+          `${ctx.from.first_name}, you need start me again on terminal.\nI will be stop in 3 seconds..`,
+          keyboard
+        );
 
         setTimeout(() => {
           process.exit(0);
