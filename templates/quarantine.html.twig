@@ -43,6 +43,10 @@
 
                                     </thead>
                                     <tbody>
+                                    {% if quarantines.length == 0 %}
+                                    <tr><td colspan="5" class="text-center">No records found.</td></tr>
+                                    {% endif %}
+
                                     {% for quarantine in quarantines %}
                                         <tr>
                                             <td><img src="/img/exchanges/{{ quarantine.exchange }}.png" alt="{{ quarantine.exchange }}" title="{{ quarantine.exchange }}" width="16px" height="16px"></td>

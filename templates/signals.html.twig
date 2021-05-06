@@ -58,6 +58,10 @@ pre {
 
                                     </thead>
                                     <tbody>
+                                    {% if signal.length == 0 %}
+                                    <tr><td colspan="7" class="text-center">No records found.</td></tr>
+                                    {% endif %}
+
                                     {% for signal in signals %}
                                         <tr>
                                             <td>{{ signal.exchange }}</td>
