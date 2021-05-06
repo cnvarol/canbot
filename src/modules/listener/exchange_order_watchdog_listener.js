@@ -393,7 +393,7 @@ module.exports = class ExchangeOrderWatchdogListener {
       const result = await this.gridTradingCalculator.pumpPattern(
         exchange.getName(),
         position.symbol,
-        options.short_pump_candle_period
+        options.pump_candle_period
       );
 
       if (result.roc_ma) {
