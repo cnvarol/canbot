@@ -1,0 +1,74 @@
+{% extends './layout.html.twig' %}
+
+{% block title %}Quarantine | Crypto Bot{% endblock %}
+
+{% block content %}
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1>Quarantine</h1>
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a href="{{ '/' }}">Dashboard</a></li>
+                            <li class="breadcrumb-item active">Quarantine</li>
+                        </ol>
+                    </div>
+                </div>
+            </div><!-- /.container-fluid -->
+        </section>
+        <!-- /.Content Header (Page header) -->
+
+        <!-- Main content -->
+        <div class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <!-- /.card-header -->
+                            <div class="card-body table-responsive p-0">
+                                <table class="table table-sm table-hover">
+                                    <thead>
+                                    <tr>
+                                        <th scope="col">Exchange</th>
+                                        <th scope="col">Symbol</th>
+                                        <th scope="col">Side</th>
+                                        <th scope="col">Updated</th>
+                                        <th scope="col">Action</th>
+                                    </tr>
+
+                                    </thead>
+                                    <tbody>
+                                    {% for quarantine in quarantines %}
+                                        <tr>
+                                            <td><img :src="`/img/exchanges/{{ quarantine.exchange }}.png`" alt="{{ quarantine.exchange }}" title="{{ quarantine.exchange }}" width="16px" height="16px"></td>
+                                            <td><a target="blank" href="/tradingview/{{ quarantine.exchange }}:{{ quarantine.symbol }}">{{ quarantine.symbol }}</a></td>
+                                            <td>
+                                                {% if quarantine.side == 'long' %}
+                                                    <span class="badge badge-success">long</span>
+                                                {% elseif quarantine.side == 'short' %}
+                                                    <span class="badge badge-danger">short</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>{{ quarantine.updated_at|date('d.m.y H:i') }}</td>
+                                            <td><a href="/quarantine/{{ quarantine.exchange }}/{{ quarantine.symbol }}/{{ quarantine.side }}" class="btn btn-outline-danger btn-xs">Delete</a></td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <!-- /.card-body -->
+                        </div>
+                        <!-- /.card -->
+                    </div>
+                </div>
+                <!-- /.row -->
+            </div><!-- /.container-fluid -->
+        </div>
+        <!-- /.content -->
+    </div>
+{% endblock %}

@@ -221,7 +221,8 @@ module.exports = class GridTradingCalculator {
       }
 
       if (candles.length > 1 && candles[0].time > candles[1].time) {
-        throw new Error('Invalid candlestick order');
+        resolve({});
+        return;
       }
 
       const volSma = SMA.calculate({
@@ -243,7 +244,7 @@ module.exports = class GridTradingCalculator {
         volume_v: currentCandle.volume / currentVolumeSma > 5 ? currentCandle.volume / currentVolumeSma : undefined,
         hint: currentCandle.volume / currentVolumeSma > 5,
         price_trigger: currentCandle.high,
-        roc_ma: (candles.slice(-1)[0].close - candles.slice(-1)[0].open) / candleSizeSma.slice(-1)[0] > 4
+        roc_ma: (candles.slice(-1)[0].close - candles.slice(-1)[0].open) / candleSizeSma.slice(-1)[0] > 6
       });
     });
   }

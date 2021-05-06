@@ -1,0 +1,58 @@
+module.exports = class QuarantineRepository {
+  constructor(db) {
+    this.db = db;
+
+    this.createTable();
+  }
+
+  createTable() {
+    const sql = `CREATE TABLE IF NOT EXISTS quarantines (
+      id         INTEGER PRIMARY KEY AUTOINCREMENT,
+      exchange   VARCHAR(255) NULL,
+      symbol     VARCHAR(255) NULL,
+      side       VARCHAR(50)  NULL,
+      update_at  INT          NULL
+    );`;
+
+    return new Promise(resolve => {
+      const stmt = this.db.prepare(sql);
+      resolve(stmt.run());
+    });
+  }
+
+  get() {
+    return new Promise(resolve => {
+      const stmt = this.db.prepare('SELECT * from quarantines');
+      resolve(stmt.all());
+    });
+  }
+
+  insert(exchange, symbol, side) {
+    const stmt = this.db.prepare(
+      'INSERT INTO quarantines(exchange, symbol, side, update_at) VALUES ($exchange, $symbol, $side, $updatedAt)'
+    );
+
+    stmt.run({
+      exchange: exchange,
+      symbol: symbol,
+      side: side,
+      updatedAt: new Date().getTime()
+    });
+  }
+
+  delete(exchange, symbol, side) {
+    return new Promise(resolve => {
+      const stmt = this.db.prepare(
+        'DELETE FROM quarantines WHERE exchange = $exchange AND symbol = $symbol AND side = $side'
+      );
+
+      stmt.run({
+        exchange: exchange,
+        symbol: symbol,
+        side: side
+      });
+
+      resolve();
+    });
+  }
+};

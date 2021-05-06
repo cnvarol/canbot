@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-bitwise */
 /* eslint-disable no-param-reassign */
@@ -6,7 +7,6 @@ const compression = require('compression');
 const express = require('express');
 const session = require('express-session');
 const twig = require('twig');
-const auth = require('basic-auth');
 const cookieParser = require('cookie-parser');
 const crypto = require('crypto');
 const moment = require('moment');
@@ -29,6 +29,7 @@ module.exports = class Http {
     tickers,
     eventEmitter,
     influxDB,
+    quarantinesHttp,
     projectDir
   ) {
     this.systemUtil = systemUtil;
@@ -44,6 +45,7 @@ module.exports = class Http {
     this.projectDir = projectDir;
     this.tickers = tickers;
     this.eventEmitter = eventEmitter;
+    this.quarantinesHttp = quarantinesHttp;
     this.influxDB = influxDB;
   }
 
@@ -462,6 +464,20 @@ module.exports = class Http {
       setTimeout(() => {
         res.json({ status: 'success' });
       }, 800);
+    });
+
+    app.get('/quarantine', async (req, res) => {
+      res.render('../templates/quarantine.html.twig', {
+        quarantines: await this.quarantinesHttp.get()
+      });
+    });
+
+    app.get('/quarantine/:exchange/:symbol/:side', async (req, res) => {
+      const { exchange, symbol, side } = req.params;
+
+      await this.quarantinesHttp.delete(exchange, symbol, side);
+
+      res.redirect(`/quarantine`);
     });
 
     const { exchangeManager } = this;

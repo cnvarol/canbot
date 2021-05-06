@@ -30,6 +30,7 @@ const CandlestickRepository = require('./repository/candlestick_repository');
 const StrategyManager = require('./strategy/strategy_manager');
 const ExchangeManager = require('./exchange/exchange_manager');
 const InfluxRepository = require('./repository/influx_repository');
+const QuarantineRepository = require('./repository/quarantine_repository');
 
 const Trade = require('./trade');
 const Http = require('./http');
@@ -73,6 +74,7 @@ const CandleExportHttp = require('./system/candle_export_http');
 const CandleImporter = require('./system/candle_importer');
 
 const OrdersHttp = require('./orders/orders_http');
+const QuarantineHttp = require('./quarantine/quarantine_http');
 
 let db;
 let instances;
@@ -97,6 +99,9 @@ let signalRepository;
 let candlestickRepository;
 
 let influxRepository;
+
+let quarantineHttp;
+let quarantineRepository;
 
 let exchangeManager;
 let backtest;
@@ -264,7 +269,8 @@ module.exports = {
       this.getLogger(),
       this.getTickers(),
       this.getNotifier(),
-      this.getThrottler()
+      this.getThrottler(),
+      this.getQuarantineRepository()
     ));
   },
 
@@ -316,6 +322,22 @@ module.exports = {
     const { org, host, token, bucket } = config.influx;
 
     return (influxRepository = new InfluxRepository(host, token, org, bucket, this.getLogger()));
+  },
+
+  getQuarantineHttp: function() {
+    if (quarantineHttp) {
+      return quarantineHttp;
+    }
+
+    return (quarantineHttp = new QuarantineHttp(this.getQuarantineRepository()));
+  },
+
+  getQuarantineRepository: function() {
+    if (quarantineRepository) {
+      return quarantineRepository;
+    }
+
+    return (quarantineRepository = new QuarantineRepository(this.getDatabase()));
   },
 
   getEventEmitter: function() {
@@ -411,6 +433,7 @@ module.exports = {
       this.getTickers(),
       this.getEventEmitter(),
       this.getInfluxRepository(),
+      this.getQuarantineHttp(),
       parameters.projectDir
     );
   },

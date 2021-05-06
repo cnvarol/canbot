@@ -16,7 +16,8 @@ module.exports = class ExchangeOrderWatchdogListener {
     logger,
     tickers,
     notifier,
-    throttler
+    throttler,
+    quarantineRepository
   ) {
     this.exchangeManager = exchangeManager;
     this.instances = instances;
@@ -32,6 +33,7 @@ module.exports = class ExchangeOrderWatchdogListener {
     this.orders = {};
     this.quarantine = {};
     this.throttler = throttler;
+    this.quarantineRepository = quarantineRepository;
   }
 
   onTick() {
@@ -117,8 +119,10 @@ module.exports = class ExchangeOrderWatchdogListener {
     }
 
     this.logger.info(`Watchdog: position closed cleanup orders: ${JSON.stringify([exchangeName, symbol, side])}`);
-    const qKey = exchangeName + symbol + side;
+
+    const qKey = `${exchangeName}:${symbol}:${side}`;
     delete this.quarantine[qKey];
+    this.quarantineRepository.delete(exchangeName, symbol, side);
 
     await this.orderExecutor.cancelSide(exchangeName, symbol, side);
   }
@@ -385,7 +389,7 @@ module.exports = class ExchangeOrderWatchdogListener {
     });
 
     if (options.pump_detection && position.side === 'short') {
-      const qKey = position.exchange + position.symbol + position.side;
+      const qKey = `${exchange.getName()}:${position.symbol}:${position.side}`;
       if (qKey in this.quarantine) {
         return;
       }
@@ -400,6 +404,8 @@ module.exports = class ExchangeOrderWatchdogListener {
         this.quarantine[qKey] = new Date();
 
         await this.orderExecutor.cancelSide(exchange.getName(), position.symbol, position.side);
+
+        this.quarantineRepository.insert(exchange.getName(), position.symbol, position.side);
 
         console.log(`Pump detected for position ${position.symbol} on ${position.side} side.`, result);
 
