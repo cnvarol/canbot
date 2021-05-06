@@ -34,6 +34,8 @@ module.exports = class ExchangeOrderWatchdogListener {
     this.quarantine = {};
     this.throttler = throttler;
     this.quarantineRepository = quarantineRepository;
+
+    this.fillQuarantinelist();
   }
 
   onTick() {
@@ -130,6 +132,15 @@ module.exports = class ExchangeOrderWatchdogListener {
   async onQuarantineDelete(quarantineEvent) {
     const qKey = `${quarantineEvent.exchange}:${quarantineEvent.symbol}:${quarantineEvent.side}`;
     delete this.quarantine[qKey];
+  }
+
+  async fillQuarantinelist() {
+    const rows = await this.quarantineRepository.getAll();
+
+    rows.forEach(r => {
+      const qKey = `${r.exchange}:${r.symbol}:${r.side}`;
+      this.quarantine[qKey] = new Date();
+    });
   }
 
   /**

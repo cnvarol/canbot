@@ -30,7 +30,7 @@ module.exports = class QuarantineRepository {
       );
 
       resolve(
-        stmt.run({
+        stmt.get({
           exchange: exchange,
           symbol: symbol,
           side: side
