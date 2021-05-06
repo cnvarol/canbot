@@ -467,8 +467,9 @@ module.exports = class Http {
     });
 
     app.get('/quarantine', async (req, res) => {
+      const data = await this.quarantinesHttp.getAll();
       res.render('../templates/quarantine.html.twig', {
-        quarantines: await this.quarantinesHttp.getAll()
+        quarantines: data.reverse()
       });
     });
 
