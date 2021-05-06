@@ -67,7 +67,7 @@
                                                 {% endif %}
                                             </td>
                                             <td>{{ quarantine.updated_at|date('d.m.y H:i') }}</td>
-                                            <td><a href="/quarantine/{{ quarantine.exchange }}/{{ quarantine.symbol }}/{{ quarantine.side }}" class="btn btn-outline-danger btn-xs">Delete</a></td>
+                                            <td><a href="/quarantine/{{ quarantine.exchange }}/{{ quarantine.symbol }}/{{ quarantine.side }}" class="btn btn-outline-danger btn-xs"><i class="fa fa-times"></i> Delete</a></td>
                                         </tr>
                                     {% endfor %}
                                     </tbody>
