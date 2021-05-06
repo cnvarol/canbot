@@ -45,7 +45,7 @@
                                         <th scope="col">Exchange</th>
                                         <th scope="col">Symbol</th>
                                         <th scope="col">Side</th>
-                                        <th scope="col">Updated</th>
+                                        <th scope="col">Date</th>
                                         <th scope="col">Action</th>
                                     </tr>
 
@@ -66,7 +66,7 @@
                                                     <span class="badge badge-danger">short</span>
                                                 {% endif %}
                                             </td>
-                                            <td>{{ quarantine.updated_at|date('d.m.y H:i') }}</td>
+                                            <td>{{ quarantine.update_at|date('d.m.y H:i') }}</td>
                                             <td><a href="/quarantine/{{ quarantine.exchange }}/{{ quarantine.symbol }}/{{ quarantine.side }}" class="btn btn-outline-danger btn-xs"><i class="fa fa-times"></i> Delete</a></td>
                                         </tr>
                                     {% endfor %}

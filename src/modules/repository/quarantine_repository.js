@@ -56,14 +56,14 @@ module.exports = class QuarantineRepository {
 
   insert(exchange, symbol, side) {
     const stmt = this.db.prepare(
-      'INSERT INTO quarantines(exchange, symbol, side, update_at) VALUES ($exchange, $symbol, $side, $updatedAt)'
+      'INSERT INTO quarantines(exchange, symbol, side, update_at) VALUES ($exchange, $symbol, $side, $updateAt)'
     );
 
     stmt.run({
       exchange: exchange,
       symbol: symbol,
       side: side,
-      updatedAt: new Date().getTime()
+      updateAt: new Date().getTime()
     });
   }
 
