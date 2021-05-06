@@ -2,6 +2,14 @@
 
 {% block title %}Quarantine | Crypto Bot{% endblock %}
 
+{% block javascript %}
+<script>
+    setInterval(() => {
+        window.location.reload(1);
+    }, 60000);
+</script>
+{% endblock %}
+
 {% block content %}
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">
