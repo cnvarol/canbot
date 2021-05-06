@@ -3,15 +3,13 @@ module.exports = class QuarantineHttp {
     this.quarantineRepository = quarantineRepository;
   }
 
-  async get() {
-    return {};
-    /* const quarantines = await this.quarantineRepository.get();
-    return quarantines; */
+  async getAll() {
+    const quarantines = await this.quarantineRepository.getAll();
+    return quarantines;
   }
 
   async delete(exchange, symbol, side) {
     const result = await this.quarantineRepository.delete(exchange, symbol, side);
-
     return result;
   }
 };

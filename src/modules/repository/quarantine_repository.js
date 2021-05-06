@@ -1,6 +1,9 @@
+const QuarantineEvent = require('../../event/qurantine_event');
+
 module.exports = class QuarantineRepository {
-  constructor(db) {
+  constructor(db, eventEmitter) {
     this.db = db;
+    this.eventEmitter = eventEmitter;
 
     this.createTable();
   }
@@ -20,7 +23,23 @@ module.exports = class QuarantineRepository {
     });
   }
 
-  get() {
+  get(exchange, symbol, side) {
+    return new Promise(resolve => {
+      const stmt = this.db.prepare(
+        'SELECT * FROM quarantines WHERE exchange = $exchange AND symbol = $symbol AND side = $side'
+      );
+
+      resolve(
+        stmt.run({
+          exchange: exchange,
+          symbol: symbol,
+          side: side
+        })
+      );
+    });
+  }
+
+  getAll() {
     return new Promise(resolve => {
       const stmt = this.db.prepare('SELECT * from quarantines');
       resolve(stmt.all());
@@ -51,6 +70,8 @@ module.exports = class QuarantineRepository {
         symbol: symbol,
         side: side
       });
+
+      this.eventEmitter.emit('quarantine_delete', new QuarantineEvent(exchange, symbol, side));
 
       resolve();
     });

@@ -45,7 +45,7 @@
                                     <tbody>
                                     {% for quarantine in quarantines %}
                                         <tr>
-                                            <td><img :src="`/img/exchanges/{{ quarantine.exchange }}.png`" alt="{{ quarantine.exchange }}" title="{{ quarantine.exchange }}" width="16px" height="16px"></td>
+                                            <td><img src="/img/exchanges/{{ quarantine.exchange }}.png" alt="{{ quarantine.exchange }}" title="{{ quarantine.exchange }}" width="16px" height="16px"></td>
                                             <td><a target="blank" href="/tradingview/{{ quarantine.exchange }}:{{ quarantine.symbol }}">{{ quarantine.symbol }}</a></td>
                                             <td>
                                                 {% if quarantine.side == 'long' %}

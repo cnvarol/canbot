@@ -140,5 +140,9 @@ module.exports = class Trade {
     eventEmitter.on(PositionStateChangeEvent.EVENT_NAME, async event => {
       await me.exchangeOrderWatchdogListener.onPositionChanged(event);
     });
+
+    eventEmitter.on('quarantine_delete', async event => {
+      await me.exchangeOrderWatchdogListener.onQuarantineDelete(event);
+    });
   }
 };

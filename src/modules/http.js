@@ -468,7 +468,7 @@ module.exports = class Http {
 
     app.get('/quarantine', async (req, res) => {
       res.render('../templates/quarantine.html.twig', {
-        quarantines: await this.quarantinesHttp.get()
+        quarantines: await this.quarantinesHttp.getAll()
       });
     });
 

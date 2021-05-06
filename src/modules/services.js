@@ -337,7 +337,7 @@ module.exports = {
       return quarantineRepository;
     }
 
-    return (quarantineRepository = new QuarantineRepository(this.getDatabase()));
+    return (quarantineRepository = new QuarantineRepository(this.getDatabase(), this.getEventEmitter()));
   },
 
   getEventEmitter: function() {
