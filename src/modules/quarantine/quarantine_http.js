@@ -12,4 +12,9 @@ module.exports = class QuarantineHttp {
     const result = await this.quarantineRepository.delete(exchange, symbol, side);
     return result;
   }
+
+  async count() {
+    const result = await this.quarantineRepository.count();
+    return result;
+  }
 };

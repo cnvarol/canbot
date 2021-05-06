@@ -69,19 +69,26 @@
                     <a href="{{ '/indicators' }}" class="nav-link">Indicators</a>
                 </li>
                 <li class="nav-item">
-                    <a href="{{ '/trades' }}" class="nav-link">Trades</a>
+                    <a href="{{ '/trades' }}" class="nav-link">
+                        Trades
+                    </a>
                 </li>
                 <li class="nav-item">
                     <a href="{{ '/pairs' }}" class="nav-link">Pairs</a>
                 </li>
                 <li class="nav-item">
-                    <a href="{{ '/orders' }}" class="nav-link">Orders</a>
+                    <a href="{{ '/orders' }}" class="nav-link">
+                        Orders
+                    </a>
                 </li>
                 <li class="nav-item">
                     <a href="{{ '/signals' }}" class="nav-link">Signals</a>
                 </li>
                 <li class="nav-item">
-                    <a href="{{ '/quarantine' }}" class="nav-link">Quarantine</a>
+                    <a href="{{ '/quarantine' }}" class="nav-link">
+                        Quarantine
+                        <sup><span class="badge badge-danger badge-pill badge-navbar hide" id="quarantineCount">0</span></sup>
+                    </a>
                 </li>
                 <li class="nav-item">
                     <a href="{{ '/tools/candles' }}" class="nav-link">Candles</a>
@@ -171,6 +178,29 @@
 <!-- AdminLTE App -->
 <script src="/js/adminlte.min.js?v={{ asset_version() }}"></script>
 <script>
+    async function  fetchCountsData() {
+        const res = await fetch('/api/v1/counts');
+        const data = await res.json();
+
+        if (!data) {
+            return;
+        }
+
+        $(() => {
+            if (data.quarantine > 0) {
+                $('#quarantineCount').text(data.quarantine);
+                $('#quarantineCount').show();
+            }
+
+            if (data.quarantine === 0) {
+                $('#quarantineCount').hide();
+            }
+        });
+    }
+
+    fetchCountsData();
+    setInterval(fetchCountsData, 60000);
+
     // Add Active Navigation Class Based on URL to Menu Item
     $(function () {
         let path = window.location.href; // because the 'href' property of the DOM element is the absolute path

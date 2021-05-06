@@ -43,6 +43,16 @@ nav {
     background-color: #20c997 !important;
 }
 
+.badge-navbar {
+  position: absolute;
+  top: 0;
+  padding-top: 0.3em;
+}
+
+.hide {
+  display: none;
+}
+
 /* Medium devices (tablets, 768px and up) */
 @media (min-width: 768px) {
     .span-md {

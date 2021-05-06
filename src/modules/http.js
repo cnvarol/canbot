@@ -480,6 +480,12 @@ module.exports = class Http {
       res.redirect(`/quarantine`);
     });
 
+    app.get('/api/v1/counts', async (req, res) => {
+      const data = { quarantine: await this.quarantinesHttp.count() };
+
+      res.json(data);
+    });
+
     const { exchangeManager } = this;
     app.get('/order/:exchange/:id', async (req, res) => {
       const exchangeName = req.params.exchange;

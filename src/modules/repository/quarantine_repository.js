@@ -39,6 +39,14 @@ module.exports = class QuarantineRepository {
     });
   }
 
+  count() {
+    return new Promise(resolve => {
+      const stmt = this.db.prepare('SELECT count(*) AS count FROM quarantines');
+
+      resolve(stmt.get().count);
+    });
+  }
+
   getAll() {
     return new Promise(resolve => {
       const stmt = this.db.prepare('SELECT * from quarantines');
