@@ -178,7 +178,7 @@
                             </div>
                         </div>
                         <div class="card-body">
-                            <highcharts :ref="highcharts" :options="chartOptions"></highcharts>
+                            <highcharts ref="highcharts" :options="chartOptions"></highcharts>
                         </div>
                     </div>
                 </div>
