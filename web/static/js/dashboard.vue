@@ -16,6 +16,10 @@
   height: 4em;
 }
 
+.dark-mode .highcharts-loading {
+  background: var(--dark);
+}
+
 .dark-mode .highcharts-loading-inner,
 .dark-mode .highcharts-loading-inner:before,
 .dark-mode .highcharts-loading-inner:after {
