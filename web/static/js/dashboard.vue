@@ -310,13 +310,15 @@ module.exports = {
       };
   },
   created: function() {
-      setTimeout(this.fetchChartData(this.chartDuration, this.chartEvery), 250);
       this.fetchDailyData();
       this.fetchLastRiskRatio();
       this.fetchLastWalletBalance();
       this.fetchTodaysPNL();
       this.fetchTodaysChanges();
       this.timer = setInterval(this.fetchAll, 30000);
+  },
+  mounted: function() {
+      this.fetchChartData(this.chartDuration, this.chartEvery);
   },
   methods: {
     async fetchAll() {
