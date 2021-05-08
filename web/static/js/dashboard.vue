@@ -21,7 +21,7 @@
   opacity: 1 !important;
 }
 
-.dark-mode .highcharts-loading-inner,
+/* .dark-mode .highcharts-loading-inner,
 .dark-mode .highcharts-loading-inner:before,
 .dark-mode .highcharts-loading-inner:after {
   background: var(--dark);
@@ -29,7 +29,7 @@
   animation: load1 1s infinite ease-in-out;
   width: 1em;
   height: 4em;
-}
+} */
 
 .highcharts-loading-inner {
   color: #dfdfdf;
@@ -45,7 +45,7 @@
   animation-delay: -0.16s;
 }
 
-.dark-mode .highcharts-loading-inner {
+/* .dark-mode .highcharts-loading-inner {
   color: var(--dark);
   text-indent: -9999em;
   margin: 0 auto;
@@ -57,7 +57,7 @@
   transform: translate3d(-50%, -50%, 0);
   -webkit-animation-delay: -0.16s;
   animation-delay: -0.16s;
-}
+} */
 
 .highcharts-loading-inner:before,
 .highcharts-loading-inner:after {
