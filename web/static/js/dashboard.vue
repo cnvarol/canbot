@@ -12,8 +12,8 @@
   background: #dfdfdf;
   -webkit-animation: load1 1s infinite ease-in-out;
   animation: load1 1s infinite ease-in-out;
-  width: 1em;
-  height: 4em;
+  width: 0.75em;
+  height: 3em;
 }
 
 .dark-mode .highcharts-loading {
