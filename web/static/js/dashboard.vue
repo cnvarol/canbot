@@ -411,9 +411,8 @@ module.exports = {
 
       const data = await res.json();
 
-      chart.hideLoading();
-
       if (!data.length) {
+        chart.hideLoading();
         return;
       }
 
@@ -422,6 +421,8 @@ module.exports = {
       data.forEach(d => {
           this.chartOptions.series[0].data.push([new Date(d['_time']).getTime(), d['_value']]);
       });
+
+      chart.hideLoading();
     }
   },
   beforeDestroy() {
