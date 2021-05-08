@@ -171,7 +171,9 @@ module.exports = class TickListener {
     }).resolvedOptions().maximumFractionDigits;
 
     const toCurrency = value => {
-      parseFloat(value).toLocaleString('en-US', { maximumFractionDigits: currencyFractionDigits });
+      parseFloat(value)
+        .toFixed(2)
+        .toLocaleString('en-US', { maximumFractionDigits: currencyFractionDigits });
     };
 
     const binanceFutures = this.exchangeManager.get('binance_futures');
@@ -185,10 +187,10 @@ module.exports = class TickListener {
       const riskRatio = (balances.info.totalMaintMargin / balances.info.totalMarginBalance) * 100;
 
       ctx.reply(`Wallet Balance: *${toCurrency(balances.info.totalWalletBalance)}* USDT
-Available Balance: ${toCurrency(balances.info.availableBalance).toFixed(2)} USDT
-Maintenance Margin: ${toCurrency(balances.info.totalMaintMargin).toFixed(2)} USDT
-Margin Balance: ${toCurrency(balances.info.totalMarginBalance).toFixed(2)} USDT
-Unrealized PNL: ${toCurrency(balances.info.totalUnrealizedProfit).toFixed(2)} USDT
+Available Balance: ${toCurrency(balances.info.availableBalance)} USDT
+Maintenance Margin: ${toCurrency(balances.info.totalMaintMargin)} USDT
+Margin Balance: ${toCurrency(balances.info.totalMarginBalance)} USDT
+Unrealized PNL: ${toCurrency(balances.info.totalUnrealizedProfit)} USDT
 Margin Risk Ratio: ${riskRatio.toFixed(2)}%`);
     } else {
       ctx.reply('Error occurred while getting balances!');
