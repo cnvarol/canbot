@@ -366,7 +366,9 @@ module.exports = {
       this.chartEvery = every;
 
 
-      this.$refs.highcharts.chart.showLoading();
+      const chart = this.$refs.highcharts;
+
+      chart.showLoading();
 
       const res = await fetch(`/api/v1/chartData/account/pnl?start=${duration}&every=${every}&fn=sum&createEmpty=true`);
       if (res.status === 403) {
@@ -376,7 +378,7 @@ module.exports = {
 
       const data = await res.json();
 
-      this.$refs.highcharts.chart.hideLoading();
+      chart.hideLoading();
 
       if (!data.length) {
         return;
