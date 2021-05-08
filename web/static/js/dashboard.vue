@@ -78,11 +78,11 @@
   80%,
   100% {
     box-shadow: 0 0;
-    height: 4em;
+    height: 3em;
   }
   40% {
     box-shadow: 0 -2em;
-    height: 5em;
+    height: 4em;
   }
 }
 @keyframes load1 {
@@ -90,11 +90,11 @@
   80%,
   100% {
     box-shadow: 0 0;
-    height: 4em;
+    height: 3em;
   }
   40% {
     box-shadow: 0 -2em;
-    height: 5em;
+    height: 4em;
   }
 }
 .dark-mode .highcharts-background {
