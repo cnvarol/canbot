@@ -366,8 +366,8 @@ module.exports = {
       this.chartEvery = every;
 
 
-      this.chart.showLoading();
-      
+      this.$refs.chart.showLoading();
+
       const res = await fetch(`/api/v1/chartData/account/pnl?start=${duration}&every=${every}&fn=sum&createEmpty=true`);
       if (res.status === 403) {
         window.location.href = '/login?return=/';
@@ -376,7 +376,7 @@ module.exports = {
 
       const data = await res.json();
 
-      this.chart.hideLoading();
+      this.$refs.chart.hideLoading();
 
       if (!data.length) {
         return;
