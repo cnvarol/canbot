@@ -1,6 +1,6 @@
 <style>
 .highcharts-loading {
-  opacity: 1!important;
+  opacity: 1 !important;
 }
 .highcharts-loading-inner {
   display: block;
@@ -17,7 +17,8 @@
 }
 
 .dark-mode .highcharts-loading {
-  background: var(--dark);
+  background-color: var(--dark) !important;
+  opacity: 1 !important;
 }
 
 .dark-mode .highcharts-loading-inner,
