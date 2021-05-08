@@ -229,6 +229,7 @@ module.exports = class ExchangeOrderWatchdogListener {
       risk_notify: true,
       risk_size: 5000,
       risk_take_profit: 0.75,
+      quarantine_after: 1000 * 1000,
       pump_detection: false,
       pump_candle_period: '15m'
     }
@@ -416,7 +417,7 @@ module.exports = class ExchangeOrderWatchdogListener {
         options.pump_candle_period
       );
 
-      if (result.roc_ma) {
+      if (result.roc_ma || size >= options.quarantine_after) {
         this.quarantine[qKey] = new Date();
 
         await this.orderExecutor.cancelSide(exchange.getName(), position.symbol, position.side);
