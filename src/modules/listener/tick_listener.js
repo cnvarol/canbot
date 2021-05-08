@@ -165,7 +165,7 @@ module.exports = class TickListener {
   }
 
   async getBalances(ctx) {
-    const toCurrency = value => {
+    const toCurrency = function(value) {
       Number(value).toLocaleString('en-US', { maximumFractionDigits: 2 });
     };
 
