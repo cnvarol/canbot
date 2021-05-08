@@ -422,7 +422,9 @@ module.exports = {
           this.chartOptions.series[0].data.push([new Date(d['_time']).getTime(), d['_value']]);
       });
 
-      setTimeout(this.$refs.highcharts.chart.hideLoading, 250);
+      setTimeout( () => {
+          chart.hideLoading();
+      }, 250);
     }
   },
   beforeDestroy() {
