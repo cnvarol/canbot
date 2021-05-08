@@ -187,6 +187,9 @@ module.exports = {
                     marker: {
                         lineWidth: 2
                     }
+                },
+                series: {
+                    animation: false
                 }
             },
             xAxis: {
