@@ -178,7 +178,7 @@
                             </div>
                         </div>
                         <div class="card-body">
-                            <highcharts :ref="chart" :options="chartOptions"></highcharts>
+                            <highcharts :ref="highcharts" :options="chartOptions"></highcharts>
                         </div>
                     </div>
                 </div>
@@ -366,7 +366,7 @@ module.exports = {
       this.chartEvery = every;
 
 
-      this.$refs.chart.showLoading();
+      this.$refs.highcharts.chart.showLoading();
 
       const res = await fetch(`/api/v1/chartData/account/pnl?start=${duration}&every=${every}&fn=sum&createEmpty=true`);
       if (res.status === 403) {
@@ -376,7 +376,7 @@ module.exports = {
 
       const data = await res.json();
 
-      this.$refs.chart.hideLoading();
+      this.$refs.highcharts.chart.hideLoading();
 
       if (!data.length) {
         return;
