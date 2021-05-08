@@ -15,6 +15,17 @@
   width: 1em;
   height: 4em;
 }
+
+.dark-mode .highcharts-loading-inner,
+.dark-mode .highcharts-loading-inner:before,
+.dark-mode .highcharts-loading-inner:after {
+  background: var(--dark);
+  -webkit-animation: load1 1s infinite ease-in-out;
+  animation: load1 1s infinite ease-in-out;
+  width: 1em;
+  height: 4em;
+}
+
 .highcharts-loading-inner {
   color: #dfdfdf;
   text-indent: -9999em;
@@ -28,6 +39,11 @@
   -webkit-animation-delay: -0.16s;
   animation-delay: -0.16s;
 }
+
+.dark-mode .highcharts-loading-inner {
+  color: var(--dark);
+}
+
 .highcharts-loading-inner:before,
 .highcharts-loading-inner:after {
   position: absolute;
