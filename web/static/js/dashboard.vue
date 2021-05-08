@@ -12,8 +12,8 @@
   background: #dfdfdf;
   -webkit-animation: load1 1s infinite ease-in-out;
   animation: load1 1s infinite ease-in-out;
-  width: 0.75em;
-  height: 3em;
+  width: 1em;
+  height: 4em;
 }
 
 .dark-mode .highcharts-loading {
@@ -78,11 +78,11 @@
   80%,
   100% {
     box-shadow: 0 0;
-    height: 3em;
+    height: 4em;
   }
   40% {
     box-shadow: 0 -2em;
-    height: 4em;
+    height: 5em;
   }
 }
 @keyframes load1 {
@@ -90,11 +90,11 @@
   80%,
   100% {
     box-shadow: 0 0;
-    height: 3em;
+    height: 4em;
   }
   40% {
     box-shadow: 0 -2em;
-    height: 4em;
+    height: 5em;
   }
 }
 .dark-mode .highcharts-background {
