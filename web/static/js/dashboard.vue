@@ -366,7 +366,7 @@ module.exports = {
       this.chartEvery = every;
 
 
-      const chart = this.$refs.highcharts;
+      const chart = this.$refs.highcharts.chart;
 
       chart.showLoading();
 
