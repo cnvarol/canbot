@@ -165,8 +165,8 @@ module.exports = class TickListener {
   }
 
   async getBalances(ctx) {
-    const toCurrency = function(value) {
-      Number(value).toLocaleString('en-US', { maximumFractionDigits: 2 });
+    const toCurrency = value => {
+      return Number(value).toLocaleString('en-US', { maximumFractionDigits: 2 });
     };
 
     const binanceFutures = this.exchangeManager.get('binance_futures');
