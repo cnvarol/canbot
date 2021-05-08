@@ -165,15 +165,10 @@ module.exports = class TickListener {
   }
 
   async getBalances(ctx) {
-    const currencyFractionDigits = new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD'
-    }).resolvedOptions().maximumFractionDigits;
-
     const toCurrency = value => {
-      parseFloat(value)
+      Number(value)
         .toFixed(2)
-        .toLocaleString('en-US', { maximumFractionDigits: currencyFractionDigits });
+        .toLocaleString('en-US');
     };
 
     const binanceFutures = this.exchangeManager.get('binance_futures');
@@ -186,7 +181,7 @@ module.exports = class TickListener {
     if (balances.info) {
       const riskRatio = (balances.info.totalMaintMargin / balances.info.totalMarginBalance) * 100;
 
-      ctx.reply(`Wallet Balance: *${toCurrency(balances.info.totalWalletBalance)}* USDT
+      ctx.reply(`Wallet Balance: ${toCurrency(balances.info.totalWalletBalance)} USDT
 Available Balance: ${toCurrency(balances.info.availableBalance)} USDT
 Maintenance Margin: ${toCurrency(balances.info.totalMaintMargin)} USDT
 Margin Balance: ${toCurrency(balances.info.totalMarginBalance)} USDT
