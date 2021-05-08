@@ -101,7 +101,7 @@
                                     <a href="#" class="dropdown-item" v-on:click.prevent="fetchChartData('-2d', '1h'); chartDurationText='Past 2d'">Past 2d</a>
                                     <a href="#" class="dropdown-item" v-on:click.prevent="fetchChartData('-7d', '6h'); chartDurationText='Past 7d'">Past 7d</a>
                                     <a href="#" class="dropdown-item" v-on:click.prevent="fetchChartData('-30d', '1d'); chartDurationText='Past 30d'">Past 30d</a>
-                                    <a href="#" class="dropdown-item" v-on:click.prevent="fetchChartData('-90d', '3d'); chartDurationText='Past 90d'">Past 90d</a>
+                                    <a href="#" class="dropdown-item" v-on:click.prevent="fetchChartData('-90d', '1d'); chartDurationText='Past 90d'">Past 90d</a>
                                 </div>
                                 <button type="button" class="btn btn-tool" v-on:click="fetchChartData(chartDuration, chartEvery)">
                                     <i class="fas fa-sync-alt"></i>
