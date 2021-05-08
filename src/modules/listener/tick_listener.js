@@ -165,6 +165,15 @@ module.exports = class TickListener {
   }
 
   async getBalances(ctx) {
+    const currencyFractionDigits = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD'
+    }).resolvedOptions().maximumFractionDigits;
+
+    const toCurrency = value => {
+      parseFloat(value).toLocaleString('en-US', { maximumFractionDigits: currencyFractionDigits });
+    };
+
     const binanceFutures = this.exchangeManager.get('binance_futures');
     if (!binanceFutures) {
       ctx.reply('Balances not found');
@@ -175,13 +184,14 @@ module.exports = class TickListener {
     if (balances.info) {
       const riskRatio = (balances.info.totalMaintMargin / balances.info.totalMarginBalance) * 100;
 
-      ctx.reply(`Wallet Balance: ${parseFloat(balances.info.totalWalletBalance).toFixed(2)} USDT
-Maintenance Margin: ${parseFloat(balances.info.totalMaintMargin).toFixed(2)} USDT
-Margin Balance: ${parseFloat(balances.info.totalMarginBalance).toFixed(2)} USDT
-Unrealized PNL: ${parseFloat(balances.info.totalUnrealizedProfit).toFixed(2)} USDT
+      ctx.reply(`Wallet Balance: *${toCurrency(balances.info.totalWalletBalance)}* USDT
+Available Balance: ${toCurrency(balances.info.availableBalance).toFixed(2)} USDT
+Maintenance Margin: ${toCurrency(balances.info.totalMaintMargin).toFixed(2)} USDT
+Margin Balance: ${toCurrency(balances.info.totalMarginBalance).toFixed(2)} USDT
+Unrealized PNL: ${toCurrency(balances.info.totalUnrealizedProfit).toFixed(2)} USDT
 Margin Risk Ratio: ${riskRatio.toFixed(2)}%`);
     } else {
-      ctx.reply('Balances not found');
+      ctx.reply('Error occurred while getting balances!');
     }
   }
 
