@@ -9,7 +9,7 @@
 .highcharts-loading-inner,
 .highcharts-loading-inner:before,
 .highcharts-loading-inner:after {
-  background: #dfdfdf;
+  /* background: #dfdfdf; */
   -webkit-animation: load1 1s infinite ease-in-out;
   animation: load1 1s infinite ease-in-out;
   width: 1em;
@@ -279,7 +279,7 @@ module.exports = {
       };
   },
   created: function() {
-      this.fetchChartData(this.chartDuration, this.chartEvery);
+      setTimeout(this.fetchChartData(this.chartDuration, this.chartEvery), 250);
       this.fetchDailyData();
       this.fetchLastRiskRatio();
       this.fetchLastWalletBalance();
