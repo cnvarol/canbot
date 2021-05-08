@@ -42,6 +42,16 @@
 
 .dark-mode .highcharts-loading-inner {
   color: var(--dark);
+  text-indent: -9999em;
+  margin: 0 auto;
+  top: 50%!important;
+  position: relative;
+  font-size: 11px;
+  -webkit-transform: translate3d(-50%, -50%, 0);
+  -ms-transform: translate3d(-50%, -50%, 0);
+  transform: translate3d(-50%, -50%, 0);
+  -webkit-animation-delay: -0.16s;
+  animation-delay: -0.16s;
 }
 
 .highcharts-loading-inner:before,
