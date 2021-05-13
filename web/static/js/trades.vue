@@ -125,6 +125,10 @@
         <template slot="size" slot-scope="props">{{ props.cell_value|filter_price }} <small>USDT</small></template>
         <template slot="entry_price" slot-scope="props">{{ props.cell_value|filter_price }} <small>USDT</small></template>
         <template slot="mark_price" slot-scope="props">{{ props.cell_value|filter_price }} <small>USDT</small></template>
+        <template slot="liq_price" slot-scope="props">
+          <span class="text-warning" v-if="props.cell_value !== '0'">{{ props.cell_value|filter_price }} <small>USDT</small></span>
+          <span v-if="props.cell_value === '0'">-</span>
+        </template>
         <template slot="margin" slot-scope="props">
           {{ (props.row.currency / props.row.position.raw.leverage) + (props.row.position.raw.unRealizedProfit / props.row.position.raw.leverage)|filter_price }}
           (<small>{{ props.cell_value }}</small>)
@@ -367,6 +371,13 @@ module.exports = {
               name: "position.raw.markPrice",
               slot_name: "mark_price",
               sort: true,
+              row_text_alignment:  "text-left",
+              column_text_alignment:  "text-left"
+          },
+          {
+              label: "Liq. Price",
+              name: "position.raw.liquidationPrice",
+              slot_name: "liq_price",
               row_text_alignment:  "text-left",
               column_text_alignment:  "text-left"
           },
