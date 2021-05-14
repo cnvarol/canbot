@@ -97,7 +97,7 @@
                 </div>
                 <div class="col-md-4 text-center">
                   <h5 class="text-teal">BNB</h5>
-                  <h5>{{ balances.BNB.total|filter_price }} <small>BNB</small><br></h5>
+                  <h5>{{ balances.BNB.total|round(2) }} <small>BNB</small><br></h5>
                 </div>
               </div>
             </div>
