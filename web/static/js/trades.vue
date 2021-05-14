@@ -68,15 +68,15 @@
               <div class="row justify-content-md-center">
                 <div class="col-md-4 border-right text-center">
                   <h5 class="text-teal">Maint.</h5>
-                  <h5>{{ balances.info.totalMaintMargin|round }} <small>USDT</small></h5>
+                  <h5>{{ balances.info.totalMaintMargin|filter_price }}</h5>
                 </div>
                 <div class="col-md-4 border-right text-center">
                   <h5 class="text-teal">Balance</h5>
-                  <h5>{{ balances.info.totalMarginBalance|round }} <small>USDT</small></h5>
+                  <h5>{{ balances.info.totalMarginBalance|filter_price }}</h5>
                 </div>
                 <div class="col-md-4 text-center">
                   <h5 class="text-teal">Available</h5>
-                  <h5>{{ balances.info.availableBalance|round }} <small>USDT</small></h5>
+                  <h5>{{ balances.info.availableBalance|filter_price }}</h5>
                 </div>
               </div>
             </div>
@@ -89,11 +89,11 @@
               <div class="row justify-content-md-center">
                 <div class="col-md-4 border-right text-center">
                   <h5 class="text-teal">Wallet</h5>
-                  <h5>{{ balances.info.totalWalletBalance|round }} <small>USDT</small></h5>
+                  <h5>{{ balances.info.totalWalletBalance|filter_price }}</h5>
                 </div>
                 <div class="col-md-4 border-right text-center">
                   <h5 class="text-teal">Curr PNL</h5>
-                  <h5>{{ balances.info.totalUnrealizedProfit|round }} <small>USDT</small></h5>
+                  <h5>{{ balances.info.totalUnrealizedProfit|filter_price }}</h5>
                 </div>
                 <div class="col-md-4 text-center">
                   <h5 class="text-teal">BNB</h5>
@@ -108,7 +108,7 @@
     <template>
       <div class="card card-outline card-teal">
       <div class="card-header border-bottom-0">
-        <h3 class="card-title">Positions ({{ positions.length }}) - <span class="text-teal">Open long: {{ totalLongPosition.toFixed(0) }} <small>USDT</small></span> - <span class="text-danger">Open short: {{ totalShortPosition.toFixed(0) }} <small>USDT</small></span></h3> <span class="text-muted float-right"><transition name="slide-fade" mode="out-in"><div :key="positionsUpdatedAt">{{ positionsUpdatedAt }}</div></transition></span>
+        <h3 class="card-title">Positions ({{ positions.length }}) - <span class="text-teal">Open long: {{ totalLongPosition.toFixed(0) }}</span> - <span class="text-danger">Open short: {{ totalShortPosition.toFixed(0) }}</span></h3> <span class="text-muted float-right"><transition name="slide-fade" mode="out-in"><div :key="positionsUpdatedAt">{{ positionsUpdatedAt }}</div></transition></span>
       </div>
       <div class="card-body">
       <div class="table-responsive">
@@ -122,11 +122,11 @@
           <a target="blank" :href="'/tradingview/' + props.row.exchange + ':' + props.cell_value">{{ props.cell_value }}</a> 
           <small class="text-warning">[{{ props.row.position.raw.leverage }}x]</small>
         </template>
-        <template slot="size" slot-scope="props">{{ props.cell_value|filter_price }} <small>USDT</small></template>
-        <template slot="entry_price" slot-scope="props">{{ props.cell_value|filter_price }} <small>USDT</small></template>
-        <template slot="mark_price" slot-scope="props">{{ props.cell_value|filter_price }} <small>USDT</small></template>
+        <template slot="size" slot-scope="props">{{ props.cell_value|filter_price }}</template>
+        <template slot="entry_price" slot-scope="props">{{ props.cell_value|filter_price }}</template>
+        <template slot="mark_price" slot-scope="props">{{ props.cell_value|filter_price }}</template>
         <template slot="liq_price" slot-scope="props">
-          <span class="text-warning" v-if="props.cell_value !== '0'">{{ props.cell_value|filter_price }} <small>USDT</small></span>
+          <span class="text-warning" v-if="props.cell_value !== '0'">{{ props.cell_value|filter_price }}</span>
           <span v-if="props.cell_value === '0'">-</span>
         </template>
         <template slot="margin" slot-scope="props">
@@ -173,9 +173,9 @@
             <template slot="side" slot-scope="props">
               <span class="badge" v-bind:class="{'badge-danger': props.row.sideStatus.includes('Short'), 'badge-success': props.row.sideStatus.includes('Long')}">{{props.row.sideStatus}}</span>
             </template>
-            <template slot="currency" slot-scope="props">{{ props.cell_value|filter_price }} <small>USDT</small></template>
+            <template slot="currency" slot-scope="props">{{ props.cell_value|filter_price }}</template>
             <template slot="price" slot-scope="props">
-              {{ props.cell_value|filter_price }} <small>USDT</small> 
+              {{ props.cell_value|filter_price }} 
               <span v-if="props.row.percent_to_price" title="Percent to current price" v-bind:class="{ 'text-teal': props.row.percent_to_price > 0, 'text-danger': props.row.percent_to_price < 0 }">({{ props.row.percent_to_price|round(2) }}%)</span>
             </template>
             <template slot="retry" slot-scope="props">
