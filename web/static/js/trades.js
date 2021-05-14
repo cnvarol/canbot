@@ -18,7 +18,10 @@ Vue.filter('filter_price', function(value) {
 });
 
 Vue.filter('round', function(value, decimalPlaces = 0) {
-  return Number(value).toLocaleString('en-US', { minimumFractionDigits: decimalPlaces, maximumFractionDigits: decimalPlaces });
+  return Number(value).toLocaleString('en-US', {
+    minimumFractionDigits: decimalPlaces,
+    maximumFractionDigits: decimalPlaces
+  });
 });
 
 Vue.filter('date', function(value) {

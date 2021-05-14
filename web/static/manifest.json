@@ -14,5 +14,6 @@
     "background_color": "#454d55",
     "start_url": "/",
     "scope": "/",
-    "display": "fullscreen"
+    "display": "standalone",
+    "display_override": ["tabbed"]
   }

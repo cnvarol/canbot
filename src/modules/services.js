@@ -62,6 +62,7 @@ const Bitmex = require('../exchange/bitmex');
 const BitmexTestnet = require('../exchange/bitmex_testnet');
 const Binance = require('../exchange/binance');
 const BinanceFutures = require('../exchange/binance_futures');
+const BinanceDelivery = require('../exchange/binance_delivery');
 const BinanceMargin = require('../exchange/binance_margin');
 const Bitfinex = require('../exchange/bitfinex');
 const CoinbasePro = require('../exchange/coinbase_pro');
@@ -703,6 +704,16 @@ module.exports = {
         this.getCandleImporter()
       ),
       new BinanceFutures(
+        this.getEventEmitter(),
+        this.getRequestClient(),
+        this.getCandlestickResample(),
+        this.getLogger(),
+        this.getQueue(),
+        this.getCandleImporter(),
+        this.getThrottler(),
+        this.getInfluxRepository()
+      ),
+      new BinanceDelivery(
         this.getEventEmitter(),
         this.getRequestClient(),
         this.getCandlestickResample(),
