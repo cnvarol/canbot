@@ -108,7 +108,7 @@
     <template>
       <div class="card card-outline card-teal">
       <div class="card-header border-bottom-0">
-        <h3 class="card-title">Positions ({{ positions.length }}) - <span class="text-teal">Open long: {{ totalLongPosition.toFixed(0) }}</span> - <span class="text-danger">Open short: {{ totalShortPosition.toFixed(0) }}</span></h3> <span class="text-muted float-right"><transition name="slide-fade" mode="out-in"><div :key="positionsUpdatedAt">{{ positionsUpdatedAt }}</div></transition></span>
+        <h3 class="card-title">Positions ({{ positions.length }}) - <span class="text-teal">Open long: {{ totalLongPosition|filter_price }}</span> - <span class="text-danger">Open short: {{ totalShortPosition|filter_price }}</span></h3> <span class="text-muted float-right"><transition name="slide-fade" mode="out-in"><div :key="positionsUpdatedAt">{{ positionsUpdatedAt }}</div></transition></span>
       </div>
       <div class="card-body">
       <div class="table-responsive">
