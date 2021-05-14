@@ -12,6 +12,16 @@ Vue.filter('filter_price', function(value) {
     }).format(value);
   }
 
+  if (parseFloat(value) > 100 * 1000) {
+    return Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      useGrouping: true,
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(value);
+  }
+
   return Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
