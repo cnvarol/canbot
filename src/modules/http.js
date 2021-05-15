@@ -838,6 +838,11 @@ module.exports = class Http {
       mySymbol += 'PERP';
     }
 
+    if (mySymbol.includes('binance_delivery')) {
+      mySymbol = mySymbol.replace('binance_delivery', 'binance');
+      mySymbol = mySymbol.replace('USD_', '');
+    }
+
     return mySymbol
       .replace('-', '')
       .replace('coinbase_pro', 'coinbase')
