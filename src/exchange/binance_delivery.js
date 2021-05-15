@@ -497,8 +497,8 @@ module.exports = class BinanceDelivery {
 
     const riskRatio = maintMargin.div(marginBalance).mul(100);
 
-    await this.influxDB.writeFloat('account', 'balance', walletBalance.toNumber());
-    await this.influxDB.writeFloat('account', 'riskratio', riskRatio.toNumber());
+    // await this.influxDB.writeFloat('account', 'balance', walletBalance.toNumber());
+    // await this.influxDB.writeFloat('account', 'riskratio', riskRatio.toNumber());
 
     this.logger.debug(`Binance Delivery: balances updates`);
   }
