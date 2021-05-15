@@ -198,6 +198,8 @@
 </template>
 
 <script>
+let title = document.title;
+
 module.exports = {
   data: function() {
     return {
@@ -457,6 +459,7 @@ module.exports = {
       this.balances.info.assets.forEach(asset => {
         if (asset.asset === event.target.value) {
           this.asset = asset;
+          document.title = `Unrealized PNL ${parseFloat(asset.unrealizedProfit).toFixed(5)} | ${title}`;
         }
       });
     },
@@ -620,6 +623,7 @@ module.exports = {
       this.balances.info.assets.forEach(asset => {
         if (asset.asset === this.assetName) {
           this.asset = asset;
+          document.title = `Unrealized PNL ${parseFloat(asset.unrealizedProfit).toFixed(5)} | ${title}`;
         }
       });
 
