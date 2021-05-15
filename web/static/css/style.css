@@ -57,6 +57,10 @@ nav {
   font-size: 0.9rem !important;
 }
 
+.content-header h1 {
+  font-size: 1.5rem;
+}
+
 /* Medium devices (tablets, 768px and up) */
 @media (min-width: 768px) {
     .span-md {

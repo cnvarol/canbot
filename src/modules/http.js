@@ -679,7 +679,8 @@ module.exports = class Http {
 
           if (
             (exchangeName.includes('bitmex') && ['XBTUSD', 'ETHUSD'].includes(position.symbol)) ||
-            exchangeName.includes('bybit')
+            exchangeName.includes('bybit') ||
+            exchangeName.includes('binance_delivery')
           ) {
             // inverse exchanges
             currencyValue = Math.abs(position.amount);
