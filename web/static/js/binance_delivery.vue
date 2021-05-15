@@ -459,7 +459,7 @@ module.exports = {
       this.balances.info.assets.forEach(asset => {
         if (asset.asset === event.target.value) {
           this.asset = asset;
-          document.title = `Unrealized PNL ${parseFloat(asset.unrealizedProfit).toFixed(5)} | ${title}`;
+          document.title = `Unrealized PNL ${parseFloat(asset.unrealizedProfit).toFixed(5)} ${asset.asset} | ${title}`;
         }
       });
     },
@@ -623,7 +623,7 @@ module.exports = {
       this.balances.info.assets.forEach(asset => {
         if (asset.asset === this.assetName) {
           this.asset = asset;
-          document.title = `Unrealized PNL ${parseFloat(asset.unrealizedProfit).toFixed(5)} | ${title}`;
+          document.title = `Unrealized PNL ${parseFloat(asset.unrealizedProfit).toFixed(5)} ${asset.asset} | ${title}`;
         }
       });
 
