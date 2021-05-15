@@ -43,9 +43,10 @@
                                     <thead>
                                     <tr>
                                         <th scope="col" width="10%" nowrap>Exchange</th>
-                                        <th scope="col" width="25%">Symbol</th>
-                                        <th scope="col" width="25%">Side</th>
-                                        <th scope="col" width="25%">Date</th>
+                                        <th scope="col" width="20%">Symbol</th>
+                                        <th scope="col" width="20%">Side</th>
+                                        <th scope="col" width="20%">Reason</th>
+                                        <th scope="col" width="20%">Date</th>
                                         <th scope="col">Action</th>
                                     </tr>
 
@@ -66,6 +67,7 @@
                                                     <span class="badge badge-danger">short</span>
                                                 {% endif %}
                                             </td>
+                                            <td>{{ quarantine.reason }}</td>
                                             <td>{{ (quarantine.update_at / 1000)|date('d.m.y H:i') }}</td>
                                             <td><a href="/quarantine/{{ quarantine.exchange }}/{{ quarantine.symbol }}/{{ quarantine.side }}" class="btn btn-outline-danger btn-xs"><i class="fa fa-times"></i> Delete</a></td>
                                         </tr>

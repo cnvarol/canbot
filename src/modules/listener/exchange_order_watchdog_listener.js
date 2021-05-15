@@ -422,7 +422,8 @@ module.exports = class ExchangeOrderWatchdogListener {
 
         await this.orderExecutor.cancelSide(exchange.getName(), position.symbol, position.side);
 
-        this.quarantineRepository.insert(exchange.getName(), position.symbol, position.side);
+        const reason = result.roc_ma ? 'Pump detected' : 'Risk size';
+        this.quarantineRepository.insert(exchange.getName(), position.symbol, position.side, reason);
 
         console.log(`Pump detected for position ${position.symbol} on ${position.side} side.`, result);
 

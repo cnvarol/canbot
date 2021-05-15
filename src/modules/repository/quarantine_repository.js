@@ -6,6 +6,7 @@ module.exports = class QuarantineRepository {
     this.eventEmitter = eventEmitter;
 
     this.createTable();
+    this.alterTable();
   }
 
   createTable() {
@@ -14,8 +15,19 @@ module.exports = class QuarantineRepository {
       exchange   VARCHAR(255) NULL,
       symbol     VARCHAR(255) NULL,
       side       VARCHAR(50)  NULL,
+      reason     VARCHAR(50)  NULL,
       update_at  INT          NULL
     );`;
+
+    return new Promise(resolve => {
+      const stmt = this.db.prepare(sql);
+      resolve(stmt.run());
+    });
+  }
+
+  alterTable() {
+    const sql = `ALTER TABLE quarantines
+    ADD COLUMN reason VARCHAR(50);`;
 
     return new Promise(resolve => {
       const stmt = this.db.prepare(sql);
@@ -54,15 +66,16 @@ module.exports = class QuarantineRepository {
     });
   }
 
-  insert(exchange, symbol, side) {
+  insert(exchange, symbol, side, reason = '-') {
     const stmt = this.db.prepare(
-      'INSERT INTO quarantines(exchange, symbol, side, update_at) VALUES ($exchange, $symbol, $side, $updateAt)'
+      'INSERT INTO quarantines(exchange, symbol, side, reason, update_at) VALUES ($exchange, $symbol, $side, $reason, $updateAt)'
     );
 
     stmt.run({
       exchange: exchange,
       symbol: symbol,
       side: side,
+      reason: reason,
       updateAt: new Date().getTime()
     });
   }

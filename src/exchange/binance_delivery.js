@@ -213,7 +213,7 @@ module.exports = class BinanceDelivery {
   }
 
   calculateAmount(amount, symbol) {
-    return amount; // done by ccxt
+    return amount * 10; // done by ccxt
   }
 
   getName() {
@@ -298,9 +298,9 @@ module.exports = class BinanceDelivery {
    */
   static createPositions(positions) {
     return positions.map(position => {
-      const positionAmt = parseFloat(position.positionAmt);
-
       const entryPrice = parseFloat(position.entryPrice);
+      const positionAmt = (parseFloat(position.positionAmt) / entryPrice) * 10;
+
       const markPrice = parseFloat(position.markPrice);
 
       const profit =
@@ -328,8 +328,8 @@ module.exports = class BinanceDelivery {
    * @returns {*}
    */
   static createPositionFromWebsocket(position) {
-    const positionAmt = parseFloat(position.pa);
     const entryPrice = parseFloat(position.ep);
+    const positionAmt = (parseFloat(position.pa) / entryPrice) * 10;
     const profit = (parseFloat(position.up) / Math.abs(positionAmt)) * 100;
 
     return new Position(
@@ -545,6 +545,10 @@ module.exports = class BinanceDelivery {
 
         totalUnrealizedProfit += parseFloat(position.raw.unRealizedProfit);
       });
+
+      if (!this.balances.info.totalWalletBalance) {
+        this.balances.info.totalWalletBalance = 0;
+      }
 
       this.balances.info.totalMarginBalance = parseFloat(this.balances.info.totalWalletBalance) + totalUnrealizedProfit;
       this.balances.info.totalUnrealizedProfit = totalUnrealizedProfit;
@@ -763,6 +767,7 @@ module.exports = class BinanceDelivery {
     const CcxtExchangeOrderExtends = class extends CcxtExchangeOrder {
       async createOrder(order) {
         order.symbol = order.symbol.replace('USD_PERP', '/USD');
+        order.amount = Math.ceil(order.amount / order.getPrice());
         return super.createOrder(order);
       }
     };
@@ -773,7 +778,6 @@ module.exports = class BinanceDelivery {
       },
       convertOrder: (client, order) => {
         order.symbol = order.symbol.replace('/USD', 'USD_PERP');
-
         // ccxt does not pipe the stopPrice
         if (
           ['trailing_stop_market', 'stop_market', 'take_profit_market'].includes(order.type) &&
@@ -781,6 +785,8 @@ module.exports = class BinanceDelivery {
         ) {
           order.price = parseFloat(order.info.stopPrice);
         }
+
+        order.amount /= order.price / 10;
       },
       createOrder: order => {
         const request = {

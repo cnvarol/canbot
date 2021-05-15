@@ -62,6 +62,8 @@ module.exports = class Trade {
       ${err.message}`;
 
       this.notify.send(message);
+
+      console.error(err);
     });
 
     /* this.logger.on('error', async err => {

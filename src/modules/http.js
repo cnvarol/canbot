@@ -660,7 +660,7 @@ module.exports = class Http {
       for (const exchange of exchanges) {
         const exchangeName = exchange.getName();
 
-        if (exchangeName.includes('binance_futures')) {
+        if (['binance_futures', 'binance_delivery'].includes(exchangeName)) {
           balances = await exchange.getBalances();
         }
 
