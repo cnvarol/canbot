@@ -145,7 +145,7 @@
                             <span class="info-box-text"><i class="fas fa-ellipsis-v"></i> Wallet Balance</span>
                             <span class="info-box-number text-teal" style="font-size:30px; font-size:3vw;">
                                 <svg width="100%" height="100%" viewBox="0 0 500 80" xmlns="http://www.w3.org/2000/svg">
-                                    <text y="75" fill="rgb(32, 201, 151)" font-size="65">${{ walletBalance | filter_price }}</text>
+                                    <text y="75" fill="rgb(32, 201, 151)" font-size="65">{{ walletBalance | filter_price }}</text>
                                 </svg>
                             </span>
                         </div>
@@ -157,7 +157,7 @@
                             <span class="info-box-text"><i class="fas fa-ellipsis-v"></i> Today's PNL</span>
                             <span class="info-box-number text-teal" style="font-size:30px; font-size:3vw;">
                                 <svg width="100%" height="100%" viewBox="0 0 500 80" xmlns="http://www.w3.org/2000/svg">
-                                    <text y="75" fill="rgb(32, 201, 151)" font-size="65">${{ todaysPNL | filter_price }}</text>
+                                    <text y="75" fill="rgb(32, 201, 151)" font-size="65">{{ todaysPNL | filter_price }}</text>
                                 </svg>
                             </span>
                         </div>
@@ -169,7 +169,7 @@
                             <span class="info-box-text"><i class="fas fa-ellipsis-v"></i> Today's Balance Changes</span>
                             <span class="info-box-number text-teal" style="font-size:30px; font-size:3vw;">
                                 <svg width="100%" height="100%" viewBox="0 0 500 80" xmlns="http://www.w3.org/2000/svg">
-                                    <text y="75" fill="rgb(32, 201, 151)" font-size="65">${{ todaysChanges | filter_price }}</text>
+                                    <text y="75" fill="rgb(32, 201, 151)" font-size="65">{{ todaysChanges | filter_price }}</text>
                                 </svg>
                             </span>
                         </div>
@@ -233,8 +233,8 @@
                                 <tbody>
                                     <tr v-for="(data, time) in dailyData" :key="time">
                                         <td>{{ new Date(time).toLocaleString('tr-TR') }}</td>
-                                        <td>{{ data.pnl | filter_price }} USDT</td>
-                                        <td>{{ data.changes | filter_price }} USDT</td>
+                                        <td>{{ data.pnl | filter_price }}</td>
+                                        <td>{{ data.changes | filter_price }}</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -297,13 +297,13 @@ module.exports = {
             yAxis:[
                 {
                     title: {
-                        text: 'USDT'
+                        text: 'USD'
                     }
                 }
             ],
             series: [{
                 name: 'Profit and Loss',
-                tooltip: { pointFormat: '<span style="color:{point.color}">\u25CF</span>  {series.name}: <b>{point.y:.2f} USDT</b><br/>'},
+                tooltip: { pointFormat: '<span style="color:{point.color}">\u25CF</span>  {series.name}: <b>{point.y:.2f} USD</b><br/>'},
                 data: []
             }]
         }
