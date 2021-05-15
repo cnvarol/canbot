@@ -17,8 +17,8 @@ Vue.filter('filter_price', function(value) {
       style: 'currency',
       currency: 'USD',
       useGrouping: true,
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
+      minimumFractionDigits: 1,
+      maximumFractionDigits: 1
     }).format(value);
   }
 
