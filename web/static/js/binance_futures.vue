@@ -92,7 +92,7 @@
                   <h5>{{ balances.info.totalWalletBalance|filter_price }}</h5>
                 </div>
                 <div class="col-md-4 border-right text-center">
-                  <h5 class="text-teal">Curr PNL</h5>
+                  <h5 class="text-teal">Unr. PNL</h5>
                   <h5>{{ balances.info.totalUnrealizedProfit|filter_price }}</h5>
                 </div>
                 <div class="col-md-4 text-center">

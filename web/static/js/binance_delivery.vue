@@ -132,7 +132,7 @@
           <span v-if="props.cell_value === '0'">-</span>
         </template>
         <template slot="margin" slot-scope="props">
-          {{ (props.row.currency / props.row.position.raw.leverage) + (props.row.position.raw.unRealizedProfit / props.row.position.raw.leverage)|filter_currency }}
+          {{ (props.row.position.raw.notionalValue * props.row.position.entry / props.row.position.raw.leverage) + (props.row.position.raw.unRealizedProfit / props.row.position.raw.leverage)|filter_currency }}
           (<small>{{ props.cell_value }}</small>)
         </template>
         <template slot="pnl" slot-scope="props">
