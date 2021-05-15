@@ -125,19 +125,19 @@
           <small class="text-warning">[{{ props.row.position.raw.leverage }}x]</small>
         </template>
         <template slot="size" slot-scope="props">{{ props.cell_value|round(0) }} <small>Cont</small></template>
-        <template slot="entry_price" slot-scope="props">{{ props.cell_value|filter_price }}</template>
-        <template slot="mark_price" slot-scope="props">{{ props.cell_value|filter_price }}</template>
+        <template slot="entry_price" slot-scope="props">{{ props.cell_value|filter_currency }}</template>
+        <template slot="mark_price" slot-scope="props">{{ props.cell_value|filter_currency }}</template>
         <template slot="liq_price" slot-scope="props">
-          <span class="text-warning" v-if="props.cell_value !== '0'">{{ props.cell_value|filter_price }}</span>
+          <span class="text-warning" v-if="props.cell_value !== '0'">{{ props.cell_value|filter_currency }}</span>
           <span v-if="props.cell_value === '0'">-</span>
         </template>
         <template slot="margin" slot-scope="props">
-          {{ (props.row.currency / props.row.position.raw.leverage) + (props.row.position.raw.unRealizedProfit / props.row.position.raw.leverage)|filter_price }}
+          {{ (props.row.currency / props.row.position.raw.leverage) + (props.row.position.raw.unRealizedProfit / props.row.position.raw.leverage)|filter_currency }}
           (<small>{{ props.cell_value }}</small>)
         </template>
         <template slot="pnl" slot-scope="props">
           <span v-if="typeof props.row.position.profit !== 'undefined'" v-bind:class="{ 'text-teal': props.row.position.profit > 0, 'text-danger': props.row.position.profit < 0 }">
-            {{ props.row.position.raw.unRealizedProfit|filter_price }}({{ props.row.position.profit|round(2) }}%)
+            {{ props.row.position.raw.unRealizedProfit|filter_currency }}({{ props.row.position.profit|round(2) }}%)
           </span>
         </template>
         <template slot="actions" slot-scope="props">
@@ -177,7 +177,7 @@
             </template>
             <template slot="amount" slot-scope="props">{{ props.cell_value|round(0) }} <small>Cont</small></template>
             <template slot="price" slot-scope="props">
-              {{ props.cell_value|filter_price }} 
+              {{ props.cell_value|filter_currency }} 
               <span v-if="props.row.percent_to_price" title="Percent to current price" v-bind:class="{ 'text-teal': props.row.percent_to_price > 0, 'text-danger': props.row.percent_to_price < 0 }">({{ props.row.percent_to_price|round(2) }}%)</span>
             </template>
             <template slot="retry" slot-scope="props">
