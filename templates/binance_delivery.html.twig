@@ -1,0 +1,50 @@
+{% extends './layout.html.twig' %}
+
+{% block title %}Binance COIN-M Futures | Crypto Bot{% endblock %}
+
+{% block javascript %}
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <script src="https://unpkg.com/http-vue-loader"></script>
+    <script src="/js/binance_delivery.js?v={{ asset_version() }}" type="module"></script>
+
+    <!-- DataTables and Plugins -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/vue-bootstrap4-table@1.1.11/dist/vue-bootstrap4-table.min.js" crossorigin="anonymous"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue-toastification" crossorigin="anonymous"></script>
+{% endblock %}
+
+{% block stylesheet %}
+    <link rel="stylesheet" href="/css/toast.css?v={{ asset_version() }}">
+{% endblock %}
+
+{% block content %}
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h1>Binance COIN-M Futures</h1>
+                    </div>
+                </div>
+            </div><!-- /.container-fluid -->
+        </section>
+        <!-- /.Content Header (Page header) -->
+
+        <!-- Main content -->
+        <div class="content" id="app">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-12">
+                        <trades></trades>
+                    </div>
+                </div>
+                <!-- /.row -->
+            </div><!-- /.container-fluid -->
+        </div>
+        <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+{% endblock %}

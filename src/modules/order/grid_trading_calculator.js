@@ -50,7 +50,7 @@ module.exports = class GridTradingCalculator {
 
   calculateForOpenPosition(position, options) {
     let entryPrice = position.entry;
-    const size = Math.abs(position.amount * position.entry);
+    const size = position.raw.size ? Math.abs(position.raw.size) : Math.abs(position.amount * position.entry);
 
     if (!entryPrice) {
       this.logger.info(`Invalid entryPrice for grid trading:${JSON.stringify(position)}`);

@@ -19,7 +19,7 @@ module.exports = class PairsHttp {
         const strategiesTrade = symbol.trade && symbol.trade.strategies ? symbol.trade.strategies : [];
         const strategies = symbol.strategies || [];
 
-        const leverage = _.get(symbol, 'extra.binance_futures_leverage', 0);
+        const leverage = _.get(symbol, `extra.${symbol.exchange}_leverage`, 0);
 
         const tradeCapital = _.get(symbol, 'trade.capital', 0);
         const tradeCurrencyCapital = _.get(symbol, 'trade.currency_capital', 0);

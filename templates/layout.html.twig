@@ -69,9 +69,16 @@
                     <a href="{{ '/indicators' }}" class="nav-link">Indicators</a>
                 </li>
                 <li class="nav-item">
-                    <a href="{{ '/trades' }}" class="nav-link">
-                        Trades
+                    <a href="{{ '/trades' }}" class="nav-link">Trades</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="derivativesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Derivatives
                     </a>
+                    <div class="dropdown-menu" aria-labelledby="derivativesDropdown">
+                        <a href="{{ '/binance_futures' }}" class="dropdown-item">Binance USDⓈ-M Futures</a>
+                        <a href="{{ '/binance_delivery' }}" class="dropdown-item">Binance COIN-M Futures</a>
+                    </div>
                 </li>
                 <li class="nav-item">
                     <a href="{{ '/pairs' }}" class="nav-link">Pairs</a>
@@ -90,19 +97,17 @@
                         <sup><span class="badge badge-danger badge-pill badge-navbar hide" id="quarantineCount">0</span></sup>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a href="{{ '/tools/candles' }}" class="nav-link">Candles</a>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="toolsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Tools
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="toolsDropdown">
+                        <a href="{{ '/tools/candles' }}" class="dropdown-item">Candles</a>
+                        <a href="{{ '/backtest' }}" class="dropdown-item">Backtest</a>
+                        <a href="{{ '/gridmodel' }}" class="dropdown-item">Grid Model</a>
+                        <a href="{{ '/logs' }}" class="dropdown-item">Logs</a>
+                    </div>
                 </li>
-                <li class="nav-item">
-                    <a href="{{ '/backtest' }}" class="nav-link">Backtest</a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ '/gridmodel' }}" class="nav-link">Grid Model</a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ '/logs' }}" class="nav-link">Logs</a>
-                </li>
-
                 {% set desks = desks() %}
                 {% if desks|length > 0 %}
                     <li class="nav-item dropdown">

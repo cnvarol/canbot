@@ -7,6 +7,7 @@ const WebSocket = require('ws');
 const ccxt = require('ccxt');
 const moment = require('moment');
 const _ = require('lodash');
+const fetch = require('request');
 const Decimal = require('decimal');
 const Ticker = require('../dict/ticker');
 const Order = require('../dict/order');
@@ -57,6 +58,7 @@ module.exports = class BinanceDelivery {
     this.intervals = [];
 
     this.symbols = symbols;
+
     this.positions = {};
     this.orders = {};
     this.ccxtExchangeOrder = BinanceDelivery.createCustomCcxtOrderInstance(ccxtClient, symbols, logger, config);
@@ -213,7 +215,7 @@ module.exports = class BinanceDelivery {
   }
 
   calculateAmount(amount, symbol) {
-    return amount * 10; // done by ccxt
+    return amount; // done by ccxt
   }
 
   getName() {
@@ -299,14 +301,19 @@ module.exports = class BinanceDelivery {
   static createPositions(positions) {
     return positions.map(position => {
       const entryPrice = parseFloat(position.entryPrice);
-      const positionAmt = (parseFloat(position.positionAmt) / entryPrice) * 10;
-
+      const positionAmt = parseFloat(position.positionAmt);
+      const amount = parseFloat(position.notionalValue);
       const markPrice = parseFloat(position.markPrice);
 
+      position.size = amount * entryPrice;
+
       const profit =
-        positionAmt < 0
+        amount < 0
           ? (entryPrice / markPrice - 1) * 100 // short
           : (markPrice / entryPrice - 1) * 100; // long
+
+      position.unRealizedProfit =
+        amount < 0 ? (entryPrice - markPrice) * Math.abs(amount) : (markPrice - entryPrice) * Math.abs(amount);
 
       return new Position(
         position.symbol,
@@ -329,7 +336,7 @@ module.exports = class BinanceDelivery {
    */
   static createPositionFromWebsocket(position) {
     const entryPrice = parseFloat(position.ep);
-    const positionAmt = (parseFloat(position.pa) / entryPrice) * 10;
+    const positionAmt = parseFloat(position.pa);
     const profit = (parseFloat(position.up) / Math.abs(positionAmt)) * 100;
 
     return new Position(
@@ -527,17 +534,16 @@ module.exports = class BinanceDelivery {
           position.markPrice = markPrice;
           position.raw.markPrice = markPrice;
 
+          const amount = parseFloat(position.raw.notionalValue);
           const profit =
-            position.amount < 0
+            amount < 0
               ? (position.entry / position.markPrice - 1) * 100 // short
               : (position.markPrice / position.entry - 1) * 100; // long
 
           const pnl =
-            position.amount < 0
-              ? (position.entry - position.markPrice) * Math.abs(position.amount)
-              : (position.markPrice - position.entry) * Math.abs(position.amount);
-
-          // (Math.abs(position.amount) * position.entry * profit) / 100;
+            amount < 0
+              ? (position.entry - position.markPrice) * Math.abs(amount)
+              : (position.markPrice - position.entry) * Math.abs(amount);
 
           position.raw.unRealizedProfit = pnl;
           position.profit = profit;
@@ -767,7 +773,6 @@ module.exports = class BinanceDelivery {
     const CcxtExchangeOrderExtends = class extends CcxtExchangeOrder {
       async createOrder(order) {
         order.symbol = order.symbol.replace('USD_PERP', '/USD');
-        order.amount = Math.ceil(order.amount / order.getPrice());
         return super.createOrder(order);
       }
     };
@@ -785,8 +790,6 @@ module.exports = class BinanceDelivery {
         ) {
           order.price = parseFloat(order.info.stopPrice);
         }
-
-        order.amount /= order.price / 10;
       },
       createOrder: order => {
         const request = {

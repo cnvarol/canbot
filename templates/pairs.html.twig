@@ -80,7 +80,10 @@ pre {
                                                 <td class="no-wrap"><img src="/img/exchanges/{{ pair.exchange }}.png" title="{{ pair.exchange }}" alt="{{ pair.exchange }}" width="16px" height="16px"></td>
                                                 <td class="no-wrap row-pair"><a target="blank" href="/tradingview/{{ pair.exchange }}:{{ pair.symbol }}">{{ pair.symbol }} <small class="text-warning">[{{ pair.leverage }}x]</small></td>
                                                 <td class="no-wrap">{{ pair.is_trading ? '<i class="fas fa-exchange-alt fa-2x text-teal" title="Trading"></i>' : '<i class="fas fa-chart-line fa-2x text-muted" title="Watching"></i>' }}</td>
-                                                <td class="no-wrap">{% if pair.is_trading %}{{ pair.trade_currency_capital|default(0) }} <small>USDT</small>{% endif %}</td>
+                                                <td class="no-wrap">
+                                                    {% if pair.is_trading and pair.trade_currency_capital %}${{ pair.trade_currency_capital|default(0) }}{% endif %}
+                                                    {% if pair.is_trading and pair.trade_capital %}{{ pair.trade_capital|default(0) }} <small>Cont</small>{% endif %}
+                                                </td>
                                                 <td>
                                                     <span class="span-md">
                                                         <code><pre>{% if pair.strategies.length > 0 %}{{ pair.strategies|json_pretty }}{% endif %}</pre></code>

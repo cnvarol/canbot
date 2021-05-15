@@ -650,6 +650,14 @@ module.exports = class Http {
       res.render('../templates/trades.html.twig');
     });
 
+    app.get('/binance_futures', async (req, res) => {
+      res.render('../templates/binance_futures.html.twig');
+    });
+
+    app.get('/binance_delivery', async (req, res) => {
+      res.render('../templates/binance_delivery.html.twig');
+    });
+
     app.get('/trades.json', async (req, res) => {
       const positions = [];
       const orders = [];
@@ -660,7 +668,7 @@ module.exports = class Http {
       for (const exchange of exchanges) {
         const exchangeName = exchange.getName();
 
-        if (['binance_futures', 'binance_delivery'].includes(exchangeName)) {
+        if (['binance_futures'].includes(exchangeName)) {
           balances = await exchange.getBalances();
         }
 
@@ -704,6 +712,96 @@ module.exports = class Http {
           orders.push(items);
         });
       }
+
+      res.json({
+        balances: balances,
+        orders: orders.sort((a, b) => a.order.symbol.localeCompare(b.order.symbol)),
+        positions: positions.sort((a, b) => a.position.symbol.localeCompare(b.position.symbol))
+      });
+    });
+
+    app.get('/binance_futures.json', async (req, res) => {
+      const positions = [];
+      const orders = [];
+      let balances = {};
+
+      const exchange = exchangeManager.get('binance_futures');
+
+      balances = await exchange.getBalances();
+
+      const myPositions = await exchange.getPositions();
+      myPositions.forEach(position => {
+        const currencyValue = position.entry * Math.abs(position.amount);
+
+        positions.push({
+          exchange: 'binance_futures',
+          position: position,
+          currency: currencyValue,
+          currencyProfit: position.getProfit()
+            ? currencyValue + (currencyValue / 100) * position.getProfit()
+            : undefined
+        });
+      });
+
+      const myOrders = await exchange.getOrders();
+      myOrders.forEach(order => {
+        const items = {
+          exchange: exchange.getName(),
+          order: order
+        };
+
+        const ticker = this.tickers.get(exchange.getName(), order.symbol);
+        if (ticker) {
+          items.percent_to_price = OrderUtil.getPercentDifferent(order.price, ticker.bid);
+        }
+
+        orders.push(items);
+      });
+
+      res.json({
+        balances: balances,
+        orders: orders.sort((a, b) => a.order.symbol.localeCompare(b.order.symbol)),
+        positions: positions.sort((a, b) => a.position.symbol.localeCompare(b.position.symbol))
+      });
+    });
+
+    app.get('/binance_delivery.json', async (req, res) => {
+      const positions = [];
+      const orders = [];
+      let balances = {};
+
+      const exchange = exchangeManager.get('binance_delivery');
+
+      balances = await exchange.getBalances();
+
+      const myPositions = await exchange.getPositions();
+      myPositions.forEach(position => {
+        const currencyValue = Math.abs(position.amount);
+
+        positions.push({
+          exchange: 'binance_delivery',
+          position: position,
+          currency: currencyValue,
+          currencyProfit: position.getProfit()
+            ? currencyValue + (currencyValue / 100) * position.getProfit()
+            : undefined
+        });
+      });
+
+      const myOrders = await exchange.getOrders();
+      myOrders.forEach(order => {
+        const items = {
+          exchange: exchange.getName(),
+          order: order
+        };
+
+        const ticker = this.tickers.get(exchange.getName(), order.symbol);
+        if (ticker) {
+          items.percent_to_price = OrderUtil.getPercentDifferent(order.price, ticker.bid);
+        }
+
+        orders.push(items);
+      });
 
       res.json({
         balances: balances,

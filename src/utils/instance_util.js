@@ -197,6 +197,41 @@ module.exports = {
   },
 
   /**
+   * Init helper for Binance delivery exchange to fetch active contracts
+   * @param callback
+   * @returns {Promise<unknown>}
+   */
+  binanceDeliveryInit: async callback => {
+    return new Promise(resolve => {
+      request('https://dapi.binance.com/dapi/v1/exchangeInfo', (_error, _res, body) => {
+        const pairs = [];
+
+        const content = JSON.parse(body);
+
+        content.symbols
+          .filter(p => p.status.toUpperCase() === 'TRADING')
+          .forEach(pair => {
+            let result = {
+              symbol: pair.symbol,
+              periods: ['1m', '15m', '1h'],
+              exchange: 'binance_delivery'
+            };
+
+            if (callback) {
+              result = callback(result, pair);
+            }
+
+            if (result) {
+              pairs.push(result);
+            }
+          });
+
+        resolve(pairs);
+      });
+    });
+  },
+
+  /**
    * Init helper for Binance futures exchange to fetch active contracts
    * @param callback
    * @returns {Promise<unknown>}

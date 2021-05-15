@@ -6,7 +6,7 @@ module.exports = class QuarantineRepository {
     this.eventEmitter = eventEmitter;
 
     this.createTable();
-    this.alterTable();
+    // this.alterTable();
   }
 
   createTable() {

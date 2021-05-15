@@ -263,7 +263,9 @@ module.exports = class ExchangeOrderWatchdogListener {
     const symbol = position.getSymbol();
     const orders = await exchange.getOrdersForSymbol(symbol);
     const currentPositions = await exchange.getPositionForSymbol(symbol);
-    const size = Math.abs(position.amount * position.entry).toFixed(2);
+    const size = position.raw.size
+      ? Math.abs(position.raw.size)
+      : Math.abs(position.amount * position.entry).toFixed(2);
 
     if (
       Array.isArray(currentPositions) &&
