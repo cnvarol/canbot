@@ -377,7 +377,7 @@ module.exports = class ExchangeOrderWatchdogListener {
         this.notifier.send(
           `Position size of ${position.symbol.replace('_', '')} on ${
             position.side
-          } side too large.\nPlease await from significant losses.\nCurrent Size: *${size}* USDT`
+          } side too large.\nPlease await from significant losses.\nCurrent Size: $*${size}*`
         );
 
         this.notified[noteKey] = new Date();
@@ -430,7 +430,7 @@ module.exports = class ExchangeOrderWatchdogListener {
         this.quarantineRepository.insert(exchange.getName(), position.symbol, position.side, reason);
 
         this.notifier.send(
-          `${reason} for position ${position.symbol} on ${position.side} side.\nAll orders cancelled. *Crypto Bot* won't manage this position anymore. You need to check this position status manually.\nCurrent Size: *${size}* USDT`
+          `${reason} for position ${position.symbol} on ${position.side} side.\nAll orders cancelled. *Crypto Bot* won't manage this position anymore. You need to check this position status manually.\nCurrent Size: $*${size}*`
         );
 
         return;
