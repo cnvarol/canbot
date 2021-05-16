@@ -302,14 +302,14 @@ module.exports = class BinanceDelivery {
    * @param positions
    * @returns {*}
    */
-  static createPositions(positions) {
+  static createPositions(positions, contractSizes) {
     return positions.map(position => {
       const entryPrice = parseFloat(position.entryPrice);
       const positionAmt = parseFloat(position.positionAmt);
       const amount = parseFloat(position.notionalValue);
       const markPrice = parseFloat(position.markPrice);
 
-      position.size = positionAmt * (this.contractSizes[position.symbol] || 1);
+      position.size = positionAmt * (contractSizes[position.symbol] || 1);
 
       const profit =
         amount < 0
@@ -338,11 +338,11 @@ module.exports = class BinanceDelivery {
    * @param position
    * @returns {*}
    */
-  static createPositionFromWebsocket(position) {
+  static createPositionFromWebsocket(position, contractSizes) {
     const entryPrice = parseFloat(position.ep);
     const positionAmt = parseFloat(position.pa);
     const profit = (parseFloat(position.up) / Math.abs(positionAmt)) * 100;
-    position.size = positionAmt * (this.contractSizes[position.s] || 1);
+    position.size = positionAmt * (contractSizes[position.s] || 1);
 
     return new Position(
       position.s,
@@ -456,7 +456,11 @@ module.exports = class BinanceDelivery {
         ) {
           this.eventEmitter.emit(
             'exchange_position',
-            new ExchangePositionEvent(this.getName(), BinanceDelivery.createPositionFromWebsocket(position), 'opened')
+            new ExchangePositionEvent(
+              this.getName(),
+              BinanceDelivery.createPositionFromWebsocket(position, this.contractSizes),
+              'opened'
+            )
           );
           /* const side = position.ps.toLowerCase();
           this.positions[`${position.s}:${side}`] = BinanceDelivery.createPositionFromWebsocket(position);
@@ -521,7 +525,7 @@ module.exports = class BinanceDelivery {
     }
 
     const positions = response.filter(position => position.entryPrice && parseFloat(position.entryPrice) > 0);
-    this.fullPositionsUpdate(BinanceDelivery.createPositions(positions));
+    this.fullPositionsUpdate(BinanceDelivery.createPositions(positions, this.contractSizes));
 
     this.logger.debug(`Binance Delivery: positions updates: ${positions.length}`);
   }
