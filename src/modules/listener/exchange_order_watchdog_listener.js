@@ -427,10 +427,8 @@ module.exports = class ExchangeOrderWatchdogListener {
         const reason = result.roc_ma ? 'Pump detected' : 'Risk size';
         this.quarantineRepository.insert(exchange.getName(), position.symbol, position.side, reason);
 
-        console.log(`Pump detected for position ${position.symbol} on ${position.side} side.`, result);
-
         this.notifier.send(
-          `Pump detected for position ${position.symbol} on ${position.side} side.\nAll orders cancelled. *Crypto Bot* won't manage this position anymore. You need to check this position status manually.\nCurrent Size: *${size}* USDT`
+          `${reason} for position ${position.symbol} on ${position.side} side.\nAll orders cancelled. *Crypto Bot* won't manage this position anymore. You need to check this position status manually.\nCurrent Size: *${size}* USDT`
         );
 
         return;
