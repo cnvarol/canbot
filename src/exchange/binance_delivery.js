@@ -39,6 +39,7 @@ module.exports = class BinanceDelivery {
     this.intervals = [];
     this.balances = {};
     this.wsbalances = {};
+    this.contractSizes = {};
 
     this.ccxtClient = undefined;
   }
@@ -58,6 +59,9 @@ module.exports = class BinanceDelivery {
     this.intervals = [];
 
     this.symbols = symbols;
+    symbols.forEach(symbol => {
+      this.contractSizes[symbol.symbol] = symbol.trade.contract_size;
+    });
 
     this.positions = {};
     this.orders = {};
@@ -305,7 +309,7 @@ module.exports = class BinanceDelivery {
       const amount = parseFloat(position.notionalValue);
       const markPrice = parseFloat(position.markPrice);
 
-      position.size = amount * entryPrice;
+      position.size = positionAmt * (this.contractSizes[position.symbol] || 1);
 
       const profit =
         amount < 0
@@ -338,6 +342,7 @@ module.exports = class BinanceDelivery {
     const entryPrice = parseFloat(position.ep);
     const positionAmt = parseFloat(position.pa);
     const profit = (parseFloat(position.up) / Math.abs(positionAmt)) * 100;
+    position.size = positionAmt * (this.contractSizes[position.s] || 1);
 
     return new Position(
       position.s,
