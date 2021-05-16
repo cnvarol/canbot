@@ -7,11 +7,11 @@ module.exports = class PositionStateChangeEvent {
 
   constructor(state, exchangePosition) {
     if (!(exchangePosition instanceof ExchangePosition)) {
-      throw 'TypeError: invalid exchangePosition';
+      throw new Error('TypeError: invalid exchangePosition');
     }
 
     if (!['opened', 'closed'].includes(state)) {
-      throw `TypeError: invalid state: ${state}`;
+      throw new Error(`TypeError: invalid state: ${state}`);
     }
 
     this._state = state;

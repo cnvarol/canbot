@@ -1,11 +1,10 @@
-var c = module.exports = {}
+const c = (module.exports = {});
 
-c.symbols = []
+c.symbols = [];
 
 /*
 const InstanceUtil = require('./src/utils/instance_util');
 c.init = async () => {
-    // Bitmex contracts + examples
   c.symbols.push(
     ...(await InstanceUtil.bitmexInit(pair => {
       // inverse contracts; trade with 1 USD
@@ -135,123 +134,117 @@ c.init = () => {
 */
 
 // bitmex
-let y = [
-    'XBTUSD', 'ETHUSD'
-]
+const y = ['XBTUSD', 'ETHUSD'];
 
-y.forEach((pair) => {
-    c.symbols.push({
-        'symbol': pair,
-        'periods': ['1m', '15m', '1h'],
-        'exchange': 'bitmex',
-        'state': 'watch',
-        'extra': {
-            'bitmex_leverage': 5,
-            'bitmex_rest_order_sync': 45000
-        },
-        //'trade': {
-        //    'currency_capital': 1 // trade with 1 USD dollar
-        //},
-        //'watchdogs': [
-        //    {
-        //        'name': 'stoploss',
-        //        'percent': 3,
-        //    },
-        //    {
-        //        'name': 'risk_reward_ratio',
-        //        'target_percent': 3,
-        //        'stop_percent': 3,
-        //    }
-        //],
-        'strategies': [
-            {
-                'strategy': 'cci',
-                'options': {
-                    'period': '15m'
-                }
-            },
-            {
-                'strategy': 'obv_pump_dump'
-            },
-            {
-                'strategy': 'macd',
-                'options': {
-                    'period': '1h'
-                }
-            }
-        ]
-    })
-})
+y.forEach(pair => {
+  c.symbols.push({
+    symbol: pair,
+    periods: ['1m', '15m', '1h'],
+    exchange: 'bitmex',
+    state: 'watch',
+    extra: {
+      bitmex_leverage: 5,
+      bitmex_rest_order_sync: 45000
+    },
+    trade: {
+      currency_capital: 1 // trade with 1 USD dollar
+    },
+    watchdogs: [
+      {
+        name: 'stoploss',
+        percent: 3
+      },
+      {
+        name: 'risk_reward_ratio',
+        target_percent: 3,
+        stop_percent: 3
+      }
+    ],
+    strategies: [
+      {
+        strategy: 'cci',
+        options: {
+          period: '15m'
+        }
+      },
+      {
+        strategy: 'obv_pump_dump'
+      },
+      {
+        strategy: 'macd',
+        options: {
+          period: '1h'
+        }
+      }
+    ]
+  });
+});
 
 // bitmex testnet
-let l = [
-    'XBTUSD'
-]
+const l = ['XBTUSD'];
 
-l.forEach((pair) => {
-    c.symbols.push({
-        'symbol': pair,
-        'periods': ['1m', '15m', '1h'],
-        'exchange': 'bitmex_testnet',
-        'state': 'watch',
-        'watchdogs': [
-            {
-                'name': 'stoploss',
-                'percent': 3,
-            }
-        ],
-        'extra': {
-            'bitmex_leverage': 5,
-        },
-        'trade': {
-            'capital': 50,
-        },
-        'strategies': [
-            {
-                'strategy': 'cci',
-                'options': {
-                    'period': '15m'
-                }
-            },
-            {
-                'strategy': 'obv_pump_dump'
-            },
-            {
-                'strategy': 'macd',
-                'options': {
-                    'period': '1h'
-                }
-            }
-        ]
-    })
-})
+l.forEach(pair => {
+  c.symbols.push({
+    symbol: pair,
+    periods: ['1m', '15m', '1h'],
+    exchange: 'bitmex_testnet',
+    state: 'watch',
+    watchdogs: [
+      {
+        name: 'stoploss',
+        percent: 3
+      }
+    ],
+    extra: {
+      bitmex_leverage: 5
+    },
+    trade: {
+      capital: 50
+    },
+    strategies: [
+      {
+        strategy: 'cci',
+        options: {
+          period: '15m'
+        }
+      },
+      {
+        strategy: 'obv_pump_dump'
+      },
+      {
+        strategy: 'macd',
+        options: {
+          period: '1h'
+        }
+      }
+    ]
+  });
+});
 
-let z = [
-    'BTCUSDT', 'XLMUSDT', 'BNBBTC', 'BNBUSDT'
-]
+const z = ['BTCUSDT', 'XLMUSDT', 'BNBBTC', 'BNBUSDT'];
 
-z.forEach((pair) => {
-    c.symbols.push({
-        'symbol': pair,
-        'periods': ['1m', '15m', '1h'],
-        'exchange': 'binance',
-        'state': 'watch',
-        'strategies': [
-            {
-                'strategy': 'cci',
-                'options': {
-                    'period': '15m'
-                }
-            },
-            {
-                'strategy': 'obv_pump_dump'
-            },
-            {
-                'strategy': 'macd',
-                'options': {
-                    'period': '1h'
-                }
-            }
-        ]
-    })
-})
+z.forEach(pair => {
+  c.symbols.push({
+    symbol: pair,
+    periods: ['1m', '15m', '1h'],
+    exchange: 'binance',
+    state: 'watch',
+    strategies: [
+      {
+        strategy: 'cci',
+        options: {
+          period: '15m'
+        }
+      },
+      {
+        strategy: 'obv_pump_dump'
+      },
+      {
+        strategy: 'macd',
+        options: {
+          period: '1h'
+        }
+      }
+    ]
+  });
+});
