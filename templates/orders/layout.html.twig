@@ -31,7 +31,7 @@
                         <div class="card-body">
                             <ul class="nav nav-pills nav-sidebar nav-child-indent flex-column" data-widget="treeview" role="menu" data-accordion="false">
                             {% for exchange, list in pairs %}
-                                <li class="nav-item">
+                                <li class="nav-item exchange-item">
                                     <a href="#" class="nav-link">
                                         <i class="nav-icon fas fa-exchange-alt"></i>
                                         <p>
@@ -41,7 +41,7 @@
                                     </a>
                                     <ul class="nav nav-treeview">
                                         {% for pair in list %}
-                                        <li class="nav-item">
+                                        <li class="nav-item pair-item">
                                             <a href="/orders/{{ exchange }}.{{ pair }}" class="nav-link">
                                                 <i class="far fa-circle nav-icon"></i>
                                                 <p>{{ pair }}</p>
@@ -86,13 +86,15 @@
 
               var card = me.closest('.card');
               if (filter.length === 0) {
-                card.find('li.nav-item').removeClass('menu-open');
-                card.find('li.nav-item').show()
+                card.find('li.exchange-item').removeClass('menu-open');
+                card.find('ul.nav-treeview').hide();
+                card.find('li.pair-item').show()
                 return;
               }
 
-              card.find('li.nav-item').each(function() {
-                $(this).addClass('menu-open');
+              card.find('li.exchange-item').addClass('menu-open');
+              card.find('ul.nav-treeview').show();
+              card.find('li.pair-item').each(function() {
                 if ($(this).text().toLowerCase().includes(filter.toLowerCase())) {
                   $(this).show()
                 } else {
