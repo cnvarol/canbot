@@ -60,4 +60,17 @@ module.exports = class PairConfig {
 
     return pairs.sort();
   }
+
+  getAllPairCategorized() {
+    const pairs = {};
+
+    this.instances.symbols.forEach(symbol => {
+      if (!pairs[symbol.exchange]) {
+        pairs[symbol.exchange] = [];
+      }
+      pairs[symbol.exchange].push(symbol.symbol);
+    });
+
+    return pairs;
+  }
 };

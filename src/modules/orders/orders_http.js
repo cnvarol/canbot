@@ -10,7 +10,7 @@ module.exports = class OrdersHttp {
   }
 
   getPairs() {
-    return this.pairConfig.getAllPairNames();
+    return this.pairConfig.getAllPairCategorized();
   }
 
   getOrders(pair) {

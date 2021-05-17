@@ -10,7 +10,7 @@
     <div class="col-md-12">
         <div class="small-box bg-teal">
             <div class="inner">
-                <h3>{% if ticker is defined %}{{ ticker.ask|price_format }} / {{ ticker.bid|price_format }}{% else %}{% endif %}</h3>
+                <h4>{{ pair | split('.', 2) | first | capitalizeFirstLetter }} | {{ pair | split('.', 2) | last }} - <small>{% if ticker is defined %}{{ ticker.ask|price_format }} / {{ ticker.bid|price_format }}{% else %}{% endif %}</small></h4>
                 <p>Price{% if ticker is defined %} - {{ ticker.createdAt|date('y-m-d H:i:s') }}{% endif %}</p>
             </div>
             <div class="icon">
@@ -28,7 +28,7 @@
     <div class="col-md-7">
         <div class="card card-default">
             <div class="card-header">
-                <h3 class="card-title">Order - {{ pair | split('.', 2) | last() }}</h3>
+                <h3 class="card-title">Order - {{ pair | split('.', 2) | first | capitalizeFirstLetter }} | {{ pair | split('.', 2) | last() }}</h3>
             </div>
 
             <form action="/orders/{{ pair|url_encode }}" method="post" role="form">

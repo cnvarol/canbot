@@ -29,11 +29,34 @@
                             <small class="float-sm-right"><input class="filter-pairs form-control form-control-sm" type="text" placeholder="Filter"></small>
                         </div>
                         <div class="card-body">
-                            <ul class="list-unstyled">
+                            <ul class="nav nav-pills nav-sidebar nav-child-indent flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                            {% for exchange, list in pairs %}
+                                <li class="nav-item">
+                                    <a href="#" class="nav-link">
+                                        <i class="nav-icon fas fa-exchange-alt"></i>
+                                        <p>
+                                            {{ exchange | capitalizeFirstLetter }}
+                                            <i class="right fas fa-angle-left"></i>
+                                        </p>
+                                    </a>
+                                    <ul class="nav nav-treeview">
+                                        {% for pair in list %}
+                                        <li class="nav-item">
+                                            <a href="/orders/{{ exchange }}.{{ pair }}" class="nav-link">
+                                                <i class="far fa-circle nav-icon"></i>
+                                                <p>{{ pair }}</p>
+                                            </a>
+                                        </li>
+                                        {% endfor %}
+                                    </ul>
+                                </li>
+                            {% endfor %}
+                            </ul>
+                            <!-- <ul class="list-unstyled">
                                 {% for pair in pairs %}
                                     <li class="pair-item"><a href="/orders/{{ pair|url_encode }}">{{ pair }}</a></li>
                                 {% endfor %}
-                            </ul>
+                            </ul> -->
                         </div>
                     </div>
                 </div>
@@ -63,11 +86,13 @@
 
               var card = me.closest('.card');
               if (filter.length === 0) {
-                card.find('li.pair-item').show()
+                card.find('li.nav-item').removeClass('menu-open');
+                card.find('li.nav-item').show()
                 return;
               }
 
-              card.find('li.pair-item').each(function() {
+              card.find('li.nav-item').each(function() {
+                $(this).addClass('menu-open');
                 if ($(this).text().toLowerCase().includes(filter.toLowerCase())) {
                   $(this).show()
                 } else {
