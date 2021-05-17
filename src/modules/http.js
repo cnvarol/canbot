@@ -661,15 +661,15 @@ module.exports = class Http {
     app.get('/trades.json', async (req, res) => {
       const positions = [];
       const orders = [];
-      let balances = {};
+      const balances = {};
 
       const exchanges = exchangeManager.all();
 
       for (const exchange of exchanges) {
         const exchangeName = exchange.getName();
 
-        if (['binance_futures'].includes(exchangeName)) {
-          balances = await exchange.getBalances();
+        if (['binance_futures', 'binance_delivery'].includes(exchangeName)) {
+          continue;
         }
 
         const myPositions = await exchange.getPositions();
