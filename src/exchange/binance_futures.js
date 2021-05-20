@@ -51,7 +51,16 @@ module.exports = class BinanceFutures {
       secret: config.secret,
       enableRateLimit: true,
       rateLimit: config.rateLimit || 100,
-      options: { defaultType: 'future', warnOnFetchOpenOrdersWithoutSymbol: false }
+      options: {
+        defaultType: 'future',
+        warnOnFetchOpenOrdersWithoutSymbol: false,
+        broker: {
+          spot: 'x-MWWMB8WV',
+          margin: 'x-MWWMB8WV',
+          future: 'x-Xkr3Duvf',
+          delivery: 'x-Xkr3Duvf'
+        }
+      }
     }));
 
     this.intervals = [];
