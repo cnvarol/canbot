@@ -426,7 +426,35 @@ module.exports = class ExchangeOrderWatchdogListener {
 
         await this.orderExecutor.cancelSide(exchange.getName(), position.symbol, position.side);
 
-        const reason = result.roc_ma ? 'Pump detected' : 'Risk size';
+        const reason = result.roc_ma ? 'Pump detected' : 'Risk size detected';
+        this.quarantineRepository.insert(exchange.getName(), position.symbol, position.side, reason);
+
+        this.notifier.send(
+          `${reason} for position ${position.symbol} on ${position.side} side.\nAll orders cancelled. *Crypto Bot* won't manage this position anymore. You need to check this position status manually.\nCurrent Size: $*${size}*`
+        );
+
+        return;
+      }
+    }
+
+    if (options.pump_detection && position.side === 'long') {
+      const qKey = `${exchange.getName()}:${position.symbol}:${position.side}`;
+      if (qKey in this.quarantine) {
+        return;
+      }
+
+      const result = await this.gridTradingCalculator.dumpPattern(
+        exchange.getName(),
+        position.symbol,
+        options.pump_candle_period
+      );
+
+      if (result.roc_ma || size >= options.quarantine_after) {
+        this.quarantine[qKey] = new Date();
+
+        await this.orderExecutor.cancelSide(exchange.getName(), position.symbol, position.side);
+
+        const reason = result.roc_ma ? 'Dump detected' : 'Risk size detected';
         this.quarantineRepository.insert(exchange.getName(), position.symbol, position.side, reason);
 
         this.notifier.send(

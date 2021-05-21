@@ -93,7 +93,7 @@ module.exports = class Trade {
       setInterval(async () => {
         eventEmitter.emit('warncheck_tick', {});
         await me.tickListener.warnCheckInterval();
-      }, 10000);
+      }, 7500);
 
       // order create tick
       setInterval(() => {
@@ -102,7 +102,7 @@ module.exports = class Trade {
 
       setInterval(() => {
         eventEmitter.emit('watchdog', {});
-      }, this.systemUtil.getConfig('tick.watchdog', 35000));
+      }, this.systemUtil.getConfig('tick.watchdog', 20000));
 
       setInterval(() => {
         eventEmitter.emit('tick_ordering', {});

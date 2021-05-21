@@ -1,5 +1,6 @@
 /* eslint-disable no-async-promise-executor */
 const { SMA } = require('technicalindicators');
+const { RSI } = require('technicalindicators');
 const ExchangeOrder = require('../../dict/exchange_order');
 const OrderUtil = require('../../utils/order_util');
 
@@ -209,13 +210,38 @@ module.exports = class GridTradingCalculator {
     return newOrders;
   }
 
-  async pumpPattern(exchange, symbol, period) {
+  async rsiCalculate(exchange, symbol, period) {
     return new Promise(async resolve => {
-      const allCandles = await this.candlestickRepository.getLookbacksForPair(exchange, symbol, period, 20);
+      const allCandles = await this.candlestickRepository.getLookbacksForPair(exchange, symbol, period, 14);
 
       const candles = allCandles.slice().reverse() || [];
 
-      if (candles.length === 0 || candles.length < 20) {
+      if (candles.length === 0 || candles.length < 14) {
+        resolve({});
+        return;
+      }
+
+      if (candles.length > 1 && candles[0].time > candles[1].time) {
+        resolve({});
+        return;
+      }
+
+      const candleSizeRSI = RSI.calculate({
+        period: 14,
+        values: candles.slice(-14).map(v => v.close)
+      });
+
+      resolve(candleSizeRSI[0]);
+    });
+  }
+
+  async dumpPattern(exchange, symbol, period) {
+    return new Promise(async resolve => {
+      const allCandles = await this.candlestickRepository.getLookbacksForPair(exchange, symbol, period, 40);
+
+      const candles = allCandles.slice().reverse() || [];
+
+      if (candles.length === 0 || candles.length < 40) {
         resolve({});
         return;
       }
@@ -226,13 +252,54 @@ module.exports = class GridTradingCalculator {
       }
 
       const volSma = SMA.calculate({
-        period: 20,
-        values: candles.slice(-40).map(b => b.volume)
+        period: 40,
+        values: candles.slice(-80).map(b => b.volume)
       });
 
       const candleSizeSma = SMA.calculate({
-        period: 20,
-        values: candles.slice(-40).map(v => Math.abs(v.close - v.open))
+        period: 40,
+        values: candles.slice(-80).map(v => Math.abs(v.open - v.low))
+      });
+
+      const currentCandle = candles.slice(-1)[0];
+      const currentVolumeSma = volSma.slice(-1)[0];
+
+      resolve({
+        time: new Date(),
+        volume_sd: volSma.slice(-1)[0],
+        volume_v: currentCandle.volume / currentVolumeSma > 5 ? currentCandle.volume / currentVolumeSma : undefined,
+        hint: currentCandle.volume / currentVolumeSma > 5,
+        price_trigger: currentCandle.low,
+        roc_v: (candles.slice(-1)[0].open - candles.slice(-1)[0].low) / candleSizeSma.slice(-1)[0],
+        roc_ma: (candles.slice(-1)[0].open - candles.slice(-1)[0].low) / candleSizeSma.slice(-1)[0] > 5
+      });
+    });
+  }
+
+  async pumpPattern(exchange, symbol, period) {
+    return new Promise(async resolve => {
+      const allCandles = await this.candlestickRepository.getLookbacksForPair(exchange, symbol, period, 40);
+
+      const candles = allCandles.slice().reverse() || [];
+
+      if (candles.length === 0 || candles.length < 40) {
+        resolve({});
+        return;
+      }
+
+      if (candles.length > 1 && candles[0].time > candles[1].time) {
+        resolve({});
+        return;
+      }
+
+      const volSma = SMA.calculate({
+        period: 40,
+        values: candles.slice(-80).map(b => b.volume)
+      });
+
+      const candleSizeSma = SMA.calculate({
+        period: 40,
+        values: candles.slice(-80).map(v => Math.abs(v.open - v.close))
       });
 
       const currentCandle = candles.slice(-1)[0];
@@ -244,7 +311,8 @@ module.exports = class GridTradingCalculator {
         volume_v: currentCandle.volume / currentVolumeSma > 5 ? currentCandle.volume / currentVolumeSma : undefined,
         hint: currentCandle.volume / currentVolumeSma > 5,
         price_trigger: currentCandle.high,
-        roc_ma: (candles.slice(-1)[0].close - candles.slice(-1)[0].open) / candleSizeSma.slice(-1)[0] > 5
+        roc: (candles.slice(-1)[0].open - candles.slice(-1)[0].close) / candleSizeSma.slice(-1)[0],
+        roc_ma: (candles.slice(-1)[0].open - candles.slice(-1)[0].close) / candleSizeSma.slice(-1)[0] < -5
       });
     });
   }
