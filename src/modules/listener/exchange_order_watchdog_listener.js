@@ -129,6 +129,11 @@ module.exports = class ExchangeOrderWatchdogListener {
     await this.orderExecutor.cancelSide(exchangeName, symbol, side);
   }
 
+  async onQuarantineAdd(quarantineEvent) {
+    const qKey = `${quarantineEvent.exchange}:${quarantineEvent.symbol}:${quarantineEvent.side}`;
+    this.quarantine[qKey] = new Date();
+  }
+
   async onQuarantineDelete(quarantineEvent) {
     const qKey = `${quarantineEvent.exchange}:${quarantineEvent.symbol}:${quarantineEvent.side}`;
     delete this.quarantine[qKey];

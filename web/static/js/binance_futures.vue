@@ -141,10 +141,12 @@
         <template slot="actions" slot-scope="props">
           <form v-on:submit.prevent>
             <button name="action" value="close" data-toggle="tooltip"
-                    title="Limit Close" class="btn btn-outline-primary btn-xs" v-on:click="closePosition(props.row.exchange, props.row.position.symbol, 'close', props.row.position.side)"><i class="fa fa-times"></i> Limit Close</button>
+                    title="Limit Close" class="btn btn-outline-primary btn-xs" v-on:click="closePosition(props.row.exchange, props.row.position.symbol, 'close', props.row.position.side)"><i class="fas fa-times"></i> Limit Close</button>
             <button name="action" value="close_market" data-toggle="tooltip" 
-                    title="Market Close" class="btn btn-outline-danger btn-xs" v-on:click="closePosition(props.row.exchange, props.row.position.symbol, 'close_market', props.row.position.side)"><i class="fa fa-times"></i> Market Close</button>
+                    title="Market Close" class="btn btn-outline-danger btn-xs" v-on:click="closePosition(props.row.exchange, props.row.position.symbol, 'close_market', props.row.position.side)"><i class="fas fa-times"></i> Market Close</button>
           </form>
+          <a data-toggle="tooltip" 
+                    title="Add Quarantine" class="btn btn-outline-success btn-xs" href="/quarantine/add/{{ props.row.exchange }}/{{ props.row.position.symbol }}/{{ props.row.position.side }}"><i class="fas fa-check"></i> Add Quarantine</a>
         </template>
         <template slot="sort-asc-icon"><i class="fas fa-sort-up"></i></template>
         <template slot="sort-desc-icon"><i class="fas fa-sort-down"></i></template>

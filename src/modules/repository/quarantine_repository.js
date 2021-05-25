@@ -66,21 +66,29 @@ module.exports = class QuarantineRepository {
     });
   }
 
-  insert(exchange, symbol, side, reason = '-') {
-    const stmt = this.db.prepare(
-      'INSERT INTO quarantines(exchange, symbol, side, reason, update_at) VALUES ($exchange, $symbol, $side, $reason, $updateAt)'
-    );
+  insert(exchange, symbol, side, reason = '-', eventEmit = false) {
+    return new Promise(resolve => {
+      const stmt = this.db.prepare(
+        'INSERT INTO quarantines(exchange, symbol, side, reason, update_at) VALUES ($exchange, $symbol, $side, $reason, $updateAt)'
+      );
 
-    stmt.run({
-      exchange: exchange,
-      symbol: symbol,
-      side: side,
-      reason: reason,
-      updateAt: new Date().getTime()
+      stmt.run({
+        exchange: exchange,
+        symbol: symbol,
+        side: side,
+        reason: reason,
+        updateAt: new Date().getTime()
+      });
+
+      if (eventEmit) {
+        this.eventEmitter.emit('quarantine_add', new QuarantineEvent(exchange, symbol, side));
+      }
+
+      resolve();
     });
   }
 
-  delete(exchange, symbol, side) {
+  delete(exchange, symbol, side, eventEmit = false) {
     return new Promise(resolve => {
       const stmt = this.db.prepare(
         'DELETE FROM quarantines WHERE exchange = $exchange AND symbol = $symbol AND side = $side'
@@ -92,7 +100,9 @@ module.exports = class QuarantineRepository {
         side: side
       });
 
-      this.eventEmitter.emit('quarantine_delete', new QuarantineEvent(exchange, symbol, side));
+      if (eventEmit) {
+        this.eventEmitter.emit('quarantine_delete', new QuarantineEvent(exchange, symbol, side));
+      }
 
       resolve();
     });

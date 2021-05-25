@@ -8,8 +8,13 @@ module.exports = class QuarantineHttp {
     return quarantines;
   }
 
+  async insert(exchange, symbol, side) {
+    const result = await this.quarantineRepository.insert(exchange, symbol, side, 'Client requested', true);
+    return result;
+  }
+
   async delete(exchange, symbol, side) {
-    const result = await this.quarantineRepository.delete(exchange, symbol, side);
+    const result = await this.quarantineRepository.delete(exchange, symbol, side, true);
     return result;
   }
 

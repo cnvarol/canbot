@@ -69,7 +69,7 @@
                                             </td>
                                             <td>{{ quarantine.reason }}</td>
                                             <td>{{ (quarantine.update_at / 1000)|date('d.m.y H:i') }}</td>
-                                            <td><a href="/quarantine/{{ quarantine.exchange }}/{{ quarantine.symbol }}/{{ quarantine.side }}" class="btn btn-outline-danger btn-xs"><i class="fa fa-times"></i> Delete</a></td>
+                                            <td><a href="/quarantine/delete/{{ quarantine.exchange }}/{{ quarantine.symbol }}/{{ quarantine.side }}" class="btn btn-outline-danger btn-xs"><i class="fa fa-times"></i> Delete</a></td>
                                         </tr>
                                     {% endfor %}
                                     </tbody>

@@ -473,10 +473,18 @@ module.exports = class Http {
       });
     });
 
-    app.get('/quarantine/:exchange/:symbol/:side', async (req, res) => {
+    app.get('/quarantine/delete/:exchange/:symbol/:side', async (req, res) => {
       const { exchange, symbol, side } = req.params;
 
       await this.quarantinesHttp.delete(exchange, symbol, side);
+
+      res.redirect(`/quarantine`);
+    });
+
+    app.get('/quarantine/add/:exchange/:symbol/:side', async (req, res) => {
+      const { exchange, symbol, side } = req.params;
+
+      await this.quarantinesHttp.insert(exchange, symbol, side);
 
       res.redirect(`/quarantine`);
     });
