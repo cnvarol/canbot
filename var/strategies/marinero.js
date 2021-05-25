@@ -45,8 +45,8 @@ module.exports = class {
   getBacktestColumns() {
     return [
       {
-        label: 'macd',
-        value: 'macd_current',
+        label: 'fisher_rsi',
+        value: 'fisher_rsi',
         type: 'histogram'
       }
     ];

@@ -306,18 +306,18 @@ module.exports = class ExchangeOrderWatchdogListener {
     }
 
     let { profit } = position;
-    let amount = Math.abs(position.amount);
+    let totalSize = size;
 
     /* let hedgeProfitFound = false;
     let hedgePosition = null; */
 
     if (Array.isArray(currentPositions)) {
       profit = 0;
-      amount = 0;
+      totalSize = 0;
       let pnl = 0;
 
       currentPositions.forEach(p => {
-        const pamount = Math.abs(p.amount);
+        const psize = p.raw.size ? Math.abs(p.raw.size).toFixed(2) : Math.abs(p.amount * p.entry).toFixed(2);
         /* if (
           options.hedge_profit_mode &&
           p.side !== position.side &&
@@ -329,16 +329,16 @@ module.exports = class ExchangeOrderWatchdogListener {
           hedgePosition = p;
         } */
 
-        amount += pamount * p.entry;
+        totalSize += psize;
         if (p.raw && p.raw.unRealizedProfit) {
           pnl += parseFloat(p.raw.unRealizedProfit);
         }
       });
 
-      profit = (pnl / amount) * 100;
+      profit = (pnl / totalSize) * 100;
     }
 
-    if (profit >= options.take_profit || (amount >= options.risk_size && profit >= options.risk_take_profit)) {
+    if (profit >= options.take_profit || (size >= options.risk_size && profit >= options.risk_take_profit)) {
       // close position/s with market order
       if (Array.isArray(currentPositions)) {
         currentPositions.forEach(async p => {
