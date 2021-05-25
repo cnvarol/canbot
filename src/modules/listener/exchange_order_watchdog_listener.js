@@ -132,6 +132,8 @@ module.exports = class ExchangeOrderWatchdogListener {
   async onQuarantineAdd(quarantineEvent) {
     const qKey = `${quarantineEvent.exchange}:${quarantineEvent.symbol}:${quarantineEvent.side}`;
     this.quarantine[qKey] = new Date();
+
+    await this.orderExecutor.cancelSide(quarantineEvent.exchange, quarantineEvent.symbol, quarantineEvent.side);
   }
 
   async onQuarantineDelete(quarantineEvent) {
@@ -142,9 +144,11 @@ module.exports = class ExchangeOrderWatchdogListener {
   async fillQuarantinelist() {
     const rows = await this.quarantineRepository.getAll();
 
-    rows.forEach(r => {
+    rows.forEach(async r => {
       const qKey = `${r.exchange}:${r.symbol}:${r.side}`;
       this.quarantine[qKey] = new Date();
+
+      await this.orderExecutor.cancelSide(r.exchange, r.symbol, r.side);
     });
   }
 
