@@ -2,7 +2,7 @@ const SignalResult = require('../../src/modules/strategy/dict/signal_result');
 
 module.exports = class {
   getName() {
-    return 'fast';
+    return 'marinero';
   }
 
   buildIndicator(indicatorBuilder) {
