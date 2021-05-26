@@ -63,6 +63,10 @@ module.exports = class BinanceFutures {
       }
     }));
 
+    setTimeout(async () => {
+      console.log('Binance Broker for Current Client:', await this.getIfNewUser());
+    }, 1000);
+
     this.intervals = [];
 
     this.symbols = symbols;
@@ -159,6 +163,10 @@ module.exports = class BinanceFutures {
         });
       });
     });
+  }
+
+  async getIfNewUser() {
+    return this.ccxtClient.fapiPrivateGetApiReferralIfNewUser({ brokerId: 'Xkr3Duvf' });
   }
 
   /**
