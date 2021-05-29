@@ -68,8 +68,12 @@ module.exports = class BinanceDelivery {
     this.intervals = [];
 
     this.symbols = symbols;
-    symbols.forEach(symbol => {
-      this.contractSizes[symbol.symbol] = symbol.trade.contract_size;
+
+    setTimeout(async () => {
+      const exchangeInfo = await ccxtClient.dapiPublicGetExchangeInfo();
+      exchangeInfo.symbols.forEach(s => {
+        this.contractSizes[s.symbol] = s.contractSize;
+      });
     });
 
     this.positions = {};
