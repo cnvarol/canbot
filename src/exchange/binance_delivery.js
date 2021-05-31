@@ -330,7 +330,9 @@ module.exports = class BinanceDelivery {
           : (markPrice / entryPrice - 1) * 100; // long
 
       position.unRealizedProfit =
-        amount < 0 ? (entryPrice - markPrice) * Math.abs(amount) : (markPrice - entryPrice) * Math.abs(amount);
+        position.size < 0
+          ? (entryPrice / markPrice - 1) * Math.abs(position.size)
+          : (markPrice / entryPrice - 1) * Math.abs(position.size);
 
       return new Position(
         position.symbol,
@@ -381,13 +383,17 @@ module.exports = class BinanceDelivery {
       currentPosition.amount = amount;
       currentPosition.entry = entryPrice;
 
+      const size = amount * this.contractSizes[position.s];
+
       const profit =
-        currentPosition.amount < 0
+        size < 0
           ? (currentPosition.entry / currentPosition.markPrice - 1) * 100 // short
           : (currentPosition.markPrice / currentPosition.entry - 1) * 100; // long
 
-      const pnl = (Math.abs(currentPosition.amount) * currentPosition.entry * profit) / 100;
-      currentPosition.profit = profit;
+      const pnl =
+        size < 0
+          ? (currentPosition.entry / currentPosition.markPrice - 1) * Math.abs(size)
+          : (currentPosition.markPrice / currentPosition.entry - 1) * Math.abs(size);
 
       if (currentPosition.raw) {
         currentPosition.raw.unRealizedProfit = pnl;
@@ -556,16 +562,16 @@ module.exports = class BinanceDelivery {
           position.markPrice = markPrice;
           position.raw.markPrice = markPrice;
 
-          const amount = parseFloat(position.raw.notionalValue);
+          const size = position.amount * this.contractSizes[symbol];
           const profit =
-            amount < 0
+            size < 0
               ? (position.entry / position.markPrice - 1) * 100 // short
               : (position.markPrice / position.entry - 1) * 100; // long
 
           const pnl =
-            amount < 0
-              ? (position.entry - position.markPrice) * Math.abs(amount)
-              : (position.markPrice - position.entry) * Math.abs(amount);
+            size < 0
+              ? (position.entry / position.markPrice - 1) * Math.abs(size)
+              : (position.markPrice / position.entry - 1) * Math.abs(size);
 
           position.raw.unRealizedProfit = pnl;
           position.profit = profit;
@@ -574,12 +580,12 @@ module.exports = class BinanceDelivery {
         totalUnrealizedProfit += parseFloat(position.raw.unRealizedProfit);
       });
 
-      if (!this.balances.info.totalWalletBalance) {
+      /* if (!this.balances.info.totalWalletBalance) {
         this.balances.info.totalWalletBalance = 0;
       }
 
       this.balances.info.totalMarginBalance = parseFloat(this.balances.info.totalWalletBalance) + totalUnrealizedProfit;
-      this.balances.info.totalUnrealizedProfit = totalUnrealizedProfit;
+      this.balances.info.totalUnrealizedProfit = totalUnrealizedProfit; */
     } catch (e) {
       this.logger.error(`Binance Delivery: error update mark price:${e}`);
     }
