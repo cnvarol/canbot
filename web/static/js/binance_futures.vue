@@ -115,6 +115,7 @@
       <vue-bootstrap4-table :rows="positions" :classes="dataTableClasses" :columns="positionsColumns" :config="dataTableConfig" :total-rows="positions.length">
         <template slot="exchange" slot-scope="props"><img :src="`/img/exchanges/${props.cell_value}.png`" :alt="props.cell_value" :title="props.cell_value" width="16px" height="16px"></template>
         <template slot="symbol" slot-scope="props">
+          <code></code>
           <span v-if="props.row.position.side === 'short'" class="bar bg-danger">&nbsp;</span>
           <span v-if="props.row.position.side === 'long'" class="bar bg-teal">&nbsp;</span>
           <!-- <span v-if="props.row.position.side === 'short'" class="badge badge-danger">short</span>
@@ -126,6 +127,7 @@
         <template slot="entry_price" slot-scope="props">{{ props.cell_value|filter_price }}</template>
         <template slot="mark_price" slot-scope="props">{{ props.cell_value|filter_price }}</template>
         <template slot="liq_price" slot-scope="props">
+          <code></code>
           <span class="text-warning" v-if="props.cell_value !== '0'">{{ props.cell_value|filter_price }}</span>
           <span v-if="props.cell_value === '0'">-</span>
         </template>
