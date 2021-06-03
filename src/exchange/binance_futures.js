@@ -788,12 +788,14 @@ module.exports = class BinanceFutures {
       },
       convertOrder: (client, order) => {
         order.symbol = order.symbol.replace('/USDT', 'USDT');
+
         // ccxt does not pipe the stopPrice
-        if (
-          ['trailing_stop_market', 'stop_market', 'take_profit_market'].includes(order.type) &&
-          order.info.stopPrice
-        ) {
+        if (['stop_market', 'take_profit_market'].includes(order.type) && order.info.stopPrice) {
           order.price = parseFloat(order.info.stopPrice);
+        }
+
+        if (['trailing_stop_market'].includes(order.type) && order.info.activationPrice) {
+          order.price = parseFloat(order.info.activatePrice);
         }
       },
       createOrder: order => {
