@@ -74,10 +74,10 @@ module.exports = class GridTradingCalculator {
 
     if (position.side === 'long') {
       result.targetPrice = entryPrice * (1 - step_percent / 100);
-      result.stopPrice = entryPrice * (1 - hedge_step_percent / 100);
+      result.stopPrice = entryPrice * (1 + hedge_step_percent / 100);
     } else {
       result.targetPrice = entryPrice * (1 + step_percent / 100);
-      result.stopPrice = entryPrice * (1 + hedge_step_percent / 100);
+      result.stopPrice = entryPrice * (1 - hedge_step_percent / 100);
     }
 
     return result;
