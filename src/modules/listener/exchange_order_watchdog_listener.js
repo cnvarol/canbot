@@ -233,6 +233,7 @@ module.exports = class ExchangeOrderWatchdogListener {
       hedge_profit_mode: false,
       hedge_take_profit: 3,
       take_profit: 1,
+      trailing_stop_rate: 1,
       step_resolution: 25,
       hedge_step_resolution: 5,
       risk_notify: true,
@@ -338,8 +339,7 @@ module.exports = class ExchangeOrderWatchdogListener {
       profit = (pnl / totalSize) * 100;
     }
 
-    if (profit >= options.take_profit || (size >= options.risk_size && profit >= options.risk_take_profit)) {
-      // close position/s with market order
+    /* if (profit >= options.take_profit || (size >= options.risk_size && profit >= options.risk_take_profit)) {
       if (Array.isArray(currentPositions)) {
         currentPositions.forEach(async p => {
           const marketOrder = Order.createMarketOrder(symbol, p.amount, p.side, { close: true });
@@ -359,7 +359,7 @@ module.exports = class ExchangeOrderWatchdogListener {
       );
 
       return;
-    }
+    } */
 
     /* if (hedgeProfitFound && hedgePosition) {
       const marketOrder = Order.createMarketOrder(symbol, hedgePosition.amount, hedgePosition.side, { close: true });
@@ -512,7 +512,7 @@ module.exports = class ExchangeOrderWatchdogListener {
       }
 
       if (options.hedge_profit_mode && orderChange.type === 'stop') {
-        orderChange.type = 'take_profit';
+        orderChange.type = 'trailing_stop';
         orderChange.price *= -1;
       }
 
@@ -548,12 +548,18 @@ module.exports = class ExchangeOrderWatchdogListener {
       );
 
       let ourOrder;
-      if (orderChange.type === 'take_profit') {
-        ourOrder = Order.createTakeProfitMarketOrder(symbol, position.side, orderChange.price, orderChange.amount);
+      if (orderChange.type === 'trailing_stop') {
+        ourOrder = Order.createTrailingStopMarketOrder(
+          symbol,
+          position.side,
+          orderChange.price,
+          orderChange.amount,
+          options.trailing_stop_rate
+        );
       } else if (orderChange.type === 'stop') {
         ourOrder = Order.createStopOrder(symbol, position.side, orderChange.price, orderChange.amount);
       } else {
-        ourOrder = Order.createLimitPostOnlyOrder(symbol, position.side, orderChange.price, orderChange.amount);
+        ourOrder = Order.createStopMarketOrder(symbol, position.side, orderChange.price, orderChange.amount);
       }
 
       ourOrder.price = price;

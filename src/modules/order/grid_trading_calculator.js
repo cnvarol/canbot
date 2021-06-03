@@ -17,7 +17,7 @@ module.exports = class GridTradingCalculator {
         order =>
           (order.type === ExchangeOrder.TYPE_LIMIT ||
             order.type === ExchangeOrder.TYPE_STOP ||
-            order.type === ExchangeOrder.TYPE_TAKE_PROFIT_MARKET) &&
+            order.type === ExchangeOrder.TYPE_TRAILING_STOP_MARKET) &&
           order.positionSide === position.raw.positionSide
       );
     } else {
@@ -25,7 +25,7 @@ module.exports = class GridTradingCalculator {
         order =>
           order.type === ExchangeOrder.TYPE_LIMIT ||
           order.type === ExchangeOrder.TYPE_STOP ||
-          order.type === ExchangeOrder.TYPE_TAKE_PROFIT_MARKET
+          order.type === ExchangeOrder.TYPE_TRAILING_STOP_MARKET
       );
     }
 
@@ -69,7 +69,7 @@ module.exports = class GridTradingCalculator {
     let hedge_step_percent = Math.sqrt(size / options.hedge_step_resolution);
 
     if (options.hedge_profit_mode) {
-      hedge_step_percent = options.hedge_take_profit;
+      hedge_step_percent = options.take_profit + options.trailing_stop_rate;
     }
 
     if (position.side === 'long') {
@@ -91,12 +91,12 @@ module.exports = class GridTradingCalculator {
     if (position.raw && position.raw.positionSide !== 'BOTH') {
       stopOrders = orders.filter(
         order =>
-          (order.type === ExchangeOrder.TYPE_STOP || order.type === ExchangeOrder.TYPE_TAKE_PROFIT_MARKET) &&
+          (order.type === ExchangeOrder.TYPE_STOP || order.type === ExchangeOrder.TYPE_TRAILING_STOP_MARKET) &&
           order.positionSide === position.raw.positionSide
       );
     } else {
       stopOrders = orders.filter(
-        order => order.type === ExchangeOrder.TYPE_STOP || order.type === ExchangeOrder.TYPE_TAKE_PROFIT_MARKET
+        order => order.type === ExchangeOrder.TYPE_STOP || order.type === ExchangeOrder.TYPE_TRAILING_STOP_MARKET
       );
     }
 

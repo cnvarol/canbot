@@ -33,6 +33,7 @@ module.exports = class CcxtExchangeOrder {
 
     let promise;
     switch (order.getType()) {
+      case Order.TYPE_TRAILING_STOP:
       case Order.TYPE_TAKE_PROFIT:
       case Order.TYPE_STOP:
       case Order.TYPE_LIMIT:
@@ -48,6 +49,7 @@ module.exports = class CcxtExchangeOrder {
       case Order.TYPE_MARKET:
       case Order.TYPE_STOP_MARKET:
       case Order.TYPE_TAKE_PROFIT_MARKET:
+      case Order.TYPE_TRAILING_STOP_MARKET:
         promise = this.ccxtClient.createOrder(
           order.getSymbol(),
           order.getType(),

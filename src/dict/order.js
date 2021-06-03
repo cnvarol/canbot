@@ -41,6 +41,10 @@ module.exports = class Order {
     return 'trailing_stop';
   }
 
+  static get TYPE_TRAILING_STOP_MARKET() {
+    return 'trailing_stop_market';
+  }
+
   static get OPTION_POST_ONLY() {
     return 'post_only';
   }
@@ -344,6 +348,22 @@ module.exports = class Order {
       typeof amount === 'undefined' ? exchangeOrder.amount : amount,
       exchangeOrder.type,
       exchangeOrder.options
+    );
+  }
+
+  static createTrailingStopMarketOrder(symbol, side, price, amount, callbackRate = 1) {
+    if (![Order.SIDE_SHORT, Order.SIDE_LONG].includes(side)) {
+      throw new Error(`Invalid order side:${side} - ${JSON.stringify([symbol, side, price, amount])}`);
+    }
+
+    return new Order(
+      Math.round(new Date().getTime().toString() * Math.random()),
+      symbol,
+      side,
+      price,
+      amount,
+      Order.TYPE_TRAILING_STOP_MARKET,
+      { callbackRate: callbackRate, close: true }
     );
   }
 

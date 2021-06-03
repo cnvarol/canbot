@@ -812,11 +812,12 @@ module.exports = class BinanceDelivery {
       convertOrder: (client, order) => {
         order.symbol = order.symbol.replace('/USD', 'USD_PERP');
         // ccxt does not pipe the stopPrice
-        if (
-          ['trailing_stop_market', 'stop_market', 'take_profit_market'].includes(order.type) &&
-          order.info.stopPrice
-        ) {
+        if (['stop_market', 'take_profit_market'].includes(order.type) && order.info.stopPrice) {
           order.price = parseFloat(order.info.stopPrice);
+        }
+
+        if (['trailing_stop_market'].includes(order.type) && order.info.activationPrice) {
+          order.price = parseFloat(order.info.activationPrice);
         }
       },
       createOrder: order => {
@@ -851,6 +852,17 @@ module.exports = class BinanceDelivery {
             request.args.reduceOnly = true;
           }
           request.args.stopPrice = order.getPrice();
+        }
+
+        if (order.getType() === Order.TYPE_TRAILING_STOP || order.getType() === Order.TYPE_TRAILING_STOP_MARKET) {
+          if (config.hedge) {
+            order.side = order.side === Order.SIDE_SHORT ? 'long' : 'short';
+            request.args.positionSide = order.side.toUpperCase();
+          } else {
+            request.args.reduceOnly = true;
+          }
+          request.args.activationPrice = order.getPrice();
+          request.args.callbackRate = order.options.callbackRate;
         }
 
         if (order.options && order.options.close && config.hedge) {
