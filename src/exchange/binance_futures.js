@@ -794,7 +794,7 @@ module.exports = class BinanceFutures {
           order.price = parseFloat(order.info.stopPrice);
         }
 
-        if (['trailing_stop_market'].includes(order.type) && order.info.activationPrice) {
+        if (['trailing_stop_market'].includes(order.type) && order.info.activatePrice) {
           order.price = parseFloat(order.info.activatePrice);
         }
       },
