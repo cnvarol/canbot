@@ -418,12 +418,9 @@ module.exports = class ExchangeOrderWatchdogListener {
       }
     });
 
-    if (options.pump_detection && position.side === 'short') {
-      const qKey = `${exchange.getName()}:${position.symbol}:${position.side}`;
-      if (qKey in this.quarantine) {
-        return;
-      }
+    const qKey = `${exchange.getName()}:${position.symbol}:${position.side}`;
 
+    if (!(qKey in this.quarantine) && options.pump_detection && position.side === 'short') {
       const result = await this.gridTradingCalculator.pumpPattern(
         exchange.getName(),
         position.symbol,
@@ -446,12 +443,7 @@ module.exports = class ExchangeOrderWatchdogListener {
       }
     }
 
-    if (options.pump_detection && position.side === 'long') {
-      const qKey = `${exchange.getName()}:${position.symbol}:${position.side}`;
-      if (qKey in this.quarantine) {
-        return;
-      }
-
+    if (!(qKey in this.quarantine) && options.pump_detection && position.side === 'long') {
       const result = await this.gridTradingCalculator.dumpPattern(
         exchange.getName(),
         position.symbol,
@@ -558,7 +550,7 @@ module.exports = class ExchangeOrderWatchdogListener {
         );
       } else if (orderChange.type === 'stop') {
         ourOrder = Order.createStopOrder(symbol, position.side, orderChange.price, orderChange.amount);
-      } else {
+      } else if (!(qKey in this.quarantine)) {
         ourOrder = Order.createLimitPostOnlyOrder(symbol, position.side, orderChange.price, orderChange.amount);
       }
 
