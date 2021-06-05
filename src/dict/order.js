@@ -351,7 +351,7 @@ module.exports = class Order {
     );
   }
 
-  static createTrailingStopMarketOrder(symbol, side, price, amount, callbackRate = 1) {
+  static createTrailingStopMarketOrder(symbol, side, price, amount, callbackRate = 1, close = true) {
     if (![Order.SIDE_SHORT, Order.SIDE_LONG].includes(side)) {
       throw new Error(`Invalid order side:${side} - ${JSON.stringify([symbol, side, price, amount])}`);
     }
@@ -363,7 +363,7 @@ module.exports = class Order {
       price,
       amount,
       Order.TYPE_TRAILING_STOP_MARKET,
-      { callbackRate: callbackRate, close: true }
+      { callbackRate: callbackRate, close: close }
     );
   }
 

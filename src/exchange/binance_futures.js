@@ -833,11 +833,13 @@ module.exports = class BinanceFutures {
         }
 
         if (order.getType() === Order.TYPE_TRAILING_STOP || order.getType() === Order.TYPE_TRAILING_STOP_MARKET) {
-          if (config.hedge) {
-            order.side = order.side === Order.SIDE_SHORT ? 'long' : 'short';
-            request.args.positionSide = order.side.toUpperCase();
-          } else {
-            request.args.reduceOnly = true;
+          if (order.isReduceOnly()) {
+            if (config.hedge) {
+              order.side = order.side === Order.SIDE_SHORT ? 'long' : 'short';
+              request.args.positionSide = order.side.toUpperCase();
+            } else {
+              request.args.reduceOnly = true;
+            }
           }
           request.args.activationPrice = order.getPrice();
           request.args.callbackRate = order.options.callbackRate;

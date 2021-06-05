@@ -553,7 +553,14 @@ module.exports = class ExchangeOrderWatchdogListener {
       } else if (qKey in this.quarantine) {
         return;
       } else {
-        ourOrder = Order.createLimitPostOnlyOrder(symbol, position.side, orderChange.price, orderChange.amount);
+        ourOrder = Order.createTrailingStopMarketOrder(
+          symbol,
+          position.side,
+          orderChange.price,
+          orderChange.amount,
+          options.trailing_stop_rate,
+          false
+        );
       }
 
       ourOrder.price = price;
