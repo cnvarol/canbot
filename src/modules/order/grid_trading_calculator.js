@@ -91,12 +91,15 @@ module.exports = class GridTradingCalculator {
     if (position.raw && position.raw.positionSide !== 'BOTH') {
       stopOrders = orders.filter(
         order =>
-          (order.type === ExchangeOrder.TYPE_STOP || order.type === ExchangeOrder.TYPE_TRAILING_STOP_MARKET) &&
+          (order.type === ExchangeOrder.TYPE_STOP ||
+            (order.type === ExchangeOrder.TYPE_TRAILING_STOP_MARKET && order.reduceOnly)) &&
           order.positionSide === position.raw.positionSide
       );
     } else {
       stopOrders = orders.filter(
-        order => order.type === ExchangeOrder.TYPE_STOP || order.type === ExchangeOrder.TYPE_TRAILING_STOP_MARKET
+        order =>
+          order.type === ExchangeOrder.TYPE_STOP ||
+          (order.type === ExchangeOrder.TYPE_TRAILING_STOP_MARKET && order.reduceOnly)
       );
     }
 
@@ -132,10 +135,15 @@ module.exports = class GridTradingCalculator {
     let targetOrders;
     if (position.raw && position.raw.positionSide !== 'BOTH') {
       targetOrders = orders.filter(
-        order => order.type === ExchangeOrder.TYPE_LIMIT && order.positionSide === position.raw.positionSide
+        order =>
+          order.type === ExchangeOrder.TYPE_TRAILING_STOP_MARKET &&
+          !order.reduceOnly &&
+          order.positionSide === position.raw.positionSide
       );
     } else {
-      targetOrders = orders.filter(order => order.type === ExchangeOrder.TYPE_LIMIT);
+      targetOrders = orders.filter(
+        order => order.type === ExchangeOrder.TYPE_TRAILING_STOP_MARKET && !order.reduceOnly
+      );
     }
 
     if (targetOrders.length === 0) {
