@@ -550,7 +550,9 @@ module.exports = class ExchangeOrderWatchdogListener {
         );
       } else if (orderChange.type === 'stop') {
         ourOrder = Order.createStopOrder(symbol, position.side, orderChange.price, orderChange.amount);
-      } else if (!(qKey in this.quarantine)) {
+      } else if (qKey in this.quarantine) {
+        return;
+      } else {
         ourOrder = Order.createLimitPostOnlyOrder(symbol, position.side, orderChange.price, orderChange.amount);
       }
 
