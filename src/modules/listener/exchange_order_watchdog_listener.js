@@ -394,7 +394,8 @@ module.exports = class ExchangeOrderWatchdogListener {
     }
 
     // check duplicate orders
-    const duplicateOrders = this.gridTradingCalculator.checkDuplicateOrders(position, orders);
+    let duplicateOrders = this.gridTradingCalculator.checkDuplicateStopOrders(position, orders);
+    duplicateOrders = duplicateOrders.concat(this.gridTradingCalculator.checkDuplicateLimitOrders(position, orders));
 
     duplicateOrders.forEach(async order => {
       logger.error(

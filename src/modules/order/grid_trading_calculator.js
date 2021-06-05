@@ -10,23 +10,54 @@ module.exports = class GridTradingCalculator {
     this.candlestickRepository = candlestickRepository;
   }
 
-  checkDuplicateOrders(position, orders) {
+  checkDuplicateStopOrders(position, orders) {
     let ordersCheck;
     if (position.raw && position.raw.positionSide !== 'BOTH') {
       ordersCheck = orders.filter(
         order =>
-          (order.type === ExchangeOrder.TYPE_LIMIT ||
-            order.type === ExchangeOrder.TYPE_STOP ||
-            order.type === ExchangeOrder.TYPE_TRAILING_STOP_MARKET) &&
+          (order.type === ExchangeOrder.TYPE_STOP ||
+            (order.type === ExchangeOrder.TYPE_TRAILING_STOP_MARKET && order.reduceOnly)) &&
           order.positionSide === position.raw.positionSide
       );
     } else {
       ordersCheck = orders.filter(
         order =>
-          order.type === ExchangeOrder.TYPE_LIMIT ||
           order.type === ExchangeOrder.TYPE_STOP ||
-          order.type === ExchangeOrder.TYPE_TRAILING_STOP_MARKET
+          (order.type === ExchangeOrder.TYPE_TRAILING_STOP_MARKET && order.reduceOnly)
       );
+    }
+
+    const orderAmounts = new Set();
+    const orderPrices = new Set();
+    const duplicateOrders = [];
+
+    ordersCheck.forEach(order => {
+      const duplicateAmount = orderAmounts.has(order.amount);
+      const duplicatePrice = orderPrices.has(order.price);
+
+      if (duplicateAmount && duplicatePrice) {
+        duplicateOrders.push(order);
+        return;
+      }
+
+      orderAmounts.add(order.amount);
+      orderPrices.add(order.price);
+    });
+
+    return duplicateOrders;
+  }
+
+  checkDuplicateLimitOrders(position, orders) {
+    let ordersCheck;
+    if (position.raw && position.raw.positionSide !== 'BOTH') {
+      ordersCheck = orders.filter(
+        order =>
+          order.type === ExchangeOrder.TYPE_TRAILING_STOP_MARKET &&
+          !order.reduceOnly &&
+          order.positionSide === position.raw.positionSide
+      );
+    } else {
+      ordersCheck = orders.filter(order => order.type === ExchangeOrder.TYPE_TRAILING_STOP_MARKET && !order.reduceOnly);
     }
 
     const orderAmounts = new Set();
