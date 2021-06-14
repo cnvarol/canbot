@@ -3,6 +3,7 @@
 const moment = require('moment');
 const orderUtil = require('../../utils/order_util');
 const Order = require('../../dict/order');
+const ExchangeOrder = require('../../dict/exchange_order');
 
 module.exports = class ExchangeOrderWatchdogListener {
   constructor(
@@ -296,25 +297,36 @@ module.exports = class ExchangeOrderWatchdogListener {
           }
 
           const side = position.side === Order.SIDE_LONG ? Order.SIDE_SHORT : Order.SIDE_LONG;
-          const hedgeOrder = Order.createTrailingStopMarketOrder(
-            symbol,
-            side,
-            side === 'long' ? position.markPrice * 0.999 : position.markPrice * 1.001,
-            amount,
-            options.trailing_stop_rate,
-            false
-          );
-          await this.orderExecutor.executeOrder(exchange.getName(), hedgeOrder);
 
-          logger.info(
-            `Grid Trading: opening hedge position: ${JSON.stringify({
-              hedgeOrder: hedgeOrder,
-              exchange: exchange.getName(),
-              symbol: symbol,
-              current_side: position.side,
-              fisher_rsi: fisher_rsi
-            })}`
-          );
+          const orderFound =
+            orders.filter(
+              order =>
+                order.type === ExchangeOrder.TYPE_TRAILING_STOP_MARKET &&
+                order.positionSide === side &&
+                !order.reduceOnly
+            ).length > 0;
+
+          if (!orderFound) {
+            const hedgeOrder = Order.createTrailingStopMarketOrder(
+              symbol,
+              side,
+              side === 'long' ? position.markPrice * 0.999 : position.markPrice * 1.001,
+              amount,
+              options.trailing_stop_rate,
+              false
+            );
+            await this.orderExecutor.executeOrder(exchange.getName(), hedgeOrder);
+
+            logger.info(
+              `Grid Trading: opening hedge position: ${JSON.stringify({
+                hedgeOrder: hedgeOrder,
+                exchange: exchange.getName(),
+                symbol: symbol,
+                current_side: position.side,
+                fisher_rsi: fisher_rsi
+              })}`
+            );
+          }
         }
       }
     }
