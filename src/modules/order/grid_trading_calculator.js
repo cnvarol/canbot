@@ -270,8 +270,6 @@ module.exports = class GridTradingCalculator {
         values: candles.slice(-28).map(v => v.close)
       });
 
-      console.log(candleRSI);
-
       resolve(candleRSI[candleRSI.length - 1]);
     });
   }
