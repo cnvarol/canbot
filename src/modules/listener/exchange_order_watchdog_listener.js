@@ -312,7 +312,7 @@ module.exports = class ExchangeOrderWatchdogListener {
               side,
               side === 'long' ? position.markPrice * 0.999 : position.markPrice * 1.001,
               amount,
-              options.trailing_stop_rate,
+              options.trailing_stop_rate / 2,
               false
             );
             await this.orderExecutor.executeOrder(exchange.getName(), hedgeOrder);
