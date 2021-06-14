@@ -253,7 +253,7 @@ module.exports = class GridTradingCalculator {
     return new Promise(async resolve => {
       const allCandles = await this.candlestickRepository.getLookbacksForPair(exchange, symbol, period, 20);
 
-      const candles = allCandles.slice() || [];
+      const candles = allCandles.slice().reverse() || [];
 
       if (candles.length === 0 || candles.length < 20) {
         resolve({});
@@ -272,7 +272,7 @@ module.exports = class GridTradingCalculator {
 
       console.log(candleRSI);
 
-      resolve(candleRSI[0]);
+      resolve(candleRSI[candleRSI.length - 1]);
     });
   }
 
