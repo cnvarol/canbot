@@ -306,13 +306,13 @@ module.exports = class ExchangeOrderWatchdogListener {
                 !order.reduceOnly
             ).length > 0;
 
-          if (!orderFound) {
+          if (!orderFound && position.markPrice) {
             const hedgeOrder = Order.createTrailingStopMarketOrder(
               symbol,
               side,
               side === 'long' ? position.markPrice * 0.999 : position.markPrice * 1.001,
               amount,
-              options.trailing_stop_rate / 2,
+              Math.round((options.trailing_stop_rate / 2) * 10) / 10,
               false
             );
             await this.orderExecutor.executeOrder(exchange.getName(), hedgeOrder);
