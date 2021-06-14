@@ -251,9 +251,7 @@ module.exports = class GridTradingCalculator {
 
   async rsiCalculate(exchange, symbol, period) {
     return new Promise(async resolve => {
-      const allCandles = await this.candlestickRepository.getLookbacksForPair(exchange, symbol, period, 20);
-
-      const candles = allCandles.slice().reverse() || [];
+      const candles = await this.candlestickRepository.getLookbacksForPair(exchange, symbol, period, 20);
 
       if (candles.length === 0 || candles.length < 20) {
         resolve({});
