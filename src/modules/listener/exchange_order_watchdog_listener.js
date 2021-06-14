@@ -296,7 +296,14 @@ module.exports = class ExchangeOrderWatchdogListener {
           }
 
           const side = position.side === Order.SIDE_LONG ? Order.SIDE_SHORT : Order.SIDE_LONG;
-          const hedgeOrder = Order.createMarketOrder(symbol, amount, side);
+          const hedgeOrder = Order.createTrailingStopMarketOrder(
+            symbol,
+            side,
+            side === 'long' ? position.markPrice * 0.999 : position.markPrice * 1.001,
+            amount,
+            options.trailing_stop_rate,
+            false
+          );
           await this.orderExecutor.executeOrder(exchange.getName(), hedgeOrder);
 
           logger.info(
