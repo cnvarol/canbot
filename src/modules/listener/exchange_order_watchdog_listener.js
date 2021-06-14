@@ -285,24 +285,29 @@ module.exports = class ExchangeOrderWatchdogListener {
     ) {
       // if (currentPositions.length < 2 && Math.abs(position.amount * position.entry) < capital * 1.5) {
       if (currentPositions.length < 2 && size < options.risk_size) {
-        let amount = Math.abs(position.amount);
-        if (position.side === 'long') {
-          amount *= -1;
-        } else {
-          amount *= 1;
+        const fisher_rsi = await this.gridTradingCalculator.fisherRSICalculate(exchange.getName(), symbol, '3m');
+        console.log(symbol, position.side, fisher_rsi);
+
+        if ((position.side === 'long' && fisher_rsi >= 0.7) || (position.side === 'short' && fisher_rsi <= -0.7)) {
+          let amount = Math.abs(position.amount);
+          if (position.side === 'long') {
+            amount *= -1;
+          } else {
+            amount *= 1;
+          }
+
+          const side = position.side === Order.SIDE_LONG ? Order.SIDE_SHORT : Order.SIDE_LONG;
+          const hedgeOrder = Order.createMarketOrder(symbol, amount, side);
+          await this.orderExecutor.executeOrder(exchange.getName(), hedgeOrder);
+
+          logger.info(
+            `Grid Trading: opening hedge position: ${JSON.stringify({
+              hedgeOrder: hedgeOrder,
+              symbol: symbol,
+              exchange: exchange.getName()
+            })}`
+          );
         }
-
-        const side = position.side === Order.SIDE_LONG ? Order.SIDE_SHORT : Order.SIDE_LONG;
-        const hedgeOrder = Order.createMarketOrder(symbol, amount, side);
-        await this.orderExecutor.executeOrder(exchange.getName(), hedgeOrder);
-
-        logger.info(
-          `Grid Trading: opening hedge position: ${JSON.stringify({
-            hedgeOrder: hedgeOrder,
-            symbol: symbol,
-            exchange: exchange.getName()
-          })}`
-        );
       }
     }
 

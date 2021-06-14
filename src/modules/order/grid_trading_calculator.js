@@ -274,6 +274,17 @@ module.exports = class GridTradingCalculator {
     });
   }
 
+  async fisherRSICalculate(exchange, symbol, period) {
+    const rsi = await this.rsiCalculate(exchange, symbol, period);
+
+    if (!rsi) {
+      return 0;
+    }
+
+    const rsiP = 0.1 * (rsi - 50);
+    return (Math.exp(2 * rsiP) - 1) / (Math.exp(2 * rsiP) + 1);
+  }
+
   async dumpPattern(exchange, symbol, period) {
     return new Promise(async resolve => {
       const allCandles = await this.candlestickRepository.getLookbacksForPair(exchange, symbol, period, 40);
@@ -306,11 +317,11 @@ module.exports = class GridTradingCalculator {
       resolve({
         time: new Date(),
         volume_sd: volSma.slice(-1)[0],
-        volume_v: currentCandle.volume / currentVolumeSma > 6 ? currentCandle.volume / currentVolumeSma : undefined,
-        hint: currentCandle.volume / currentVolumeSma > 6,
+        volume_v: currentCandle.volume / currentVolumeSma > 6.5 ? currentCandle.volume / currentVolumeSma : undefined,
+        hint: currentCandle.volume / currentVolumeSma > 6.5,
         price_trigger: currentCandle.low,
         roc_v: (candles.slice(-1)[0].open - candles.slice(-1)[0].low) / candleSizeSma.slice(-1)[0],
-        roc_ma: (candles.slice(-1)[0].open - candles.slice(-1)[0].low) / candleSizeSma.slice(-1)[0] > 6
+        roc_ma: (candles.slice(-1)[0].open - candles.slice(-1)[0].low) / candleSizeSma.slice(-1)[0] > 6.5
       });
     });
   }
@@ -347,11 +358,11 @@ module.exports = class GridTradingCalculator {
       resolve({
         time: new Date(),
         volume_sd: volSma.slice(-1)[0],
-        volume_v: currentCandle.volume / currentVolumeSma > 6 ? currentCandle.volume / currentVolumeSma : undefined,
-        hint: currentCandle.volume / currentVolumeSma > 6,
+        volume_v: currentCandle.volume / currentVolumeSma > 6.5 ? currentCandle.volume / currentVolumeSma : undefined,
+        hint: currentCandle.volume / currentVolumeSma > 6.5,
         price_trigger: currentCandle.high,
         roc: (candles.slice(-1)[0].open - candles.slice(-1)[0].close) / candleSizeSma.slice(-1)[0],
-        roc_ma: (candles.slice(-1)[0].open - candles.slice(-1)[0].close) / candleSizeSma.slice(-1)[0] < -6
+        roc_ma: (candles.slice(-1)[0].open - candles.slice(-1)[0].close) / candleSizeSma.slice(-1)[0] < -6.5
       });
     });
   }
