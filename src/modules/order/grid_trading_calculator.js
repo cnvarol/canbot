@@ -257,11 +257,13 @@ module.exports = class GridTradingCalculator {
 
       if (candles.length === 0 || candles.length < 14) {
         resolve({});
+        console.log('rsi no length');
         return;
       }
 
       if (candles.length > 1 && candles[0].time > candles[1].time) {
         resolve({});
+        console.log('candle time problem');
         return;
       }
 
@@ -269,6 +271,8 @@ module.exports = class GridTradingCalculator {
         period: 14,
         values: candles.slice(-14).map(v => v.close)
       });
+
+      console.log(candleSizeRSI);
 
       resolve(candleSizeRSI[0]);
     });
