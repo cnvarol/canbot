@@ -255,6 +255,8 @@ module.exports = class GridTradingCalculator {
 
       const candles = allCandles.slice().reverse() || [];
 
+      console.log(candles.slice(-28).map(v => v.close));
+
       if (candles.length === 0 || candles.length < 14) {
         resolve({});
         console.log('rsi no length');
@@ -267,14 +269,14 @@ module.exports = class GridTradingCalculator {
         return;
       }
 
-      const candleSizeRSI = RSI.calculate({
+      const candleRSI = RSI.calculate({
         period: 14,
         values: candles.slice(-28).map(v => v.close)
       });
 
-      console.log(candleSizeRSI);
+      console.log(candleRSI);
 
-      resolve(candleSizeRSI[0]);
+      resolve(candleRSI[0]);
     });
   }
 
