@@ -302,7 +302,7 @@ module.exports = class ExchangeOrderWatchdogListener {
             orders.filter(
               order =>
                 order.type === ExchangeOrder.TYPE_TRAILING_STOP_MARKET &&
-                order.positionSide === side &&
+                order.positionSide === side.toUpperCase() &&
                 !order.reduceOnly
             ).length > 0;
 
