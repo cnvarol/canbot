@@ -269,7 +269,7 @@ module.exports = class GridTradingCalculator {
 
       const candleSizeRSI = RSI.calculate({
         period: 14,
-        values: candles.slice(-14).map(v => v.close)
+        values: candles.slice(-28).map(v => v.close)
       });
 
       console.log(candleSizeRSI);
