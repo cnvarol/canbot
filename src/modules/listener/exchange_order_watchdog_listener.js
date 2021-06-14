@@ -302,8 +302,10 @@ module.exports = class ExchangeOrderWatchdogListener {
           logger.info(
             `Grid Trading: opening hedge position: ${JSON.stringify({
               hedgeOrder: hedgeOrder,
+              exchange: exchange.getName(),
               symbol: symbol,
-              exchange: exchange.getName()
+              current_side: position.side,
+              fisher_rsi: fisher_rsi
             })}`
           );
         }
