@@ -310,7 +310,7 @@ module.exports = class ExchangeOrderWatchdogListener {
             const hedgeOrder = Order.createTrailingStopMarketOrder(
               symbol,
               side,
-              side === 'long' ? position.markPrice * 0.999 : position.markPrice * 1.001,
+              side === 'long' ? position.markPrice * 0.998 : position.markPrice * 1.002,
               amount,
               Math.round((options.trailing_stop_rate / 2) * 10) / 10,
               false
