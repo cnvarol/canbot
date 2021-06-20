@@ -5,8 +5,8 @@ module.exports = class {
     return 'marinero';
   }
 
-  buildIndicator(indicatorBuilder) {
-    indicatorBuilder.add('rsi', 'rsi', '3m');
+  buildIndicator(indicatorBuilder, options) {
+    indicatorBuilder.add('rsi', 'rsi', options.period);
   }
 
   async period(indicatorPeriod) {
@@ -53,7 +53,7 @@ module.exports = class {
 
   getOptions() {
     return {
-      period: '3m'
+      period: '15m'
     };
   }
 
