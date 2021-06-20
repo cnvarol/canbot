@@ -499,14 +499,6 @@ module.exports = class ExchangeOrderWatchdogListener {
     const orderChanges = await this.gridTradingCalculator.createGridTradingOrders(position, orders, options);
 
     orderChanges.forEach(async orderChange => {
-      logger.info(
-        `Grid Trading: needed order change detected: ${JSON.stringify({
-          orderChange: orderChange,
-          symbol: symbol,
-          exchange: exchange.getName()
-        })}`
-      );
-
       // update
       if (orderChange.id && String(orderChange.id).length > 0) {
         logger.info(
