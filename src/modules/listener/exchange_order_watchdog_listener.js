@@ -261,9 +261,9 @@ module.exports = class ExchangeOrderWatchdogListener {
       this.throttler.inTasks('binance_futures_sync_orders') ||
       this.throttler.inTasks('binance_futures_sync_positions')
     ) {
-      this.logger.debug(
+      /* this.logger.debug(
         `Grid trading: Binance futures important tasks in queue, wait for 3s for position ${position.symbol} - ${position.side}`
-      );
+      ); */
       setTimeout(async () => {
         await this.gridTradingWatchdog(exchange, position, options);
       }, 3000);
