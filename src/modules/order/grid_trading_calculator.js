@@ -111,6 +111,14 @@ module.exports = class GridTradingCalculator {
       result.stopPrice = entryPrice * (1 - hedge_step_percent / 100);
     }
 
+    if (position.side === 'long' && result.targetPrice >= position.markPrice) {
+      result.targetPrice = position.markPrice * 0.998;
+    }
+
+    if (position.side === 'short' && result.targetPrice <= position.markPrice) {
+      result.targetPrice = position.markPrice * 1.002;
+    }
+
     return result;
   }
 

@@ -365,7 +365,10 @@ module.exports = class ExchangeOrderWatchdogListener {
       profit = (pnl / totalSize) * 100;
     }
 
-    /* if (profit >= options.take_profit || (size >= options.risk_size && profit >= options.risk_take_profit)) {
+    if (
+      options.hedge_profit_mode &&
+      (profit >= options.take_profit || (size >= options.risk_size && profit >= options.risk_take_profit))
+    ) {
       if (Array.isArray(currentPositions)) {
         currentPositions.forEach(async p => {
           const marketOrder = Order.createMarketOrder(symbol, p.amount, p.side, { close: true });
@@ -385,7 +388,7 @@ module.exports = class ExchangeOrderWatchdogListener {
       );
 
       return;
-    } */
+    }
 
     /* if (hedgeProfitFound && hedgePosition) {
       const marketOrder = Order.createMarketOrder(symbol, hedgePosition.amount, hedgePosition.side, { close: true });
