@@ -307,7 +307,7 @@ module.exports = class ExchangeOrderWatchdogListener {
             ).length > 0;
 
           if (!orderFound && position.markPrice) {
-            const hedgeOrder = Order.createTrailingStopOrder(
+            const hedgeOrder = Order.createTrailingStopMarketOrder(
               symbol,
               side,
               side === 'long' ? position.markPrice * 0.999 : position.markPrice * 1.001,
@@ -315,6 +315,8 @@ module.exports = class ExchangeOrderWatchdogListener {
               Math.round((options.trailing_stop_rate / 2) * 10) / 10,
               false
             );
+            hedgeOrder.retry = true;
+
             await this.orderExecutor.executeOrder(exchange.getName(), hedgeOrder);
 
             logger.info(
