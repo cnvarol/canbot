@@ -872,6 +872,18 @@ module.exports = class BinanceDelivery {
           request.args.side = order.side === Order.SIDE_SHORT ? 'BUY' : 'SELL';
         }
 
+        if (order.getType() === Order.TYPE_TRAILING_STOP_MARKET && order.symbol in this.tickers) {
+          const { bid } = this.tickers[order.symbol];
+
+          if (request.args.side === 'BUY' && order.getPrice() >= bid) {
+            request.args.activationPrice = bid * 0.998;
+          }
+
+          if (request.args.side === 'SELL' && order.getPrice() <= bid) {
+            request.args.activationPrice = bid * 1.002;
+          }
+        }
+
         return request;
       }
     });
