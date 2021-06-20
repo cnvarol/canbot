@@ -307,7 +307,7 @@ module.exports = class ExchangeOrderWatchdogListener {
             ).length > 0;
 
           if (!orderFound && position.markPrice) {
-            const hedgeOrder = Order.createTrailingStopMarketOrder(
+            const hedgeOrder = Order.createTrailingStopOrder(
               symbol,
               side,
               side === 'long' ? position.markPrice * 0.999 : position.markPrice * 1.001,

@@ -367,6 +367,22 @@ module.exports = class Order {
     );
   }
 
+  static createTrailingStopOrder(symbol, side, price, amount, callbackRate = 1, close = true) {
+    if (![Order.SIDE_SHORT, Order.SIDE_LONG].includes(side)) {
+      throw new Error(`Invalid order side:${side} - ${JSON.stringify([symbol, side, price, amount])}`);
+    }
+
+    return new Order(
+      Math.round(new Date().getTime().toString() * Math.random()),
+      symbol,
+      side,
+      price,
+      amount,
+      Order.TYPE_TRAILING_STOP,
+      { callbackRate: callbackRate, close: close }
+    );
+  }
+
   static createTrailingStopLossOrder(symbol, distance, amount) {
     return new Order(
       Math.round(new Date().getTime().toString() * Math.random()),
