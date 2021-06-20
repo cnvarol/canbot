@@ -553,14 +553,6 @@ module.exports = class ExchangeOrderWatchdogListener {
       this.orders[orderKey] = { price: orderChange.price };
 
       // we need to normalize the price here: more general solution?
-      logger.info(
-        `Grid Trading: order create: ${JSON.stringify({
-          orderChange: orderChange,
-          symbol: symbol,
-          exchange: exchange.getName()
-        })}`
-      );
-
       let ourOrder;
       if (orderChange.type === 'trailing_stop') {
         ourOrder = Order.createTrailingStopMarketOrder(
@@ -588,6 +580,14 @@ module.exports = class ExchangeOrderWatchdogListener {
       ourOrder.price = price;
 
       await this.orderExecutor.executeOrder(exchange.getName(), ourOrder);
+
+      logger.info(
+        `Grid Trading: order create: ${JSON.stringify({
+          orderChange: orderChange,
+          symbol: symbol,
+          exchange: exchange.getName()
+        })}`
+      );
     });
   }
 
