@@ -625,6 +625,10 @@ module.exports = {
         const key = `${o.order.symbol}:${o.order.positionSide.toLowerCase()}`
         if (!(key in this.positionlist)) {
           o.noPosition = true;
+
+          if (o.percent_to_price && (o.percent_to_price >= 2 || o.percent_to_price <= -2)) {
+            this.cancelOrder(o.exchange, o.order.symbol, o.order.type, o.order.side, o.order.id);
+          }
         }
         o.currency = parseFloat(o.order.price) * parseFloat(o.order.amount);
         o.sideStatus = this.sideShortOrLong(o.order);
