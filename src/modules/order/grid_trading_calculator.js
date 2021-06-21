@@ -278,7 +278,7 @@ module.exports = class GridTradingCalculator {
         values: candles.slice(-28).map(v => v.close)
       });
 
-      resolve(candleRSI[candleRSI.length - 1]);
+      resolve(candleRSI[0]);
     });
   }
 
