@@ -626,11 +626,11 @@ module.exports = {
         if (!(key in this.positionlist)) {
           o.noPosition = true;
 
-          if (o.percent_to_price && 
+          /* if (o.percent_to_price && 
           (o.percent_to_price >= 2 && o.order.positionSide === 'SHORT') || 
           (o.percent_to_price <= -2 && o.order.positionSide === 'LONG')) {
             this.cancelOrder(o.exchange, o.order.symbol, o.order.type, o.order.side, o.order.id);
-          }
+          } */
         }
         o.currency = parseFloat(o.order.price) * parseFloat(o.order.amount);
         o.sideStatus = this.sideShortOrLong(o.order);
