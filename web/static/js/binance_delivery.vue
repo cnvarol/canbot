@@ -625,7 +625,9 @@ module.exports = {
         if (!(key in this.positionlist)) {
           o.noPosition = true;
 
-          if (o.percent_to_price && (o.percent_to_price >= 3 || o.percent_to_price <= -3)) {
+          if (o.percent_to_price && 
+          (o.percent_to_price >= 2 && o.positionSide === 'SHORT') || 
+          (o.percent_to_price <= -2 && o.positionSide === 'LONG')) {
             this.cancelOrder(o.exchange, o.order.symbol, o.order.type, o.order.side, o.order.id);
           }
         }
