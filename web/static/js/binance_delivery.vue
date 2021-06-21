@@ -182,7 +182,7 @@
               {{ props.cell_value|filter_currency }} 
               <span v-if="props.row.percent_to_price" title="Percent to current price" v-bind:class="{ 'text-teal': props.row.percent_to_price > 0, 'text-danger': props.row.percent_to_price < 0 }">({{ props.row.percent_to_price|round(2) }}%)</span>
             </template>
-            <template slot="retry" slot-scope="props">
+            <template slot="noPosition" slot-scope="props">
               {{ props.cell_value === true ? 'Yes' : 'No' }}
             </template>
             <template slot="actions" slot-scope="props">
@@ -206,6 +206,7 @@ module.exports = {
   data: function() {
     return {
       positions: [],
+      positionlist: {},
       orders: [],
       balances: {},
       assetName: 'BTC',
@@ -316,10 +317,10 @@ module.exports = {
               column_text_alignment:  "text-left"
           },
           {
-              label: "Retry",
-              name: "order.retry",
-              slot_name: "retry",
-              sort: false,
+              label: "New",
+              name: "noPosition",
+              slot_name: "noPosition",
+              sort: true,
               row_text_alignment:  "text-left",
               column_text_alignment:  "text-left"
           },
@@ -606,8 +607,10 @@ module.exports = {
 
       this.totalLongPosition = 0;
       this.totalShortPosition = 0;
+      this.positionlist = {};
 
       this.positions.forEach(p => {
+        this.positionlist[`${p.position.symbol}:${p.position.side}`] = true;
         p.position.raw.unRealizedProfit = parseFloat(p.position.raw.unRealizedProfit);
         p.position.raw.markPrice = parseFloat(p.position.raw.markPrice);
         if (p.position.side === 'long') {
@@ -618,6 +621,10 @@ module.exports = {
       });
 
       this.orders.forEach(o => {
+        const key = `${o.order.symbol}:${o.order.positionSide.toLowerCase()}`
+        if (!(key in this.positionlist)) {
+          o.noPosition = true;
+        }
         o.currency = parseFloat(o.order.amount);
         o.sideStatus = this.sideShortOrLong(o.order);
       });

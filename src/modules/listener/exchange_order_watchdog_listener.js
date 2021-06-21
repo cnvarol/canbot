@@ -319,7 +319,7 @@ module.exports = class ExchangeOrderWatchdogListener {
             await this.orderExecutor.executeOrder(exchange.getName(), hedgeOrder);
 
             logger.info(
-              `Grid Trading: opening hedge position: ${JSON.stringify({
+              `Grid Trading: opening hedge order: ${JSON.stringify({
                 hedgeOrder: hedgeOrder,
                 exchange: exchange.getName(),
                 symbol: symbol,
@@ -366,7 +366,7 @@ module.exports = class ExchangeOrderWatchdogListener {
     }
 
     if (
-      options.hedge_profit_mode &&
+      !options.hedge_profit_mode &&
       (profit >= options.take_profit || (size >= options.risk_size && profit >= options.risk_take_profit))
     ) {
       if (Array.isArray(currentPositions)) {
