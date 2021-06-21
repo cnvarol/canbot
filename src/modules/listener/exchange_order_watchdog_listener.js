@@ -312,8 +312,7 @@ module.exports = class ExchangeOrderWatchdogListener {
               side,
               side === 'long' ? position.markPrice * 0.998 : position.markPrice * 1.002,
               amount,
-              // Math.round((options.trailing_stop_rate / 2) * 10) / 10,
-              options.trailing_stop_rate,
+              Math.round((options.trailing_stop_rate / 2) * 10) / 10,
               false
             );
 
