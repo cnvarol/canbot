@@ -286,9 +286,9 @@ module.exports = class ExchangeOrderWatchdogListener {
     ) {
       // if (currentPositions.length < 2 && Math.abs(position.amount * position.entry) < capital * 1.5) {
       if (currentPositions.length < 2 && size < options.risk_size) {
-        const fisher_rsi = await this.gridTradingCalculator.fisherRSICalculate(exchange.getName(), symbol, '3m');
+        const fisher_rsi = await this.gridTradingCalculator.fisherRSICalculate(exchange.getName(), symbol, '15m');
 
-        if ((position.side === 'long' && fisher_rsi <= -0.9) || (position.side === 'short' && fisher_rsi >= 0.9)) {
+        if ((position.side === 'long' && fisher_rsi >= 0.9) || (position.side === 'short' && fisher_rsi <= -0.97)) {
           let amount = Math.abs(position.amount);
           if (position.side === 'long') {
             amount *= -1;
