@@ -38,6 +38,37 @@ module.exports = class {
       return SignalResult.createSignal('short', debug);
     }
 
+    const context = indicatorPeriod.getStrategyContext();
+    const profit = indicatorPeriod.getProfit();
+
+    if (context.isBacktest() && lastSignal === 'short' && long && profit >= 1) {
+      const emptySignal = SignalResult.createEmptySignal(debug);
+      emptySignal.setSignal('close_short');
+
+      return emptySignal;
+    }
+
+    if (context.isBacktest() && lastSignal === 'long' && short && profit >= 1) {
+      const emptySignal = SignalResult.createEmptySignal(debug);
+      emptySignal.setSignal('close_long');
+
+      return emptySignal;
+    }
+
+    if (context.isBacktest() && lastSignal === 'long' && long && profit <= -3) {
+      const emptySignal = SignalResult.createEmptySignal(debug);
+      emptySignal.setSignal('long');
+
+      return emptySignal;
+    }
+
+    if (context.isBacktest() && lastSignal === 'short' && short && profit <= -3) {
+      const emptySignal = SignalResult.createEmptySignal(debug);
+      emptySignal.setSignal('short');
+
+      return emptySignal;
+    }
+
     return SignalResult.createEmptySignal(debug);
   }
 
