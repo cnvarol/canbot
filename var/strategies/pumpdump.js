@@ -78,9 +78,9 @@ module.exports = class {
       return SignalResult.createSignal('long', debug);
     }
 
-    if (!lastSignal && short) {
+    /* if (!lastSignal && short) {
       return SignalResult.createSignal('short', debug);
-    }
+    } */
 
     const context = indicatorPeriod.getStrategyContext();
     const profit = indicatorPeriod.getProfit();
