@@ -6,6 +6,7 @@
 const compression = require('compression');
 const express = require('express');
 const session = require('express-session');
+const FileStore = require('session-file-store')(session);
 const twig = require('twig');
 const cookieParser = require('cookie-parser');
 const crypto = require('crypto');
@@ -139,13 +140,16 @@ module.exports = class Http {
     app.use(compression());
     app.use(express.static(`${this.projectDir}/web/static`, { maxAge: 3600000 * 24 }));
 
+    const fileStoreOptions = {};
+
     app.set('trust proxy', 1);
     app.use(
       session({
         genid: req => {
           return uuidv4();
         },
-        secret: uuidv4(),
+        secret: 'botisthefuture',
+        store: new FileStore(fileStoreOptions),
         resave: false,
         saveUninitialized: false,
         cookie: { secure: false }
