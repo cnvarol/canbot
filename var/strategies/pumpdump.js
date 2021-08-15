@@ -6,9 +6,7 @@ module.exports = class {
     return 'pumpdump';
   }
 
-  pumpCatcher(allCandles) {
-    const candles = allCandles.slice().reverse() || [];
-
+  pumpCatcher(candles) {
     if (candles.length < 40) {
       return false;
     }
@@ -25,9 +23,7 @@ module.exports = class {
     return (candles.slice(-1)[0].open - candles.slice(-1)[0].close) / candleSizeSma.slice(-1)[0] < -5;
   }
 
-  dumpCatcher(allCandles) {
-    const candles = allCandles.slice().reverse() || [];
-
+  dumpCatcher(candles) {
     if (candles.length < 40) {
       return false;
     }
