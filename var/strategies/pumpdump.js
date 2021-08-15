@@ -20,7 +20,7 @@ module.exports = class {
       values: candles.slice(-80).map(v => Math.abs(v.open - v.close))
     });
 
-    return (candles.slice(-1)[0].open - candles.slice(-1)[0].close) / candleSizeSma.slice(-1)[0] < -5;
+    return (candles.slice(-1)[0].open - candles.slice(-1)[0].close) / candleSizeSma.slice(-1)[0] < -4;
   }
 
   dumpCatcher(candles) {
@@ -37,7 +37,7 @@ module.exports = class {
       values: candles.slice(-80).map(v => Math.abs(v.open - v.low))
     });
 
-    return (candles.slice(-1)[0].open - candles.slice(-1)[0].low) / candleSizeSma.slice(-1)[0] > 5;
+    return (candles.slice(-1)[0].open - candles.slice(-1)[0].low) / candleSizeSma.slice(-1)[0] > 4;
   }
 
   buildIndicator(indicatorBuilder, options) {
@@ -59,8 +59,10 @@ module.exports = class {
     const rsiP = 0.1 * (rsi - 50);
     const fisher_rsi = (Math.exp(2 * rsiP) - 1) / (Math.exp(2 * rsiP) + 1);
 
-    const long = fisher_rsi >= 0.7 && pump;
-    const short = fisher_rsi <= -0.7 && dump;
+    /* const long = fisher_rsi >= 0.7 && pump;
+    const short = fisher_rsi <= -0.7 && dump; */
+    const long = pump;
+    const short = dump;
 
     const lastSignal = indicatorPeriod.getLastSignal();
 
