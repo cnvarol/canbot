@@ -22,7 +22,7 @@ module.exports = class Backtest {
 
         return {
           name: `${symbol.exchange}.${symbol.symbol}`,
-          options: periods.length > 0 ? periods : ['15m', '1m', '5m', '1h', '4h']
+          options: periods.length > 0 ? periods : ['15m', '1m', '3m', '1h', '4h']
         };
       };
     });
