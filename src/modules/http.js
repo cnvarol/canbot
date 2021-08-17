@@ -140,7 +140,7 @@ module.exports = class Http {
     app.use(compression());
     app.use(express.static(`${this.projectDir}/web/static`, { maxAge: 3600000 * 24 }));
 
-    const fileStoreOptions = {};
+    const fileStoreOptions = { ttl: 604800 };
 
     app.set('trust proxy', 1);
     app.use(
