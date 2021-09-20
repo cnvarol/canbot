@@ -1,250 +1,55 @@
-const c = (module.exports = {});
+var c = module.exports = {}
 
-c.symbols = [];
+c.symbols = []
 
-/*
 const InstanceUtil = require('./src/utils/instance_util');
 c.init = async () => {
   c.symbols.push(
-    ...(await InstanceUtil.bitmexInit(pair => {
-      // inverse contracts; trade with 1 USD
-      // you can also provide a "capital" instead for trade with fixed BTC or ETH
-      if (['XBTUSD', 'ETHUSD'].includes(pair.symbol) || pair.symbol.startsWith('XBT')) {
-        pair.trade = { currency_capital: 1 };
-        return pair;
+    ...(await InstanceUtil.binanceFuturesInit(pair => {
+      if (pair.symbol.startsWith('BTC') || pair.symbol.startsWith('ETH') || pair.symbol.endsWith('BUSD')) {
+        return;
       }
 
-      // trade with 1 ETH on "BTC-ETH" contract, but ignore USD pair
-      if (pair.symbol.startsWith('ETH') && !pair.symbol.includes('USD')) {
-        pair.trade = { capital: 1 };
-        return pair;
-      }
-
-      // trade ADA-BTC; as ADA is low priced BTC; good for testing
-      if (pair.symbol.startsWith('ADA')) {
-        pair.trade = { capital: 1 };
-        return pair;
-      }
-
-      // remove others; we can not use all pairs in one instance; (only on when we not in quarterly contract change window)
-      return undefined;
+      return {
+        'symbol': pair.symbol,
+        'extra': {
+          'binance_futures_leverage': 20
+        },
+        'periods': ['1m', '3m', '15m', '1h', '4h', '1d'],
+        'watchdogs': [
+          {
+            'name': 'grid_trading',
+            'hedge_position': true,
+            'hedge_min_percent': -2.5,
+            'hedge_max_percent': -6,
+            'hedge_profit_mode': true,
+            'hedge_take_profit': 3,
+            'step_resolution': 3.5,
+            'hedge_step_resolution': 1.5,
+            'trailing_stop_rate': 1,
+            'take_profit': 1,
+            'risk_notify': true,
+            'risk_size': 300,
+            'risk_take_profit': 1,
+            'pump_detection': true,
+            'pump_candle_period': "15m",
+            'quarantine_after': 1000
+          }
+        ],
+        'exchange': 'binance_futures',
+        'trade': {
+          'max_position': 10,
+          'currency_capital': 80,
+          'strategies': [
+            {
+              'strategy': 'marinero',
+              'options': {
+                'period': '1h'
+              }
+            }
+          ]
+        }
+      };
     }))
   );
-
-    // FTX all "perp" / futures contracts
-    c.symbols.push(...(await InstanceUtil.ftxInitPerp()));
-
-    // Binance all USDT pairs
-    c.symbols.push(...(await InstanceUtil.binanceInitUsd()));
-
-    // Binance all USDT pairs spot or margin
-    // c.symbols.push(...(await InstanceUtil.binanceInitMarginUsd()));
-    // c.symbols.push(...(await InstanceUtil.binanceInitSpotUsd()));
-
-
-    // Binance futures
-    c.symbols.push(...(await InstanceUtil.binanceFuturesInit()));
-
-    // Binance futures or trade with 2 USD
-    c.symbols.push(
-      ...(await InstanceUtil.binanceFuturesInit(pair => {
-        pair.trade = { currency_capital: 2 };
-        return pair;
-      }))
-    );
-
-    // Bitfinex USD margin pairs
-    c.symbols.push(...(await InstanceUtil.bitfinexUsdMarginInit()));
-
-    // Bybit USD pairs
-    c.symbols.push(...(await InstanceUtil.bybitInit()));
-};
-*/
-
-/*
-// external loading; lazy init
-c.init = () => {
-    return new Promise(resolve => {
-        require('request')('https://api.binance.com/api/v1/exchangeInfo', (error, response, body) => {
-            let z = [
-                'BNBBTC', 'QKCBTC', 'XVGBTC', 'STRATBTC', 'LUNBTC', 'NANOBTC', 'LOOMBTC', 'VIBEBTC', 'PIVXBTC', 'MCOBTC', 'APPCBTC', 'STORJBTC', 'ELFBTC', 'ENJBTC', 'KNCBTC', 'RVNBTC', 'WANBTC', 'HCBTC',
-            ]
-
-            let trading = {
-                //'BTCUSDT': 50,
-                'TNTBTC': 6622,
-                'ADAUSDT': 300,
-                //'TUSDUSDT': 50,
-                'ONTUSDT': 40,
-            }
-
-            // only USDT pairs, because of its volume and ignore stable coin pairing
-            JSON.parse(body)['symbols']
-		        .filter(p => p['quoteAsset'] === 'USDT' && !['USDC', 'PAX', 'USDS', 'TUSD'].includes(p['baseAsset']) && p['status'].toLowerCase() === 'trading')
-                .forEach(p => {
-                    z.push(p['symbol'])
-                    trading[p['symbol']] = 50
-                }
-            )
-
-            z.forEach((pair) => {
-                let cfg = {
-                    'symbol': pair,
-                    'periods': ['1m', '15m', '1h'],
-                    'exchange': 'binance',
-                    'state': 'watch',
-                    'watchdogs': [
-                        {
-                            'name': 'stoploss_watch',
-                            'stop': 1.5,
-                        }
-                    ],
-                    'strategies': [
-                        {
-                            'strategy': 'cci',
-                            'options': {
-                                'period': '15m'
-                            }
-                        },
-                        {
-                            'strategy': 'obv_pump_dump'
-                        },
-                        {
-                            'strategy': 'macd',
-                            'options': {
-                                'period': '1h'
-                            }
-                        }
-                    ]
-                };
-
-                if (pair in trading) {
-                    cfg['trade'] = {
-                        'capital': trading[pair],
-                    }
-                }
-
-                c.symbols.push(cfg)
-            })
-
-            resolve()
-        })
-    })
 }
-*/
-
-// bitmex
-const y = ['XBTUSD', 'ETHUSD'];
-
-y.forEach(pair => {
-  c.symbols.push({
-    symbol: pair,
-    periods: ['1m', '15m', '1h'],
-    exchange: 'bitmex',
-    state: 'watch',
-    extra: {
-      bitmex_leverage: 5,
-      bitmex_rest_order_sync: 45000
-    },
-    trade: {
-      currency_capital: 1 // trade with 1 USD dollar
-    },
-    watchdogs: [
-      {
-        name: 'stoploss',
-        percent: 3
-      },
-      {
-        name: 'risk_reward_ratio',
-        target_percent: 3,
-        stop_percent: 3
-      }
-    ],
-    strategies: [
-      {
-        strategy: 'cci',
-        options: {
-          period: '15m'
-        }
-      },
-      {
-        strategy: 'obv_pump_dump'
-      },
-      {
-        strategy: 'macd',
-        options: {
-          period: '1h'
-        }
-      }
-    ]
-  });
-});
-
-// bitmex testnet
-const l = ['XBTUSD'];
-
-l.forEach(pair => {
-  c.symbols.push({
-    symbol: pair,
-    periods: ['1m', '15m', '1h'],
-    exchange: 'bitmex_testnet',
-    state: 'watch',
-    watchdogs: [
-      {
-        name: 'stoploss',
-        percent: 3
-      }
-    ],
-    extra: {
-      bitmex_leverage: 5
-    },
-    trade: {
-      capital: 50
-    },
-    strategies: [
-      {
-        strategy: 'cci',
-        options: {
-          period: '15m'
-        }
-      },
-      {
-        strategy: 'obv_pump_dump'
-      },
-      {
-        strategy: 'macd',
-        options: {
-          period: '1h'
-        }
-      }
-    ]
-  });
-});
-
-const z = ['BTCUSDT', 'XLMUSDT', 'BNBBTC', 'BNBUSDT'];
-
-z.forEach(pair => {
-  c.symbols.push({
-    symbol: pair,
-    periods: ['1m', '15m', '1h'],
-    exchange: 'binance',
-    state: 'watch',
-    strategies: [
-      {
-        strategy: 'cci',
-        options: {
-          period: '15m'
-        }
-      },
-      {
-        strategy: 'obv_pump_dump'
-      },
-      {
-        strategy: 'macd',
-        options: {
-          period: '1h'
-        }
-      }
-    ]
-  });
-});
