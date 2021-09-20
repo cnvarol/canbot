@@ -198,6 +198,13 @@ Margin Risk Ratio: ${riskRatio.toFixed(2)}%`);
       return;
     }
 
+    const instance = this.instances.symbols.filter(symbol => symbol.symbol === symbol)
+
+    const positionCount = await this.exchangeManager.getPositions().length
+    if (instance.trade.max_position && instance.trade.max_position > positionCount) {
+      return;
+    }
+
     const strategyKey = strategy.strategy;
 
     let context = StrategyContext.create(strategy.options, ticker);
