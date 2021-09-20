@@ -200,8 +200,10 @@ Margin Risk Ratio: ${riskRatio.toFixed(2)}%`);
 
     const instance = this.instances.symbols.filter(symbol => symbol.symbol === symbol)
 
-    const positionCount = await this.exchangeManager.getPositions().length
-    if (instance.trade.max_position && instance.trade.max_position > positionCount) {
+    const allPositions = await this.exchangeManager.getPositions();
+    const positionCount = allPositions.length;
+
+    if (symbol.trade.max_position && symbol.trade.max_position > positionCount) {
       return;
     }
 
