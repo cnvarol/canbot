@@ -31,7 +31,9 @@ module.exports = class {
     const debug = {
       last_signal: lastSignal,
       rsi: rsi,
-      fisher_rsi: fisher_rsi
+      fisher_rsi: fisher_rsi,
+      adx: adx,
+      mfi: mfi
     };
 
     if (!lastSignal && long) {
