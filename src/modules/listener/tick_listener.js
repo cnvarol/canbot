@@ -205,7 +205,7 @@ Margin Risk Ratio: ${riskRatio.toFixed(2)}%`);
 
     const positionCount = allPositions.length;
 
-    if (symbol.trade.max_position && positionCount > symbol.trade.max_position) {
+    if (symbol.trade.max_position && positionCount >= symbol.trade.max_position) {
       return;
     }
 
