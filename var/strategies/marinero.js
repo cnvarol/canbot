@@ -7,12 +7,16 @@ module.exports = class {
 
   buildIndicator(indicatorBuilder, options) {
     indicatorBuilder.add('rsi', 'rsi', options.period);
+    indicatorBuilder.add('mfi', 'mfi', options.period);
+    indicatorBuilder.add('adx', 'adx', options.period);
   }
 
   async period(indicatorPeriod) {
     const rsi = indicatorPeriod.getLatestIndicator('rsi');
+    const mfi = indicatorPeriod.getLatestIndicator('mfi');
+    const adx = indicatorPeriod.getLatestIndicator('adx');
 
-    if (!rsi) {
+    if (!rsi || !mfi || !adx) {
       return undefined;
     }
 
@@ -20,7 +24,7 @@ module.exports = class {
     const fisher_rsi = (Math.exp(2 * rsiP) - 1) / (Math.exp(2 * rsiP) + 1);
 
     const long = fisher_rsi <= -0.9;
-    const short = fisher_rsi >= 0.97;
+    const short = fisher_rsi >= 0.97 && adx > 30 && mfi > 70;
 
     const lastSignal = indicatorPeriod.getLastSignal();
 
