@@ -34,6 +34,7 @@ module.exports = class TickListener {
 
     this.notified = {};
     this.warnNotified = false;
+    this.signalCounter = 0;
   }
 
   async visitStrategy(strategy, symbol) {
@@ -205,7 +206,7 @@ Margin Risk Ratio: ${riskRatio.toFixed(2)}%`);
 
     const positionCount = allPositions.length;
 
-    if (symbol.trade.max_position && positionCount >= symbol.trade.max_position) {
+    if (symbol.trade.max_position && (positionCount+this.signalCounter) >= symbol.trade.max_position) {
       return;
     }
 
@@ -253,6 +254,16 @@ Margin Risk Ratio: ${riskRatio.toFixed(2)}%`);
     if (!['close', 'close_short', 'close_long', 'short', 'long'].includes(signal)) {
       throw new Error(`Invalid signal: ${JSON.stringify(signal, strategy)}`);
     }
+
+    if(['short', 'long'].includes(signal)) {
+      if (this.signalCounter === 0) {
+        setTimeout(async () => {
+          this.signalCounter = 0;
+        }, 60 * 1000);
+      }
+      this.signalCounter++;
+    }
+
 
     /* const signalWindow = moment()
       .subtract(_.get(symbol, 'trade.signal_slowdown_minutes', 1), 'minutes')
