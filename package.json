@@ -21,7 +21,7 @@
     "bitmex-realtime-api": "^0.4.0",
     "ccxt": "^1.57.23",
     "coinbase-pro": "^0.9.0",
-    "colors": "^1.3.2",
+    "colors": "^1.4.0",
     "commander": "^4.1.1",
     "compression": "^1.7.4",
     "cookie-parser": "^1.4.5",
