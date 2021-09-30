@@ -22,7 +22,7 @@
     "ccxt": "^1.57.23",
     "coinbase-pro": "^0.9.0",
     "colors": "^1.4.0",
-    "commander": "^4.1.1",
+    "commander": "^8.2.0",
     "compression": "^1.7.4",
     "cookie-parser": "^1.4.5",
     "decimal": "^0.0.2",
