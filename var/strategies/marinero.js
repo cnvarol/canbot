@@ -24,7 +24,7 @@ module.exports = class {
     const fisher_rsi = (Math.exp(2 * rsiP) - 1) / (Math.exp(2 * rsiP) + 1);
 
     const long = fisher_rsi <= -0.9;
-    const short = fisher_rsi >= 0.97 && adx > 30 && mfi > 70;
+    const short = fisher_rsi >= 0.99 && adx > 40 && mfi > 80;
 
     const lastSignal = indicatorPeriod.getLastSignal();
 
