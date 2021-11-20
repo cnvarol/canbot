@@ -24,7 +24,7 @@ module.exports = class {
     const fisher_rsi = (Math.exp(2 * rsiP) - 1) / (Math.exp(2 * rsiP) + 1);
 
     const long = fisher_rsi <= -0.9;
-    const short = fisher_rsi >= 0.99 && adx > 40 && mfi > 80;
+    const short = fisher_rsi >= 0.99 && adx > 50 && mfi > 90;
 
     const lastSignal = indicatorPeriod.getLastSignal();
 
@@ -33,7 +33,7 @@ module.exports = class {
       rsi: rsi,
       fisher_rsi: fisher_rsi,
       adx: adx,
-      mfi: mfi
+      mfi: mfi,
     };
 
     if (!lastSignal && long) {
@@ -83,14 +83,14 @@ module.exports = class {
       {
         label: 'fisher_rsi',
         value: 'fisher_rsi',
-        type: 'histogram'
-      }
+        type: 'histogram',
+      },
     ];
   }
 
   getOptions() {
     return {
-      period: '15m'
+      period: '15m',
     };
   }
 
