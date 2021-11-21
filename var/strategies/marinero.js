@@ -9,14 +9,18 @@ module.exports = class {
     indicatorBuilder.add('rsi', 'rsi', options.period);
     indicatorBuilder.add('mfi', 'mfi', options.period);
     indicatorBuilder.add('adx', 'adx', options.period);
+    indicatorBuilder.add('sma50', 'sma', options.period, { length: 50 });
+    indicatorBuilder.add('sma200', 'sma', options.period, { length: 200 });
   }
 
   async period(indicatorPeriod) {
     const rsi = indicatorPeriod.getLatestIndicator('rsi');
     const mfi = indicatorPeriod.getLatestIndicator('mfi');
     const adx = indicatorPeriod.getLatestIndicator('adx');
+    const sma50 = indicatorPeriod.getLatestIndicator('sma50');
+    const sma200 = indicatorPeriod.getLatestIndicator('sma200');
 
-    if (!rsi || !mfi || !adx) {
+    if (!rsi || !mfi || !adx || !sma50 || !sma200) {
       return undefined;
     }
 
@@ -24,7 +28,7 @@ module.exports = class {
     const fisher_rsi = (Math.exp(2 * rsiP) - 1) / (Math.exp(2 * rsiP) + 1);
 
     const long = fisher_rsi <= -0.9;
-    const short = fisher_rsi >= 0.99 && adx > 50 && mfi > 90;
+    const short = fisher_rsi >= 0.99 && sma200 / sma50 > 0.5 && mfi > 90;
 
     const lastSignal = indicatorPeriod.getLastSignal();
 
@@ -34,6 +38,8 @@ module.exports = class {
       fisher_rsi: fisher_rsi,
       adx: adx,
       mfi: mfi,
+      sma50: sma50,
+      sma200: sma200,
     };
 
     if (!lastSignal && long) {
@@ -47,14 +53,14 @@ module.exports = class {
     const context = indicatorPeriod.getStrategyContext();
     const profit = indicatorPeriod.getProfit();
 
-    if (context.isBacktest() && lastSignal === 'short' && long && profit >= 1) {
+    if (context.isBacktest() && lastSignal === 'short' && profit >= 1) {
       const emptySignal = SignalResult.createEmptySignal(debug);
       emptySignal.setSignal('close_short');
 
       return emptySignal;
     }
 
-    if (context.isBacktest() && lastSignal === 'long' && short && profit >= 1) {
+    if (context.isBacktest() && lastSignal === 'long' && profit >= 1) {
       const emptySignal = SignalResult.createEmptySignal(debug);
       emptySignal.setSignal('close_long');
 
