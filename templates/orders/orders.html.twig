@@ -31,7 +31,7 @@
                 <h3 class="card-title">Order - {{ pair | split('.', 2) | first | capitalizeFirstLetter }} | {{ pair | split('.', 2) | last() }}</h3>
             </div>
 
-            <form action="/orders/{{ pair|url_encode }}" method="post" role="form">
+            <form action="/orders/{{ pair|url_encode }}" method="post" role="form" id="order_form" >
                 <div class="card-body">
                     <div class="row">
                         <div class="col-8">
@@ -77,9 +77,9 @@
                 </div>
 
                 <div class="card-footer">
-                    <button type="submit" class="btn btn-success" name="side" value="long">Open long</button>
+                    <button type="submit" id="long_btn" class="btn btn-success" name="side" value="long">Open long</button>
                     &nbsp;
-                    <button type="submit" class="btn btn-danger" name="side" value="short">Open short</button>
+                    <button type="submit" id="short_btn" class="btn btn-danger" name="side" value="short">Open short</button>
                 </div>
             </form>
         </div>

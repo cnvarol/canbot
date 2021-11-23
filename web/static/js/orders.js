@@ -1,15 +1,13 @@
-$(function() {
+$(function () {
   function getPrecision(numberAsString) {
     const n = numberAsString.toString().split('.');
     return n.length > 1 ? n[1].length : 0;
   }
 
-  $('.percent-input-group').on('click', 'button', function(e) {
+  $('.percent-input-group').on('click', 'button', function (e) {
     e.preventDefault();
 
-    const input = $(this)
-      .closest('.input-group')
-      .find('input');
+    const input = $(this).closest('.input-group').find('input');
 
     const percentageChange = parseFloat($(this).val());
 
@@ -17,7 +15,13 @@ $(function() {
     input.val((price + price / percentageChange / 100).toFixed(getPrecision(price)));
   });
 
-  $('.form-group-amount').on('keyup', 'input', function(e) {
+  $('#order_form').submit((e) => {
+    const order_type = $('#order_type').val();
+    const amount_currency = $('#amount_currency').val();
+    return confirm('You will open new ' + e.target.value + ' ' + order_type.toUpperCase() + ' order. Current amount '+ amount_currency +' USDT. Are you sure?');
+  });
+
+  $('.form-group-amount').on('keyup', 'input', function (e) {
     const value = $(this).val();
 
     if (!value || Number.isNaN(value)) {
