@@ -31,7 +31,7 @@
                 <h3 class="card-title">Order - {{ pair | split('.', 2) | first | capitalizeFirstLetter }} | {{ pair | split('.', 2) | last() }}</h3>
             </div>
 
-            <form action="/orders/{{ pair|url_encode }}" method="post" role="form" id="order_form" >
+            <form action="/orders/{{ pair|url_encode }}" method="post" role="form" id="order_form" data-pair="{{ pair }}">
                 <div class="card-body">
                     <div class="row">
                         <div class="col-8">

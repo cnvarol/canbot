@@ -18,7 +18,11 @@ $(function () {
   $('#order_form').submit((e) => {
     const order_type = $('#order_type').val();
     const amount_currency = $('#amount_currency').val();
-    return confirm('You will open new ' + e.target.value + ' ' + order_type.toUpperCase() + ' order. Current amount '+ amount_currency +' USDT. Are you sure?');
+    const pair = $('#order_form').data('pair');
+
+    return confirm(
+      `You will open new ${pair} ${e.originalEvent.submitter.value.toUpperCase()} ${order_type.toUpperCase()} order. Current amount ${amount_currency} USDT. Are you sure?`
+    );
   });
 
   $('.form-group-amount').on('keyup', 'input', function (e) {
