@@ -69,11 +69,11 @@ module.exports = class CcxtUtil {
     let updatedAt = new Date();
 
     if (order.info && order.info.time) {
-      createdAt = new Date(order.info.time);
+      createdAt = new Date(parseInt(order.info.time, 10));
     }
 
     if (order.info && order.info.updateTime) {
-      updatedAt = new Date(order.info.updateTime);
+      updatedAt = new Date(parseInt(order.info.updateTime, 10));
     }
 
     return new ExchangeOrder(
@@ -93,7 +93,7 @@ module.exports = class CcxtUtil {
   }
 
   static createPositions(positions) {
-    return positions.map(position => {
+    return positions.map((position) => {
       let { unrealisedRoePcnt } = position;
 
       if (position.leverage && position.leverage > 1) {
