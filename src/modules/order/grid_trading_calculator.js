@@ -105,10 +105,18 @@ module.exports = class GridTradingCalculator {
 
     if (position.side === 'long') {
       result.targetPrice = entryPrice * (1 - step_percent / 100);
-      result.stopPrice = entryPrice * (1 + hedge_step_percent / 100);
+      if (options.stop_loss_mode > 0 && position.profit >= options.stop_loss_mode) {
+        result.stopPrice = entryPrice * (1 / 100);
+      } else {
+        result.stopPrice = entryPrice * (1 + hedge_step_percent / 100);
+      }
     } else {
       result.targetPrice = entryPrice * (1 + step_percent / 100);
-      result.stopPrice = entryPrice * (1 - hedge_step_percent / 100);
+      if (options.stop_loss_mode > 0 && position.profit >= options.stop_loss_mode) {
+        result.stopPrice = entryPrice * (-1 / 100);
+      } else {
+        result.stopPrice = entryPrice * (1 - hedge_step_percent / 100);
+      }
     }
 
     if (position.side === 'long' && result.targetPrice >= position.markPrice) {

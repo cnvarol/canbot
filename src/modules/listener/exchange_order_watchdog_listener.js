@@ -242,7 +242,8 @@ module.exports = class ExchangeOrderWatchdogListener {
       risk_take_profit: 0.75,
       quarantine_after: 1000 * 1000,
       pump_detection: false,
-      pump_candle_period: '15m'
+      pump_candle_period: '15m',
+      stop_loss_mode: 0
     }
   ) {
     const { logger } = this;
@@ -562,6 +563,9 @@ module.exports = class ExchangeOrderWatchdogListener {
           orderChange.amount,
           options.trailing_stop_rate
         );
+        if (orderChange.type === 'stop' && options.stop_loss_mode > 0 && position.profit >= options.stop_loss_mode) {
+          ourOrder = Order.createStopLossOrder(symbol, orderChange.price, orderChange.amount);
+        }
       } else if (orderChange.type === 'stop') {
         ourOrder = Order.createStopOrder(symbol, position.side, orderChange.price, orderChange.amount);
       } else if (qKey in this.quarantine) {
