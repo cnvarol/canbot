@@ -556,15 +556,16 @@ module.exports = class ExchangeOrderWatchdogListener {
       // we need to normalize the price here: more general solution?
       let ourOrder;
       if (orderChange.type === 'trailing_stop') {
-        ourOrder = Order.createTrailingStopMarketOrder(
-          symbol,
-          position.side,
-          orderChange.price,
-          orderChange.amount,
-          options.trailing_stop_rate
-        );
-        if (orderChange.type === 'stop' && options.stop_loss_mode > 0 && position.profit >= options.stop_loss_mode) {
+        if (options.stop_loss_mode > 0 && position.profit >= options.stop_loss_mode) {
           ourOrder = Order.createStopLossOrder(symbol, orderChange.price, orderChange.amount);
+        } else {
+          ourOrder = Order.createTrailingStopMarketOrder(
+            symbol,
+            position.side,
+            orderChange.price,
+            orderChange.amount,
+            options.trailing_stop_rate
+          );
         }
       } else if (orderChange.type === 'stop') {
         ourOrder = Order.createStopOrder(symbol, position.side, orderChange.price, orderChange.amount);
