@@ -92,6 +92,12 @@ ssh canvarol@78.189.161.234 "cd ~/canbot && git pull origin master"
 
 > **Warning**: The `post-commit` hook runs silently. If sync fails (e.g., server down, merge conflict), the commit still succeeds locally. Check with `git push` manually if unsure.
 
+### Strategy sync (`var/strategies/`)
+
+Files in `var/strategies/` are gitignored (survives updates). They sync directly via rsync, not GitHub:
+- **Auto**: on every `git commit` (via post-commit hook)
+- **Manual**: `bash sync-strategies.sh`
+
 ## Telegram bot
 
 Commands handled in `tick_listener.js` via Telegraf. Requires `notify.telegram.chat_id` and `token` in `conf.json`.
