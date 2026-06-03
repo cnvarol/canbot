@@ -1,24 +1,28 @@
-FROM node:10
-
-MAINTAINER Daniel Espendiller <daniel@espendiller.net>
-
-# Install build-essential, sqlite in order
-RUN apt-get update && apt-get install -y \
-    sqlite \
-&& rm -rf /var/lib/apt/lists/*
+FROM node:16-bullseye-slim
 
 WORKDIR /usr/src/app
 
-# Install app dependencies
-COPY package.json /usr/src/app/
-RUN npm install --production && \
-    npm cache clean --force
+# Install build dependencies for native modules (better-sqlite3, talib, tulind)
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    python3 \
+    git \
+    && rm -rf /var/lib/apt/lists/*
 
-# Bundle app source
-COPY . /usr/src/app
+# Upgrade node-gyp to support Python 3 (fixes compilation on modern systems)
+RUN npm install -g node-gyp@9 && \
+    npm config set node_gyp $(npm root -g)/node-gyp/bin/node-gyp.js
 
-# Apply all patches in app
-RUN npm run postinstall
+# Install dependencies first (layer caching)
+COPY package.json ./
+RUN npm install --production --legacy-peer-deps
 
-EXPOSE 8080
-CMD ["npm", "run", "start"]
+# Copy application code
+COPY . .
+
+# Create required directories
+RUN mkdir -p var/log sessions
+
+EXPOSE 8068
+
+CMD ["node", "index.js", "trade"]

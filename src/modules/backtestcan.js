@@ -4,7 +4,7 @@ const StrategyManager = require('./strategy/strategy_manager');
 const Resample = require('../utils/resample');
 const CommonUtil = require('../utils/common_util');
 
-module.exports = class Backtest {
+module.exports = class Backtestcan {
   constructor(instances, strategyManager, exchangeCandleCombine, projectDir) {
     this.instances = instances;
     this.strategyManager = strategyManager;
@@ -22,7 +22,7 @@ module.exports = class Backtest {
 
         return {
           name: `${symbol.exchange}.${symbol.symbol}`,
-          options: periods.length > 0 ? periods : ['15m', '1m', '3m', '5m', '1h', '4h', '1d']
+          options: periods.length > 0 ? periods : ['15m', '1m', '3m', '5m', '1h', '4h']
         };
       };
     });
@@ -124,7 +124,7 @@ module.exports = class Backtest {
         }
 
         if (['long', 'short'].includes(currentSignal)) {
-          const amount = currentSignal === 'short' ? -(75/item.price) : (75/item.price);
+          const amount = currentSignal === 'short' ? -(60/item.price) : (60/item.price);
           lastSignal.signal = currentSignal;
           lastSignal.price = item.price;
           lastSignal.amount = amount;

@@ -50,13 +50,16 @@ module.exports = class TickListener {
     let context = StrategyContext.create(strategy.options, ticker, true);
     const positions = await this.exchangeManager.getPosition(symbol.exchange, symbol.symbol);
 
+	let count = 0;
     let position = positions;
     if (Array.isArray(positions)) {
       position = positions.find(p => p.symbol === symbol.symbol && p.side === 'long');
       if (!position) {
         position = positions.find(p => p.symbol === symbol.symbol && p.side === 'short');
       }
+      count = positions.length;
     }
+	strategy.options.positionCount = count;
 
     if (position) {
       context = StrategyContext.createFromPosition(strategy.options, ticker, position, true);
@@ -215,13 +218,16 @@ Margin Risk Ratio: ${riskRatio.toFixed(2)}%`);
     let context = StrategyContext.create(strategy.options, ticker);
     const positions = await this.exchangeManager.getPosition(symbol.exchange, symbol.symbol);
 
+	let count = 0;
     let position = positions;
     if (Array.isArray(positions)) {
       position = positions.find(p => p.symbol === symbol.symbol && p.side === 'long');
       if (!position) {
         position = positions.find(p => p.symbol === symbol.symbol && p.side === 'short');
       }
+      count = positions.length;
     }
+	strategy.options.positionCount = count;
 
     if (position) {
       context = StrategyContext.createFromPosition(strategy.options, ticker, position);
@@ -453,6 +459,12 @@ Margin Risk Ratio: ${riskRatio.toFixed(2)}%`);
         break;
       case 'm':
         myUnit = 60;
+        break;
+      case 'h':
+        myUnit = 3600;
+        break;
+      case 'd':
+        myUnit = 86400;
         break;
       default:
         throw new Error(`Unsupported period unit: ${period}`);

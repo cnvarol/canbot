@@ -15,7 +15,7 @@
     "async": "^3.2.1",
     "basic-auth": "^2.0.1",
     "better-queue": "^3.8.10",
-    "better-sqlite3": "^5.4.2",
+    "better-sqlite3": "^8.0.0",
     "binance-api-node": "^0.11.19",
     "bitfinex-api-node": "^5.0.2",
     "bitmex-realtime-api": "^0.4.0",

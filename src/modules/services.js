@@ -4,6 +4,9 @@
 const fs = require('fs');
 const events = require('events');
 
+// Set global max listeners to prevent warnings during frequent WebSocket reconnections
+events.EventEmitter.defaultMaxListeners = 100;
+
 const { createLogger, transports, format } = require('winston');
 
 const _ = require('lodash');
@@ -145,18 +148,77 @@ module.exports = {
       throw new Error(`Invalid instance.js file. Please check: ${String(e)}`);
     }
 
-    // boot instance eg to load pairs external
-    if (typeof instances.init === 'function') {
-      await instances.init();
-    }
-
+    // read configuration first so services and exchanges can be constructed properly
     try {
       config = JSON.parse(fs.readFileSync(`${parameters.projectDir}/conf.json`, 'utf8'));
     } catch (e) {
       throw new Error(`Invalid conf.json file. Please check: ${String(e)}`);
     }
 
+    // ensure DB ready
     this.getDatabase();
+
+    // create ExchangeManager instance (but do NOT call .init() yet - we need symbols first)
+    // this will assign the `exchangeManager` variable inside this module
+    let mgr;
+    try {
+      mgr = this.getExchangeManager();
+    } catch (e) {
+      console.warn('⚠️ Could not create ExchangeManager during boot:', e && e.message ? e.message : e);
+    }
+
+    // register the manager with the instances object so instance init can see it.
+    try {
+      if (mgr && instances && typeof instances.setExchangeManager === 'function') {
+        instances.setExchangeManager(mgr);
+      } else if (mgr && instances) {
+        instances.exchangeManager = mgr;
+      }
+    } catch (e) {
+      // non-fatal: continue but log
+      console.warn('⚠️ Failed to register exchange manager on instances:', e && e.message ? e.message : e);
+    }
+
+    // boot instance eg to load pairs external (now that exchange manager is registered)
+    // This populates instances.symbols with static and dynamic pairs
+    if (typeof instances.init === 'function') {
+      await instances.init();
+    }
+
+    // Log what symbols were loaded
+    console.log(`📊 Loaded ${instances.symbols ? instances.symbols.length : 0} symbols for exchanges`);
+    if (instances.symbols && instances.symbols.length > 0) {
+      const exchanges = [...new Set(instances.symbols.map(s => s.exchange))];
+      console.log(`📊 Exchanges with symbols: ${exchanges.join(', ')}`);
+    }
+
+    // NOW initialize the exchange manager with the symbols we just loaded
+    // This starts the exchanges that have symbols assigned to them
+    if (mgr && typeof mgr.init === 'function') {
+      try {
+        mgr.init();
+        console.log('✅ ExchangeManager initialized with loaded symbols');
+        const activeExchanges = mgr.all().map(e => e.getName());
+        console.log(`✅ Active exchanges after init: ${activeExchanges.join(', ')}`);
+      } catch (e) {
+        console.warn('⚠️ Could not initialize exchanges in ExchangeManager:', e && e.message ? e.message : e);
+      }
+    }
+
+    // Wait for exchanges to sync their initial data (positions, orders, etc.)
+    console.log('⏳ Waiting for exchanges to sync initial data (10 seconds)...');
+    await new Promise(resolve => setTimeout(resolve, 10000));
+
+    // Now that everything is initialized, do a second refresh to actually preserve open positions
+    // (The first refresh during instances.init happened before exchanges were ready)
+    if (instances.refreshSymbols && typeof instances.refreshSymbols === 'function') {
+      try {
+        console.log('🔄 Second refresh to capture open positions with initialized exchanges...');
+        await instances.refreshSymbols();
+      } catch (e) {
+        console.warn('⚠️ Second refresh failed:', e && e.message ? e.message : e);
+      }
+    }
   },
 
   getDatabase: () => {
@@ -169,6 +231,56 @@ module.exports = {
 
     myDb.pragma('SYNCHRONOUS = 1;');
     myDb.pragma('LOCKING_MODE = EXCLUSIVE;');
+
+    // Auto-create tables if they don't exist (needed on fresh database)
+    myDb.exec(`
+      CREATE TABLE IF NOT EXISTS candlesticks (
+        id        INTEGER PRIMARY KEY AUTOINCREMENT,
+        exchange  VARCHAR(255) NOT NULL,
+        symbol    VARCHAR(255) NOT NULL,
+        period    VARCHAR(50)  NOT NULL,
+        time      INTEGER      NOT NULL,
+        open      REAL         NOT NULL,
+        high      REAL         NOT NULL,
+        low       REAL         NOT NULL,
+        close     REAL         NOT NULL,
+        volume    REAL         NOT NULL,
+        UNIQUE(exchange, symbol, period, time)
+      );
+      CREATE TABLE IF NOT EXISTS logs (
+        id         INTEGER PRIMARY KEY AUTOINCREMENT,
+        uuid       VARCHAR(255) NOT NULL,
+        level      VARCHAR(50)  NOT NULL,
+        message    TEXT         NOT NULL,
+        created_at INTEGER      NOT NULL
+      );
+      CREATE TABLE IF NOT EXISTS signals (
+        id         INTEGER PRIMARY KEY AUTOINCREMENT,
+        exchange   VARCHAR(255) NOT NULL,
+        symbol     VARCHAR(255) NOT NULL,
+        options    TEXT         NULL,
+        side       VARCHAR(50)  NULL,
+        strategy   VARCHAR(255) NULL,
+        income_at  INTEGER      NOT NULL
+      );
+      CREATE TABLE IF NOT EXISTS ticker (
+        id         INTEGER PRIMARY KEY AUTOINCREMENT,
+        exchange   VARCHAR(255) NOT NULL,
+        symbol     VARCHAR(255) NOT NULL,
+        ask        REAL         NOT NULL,
+        bid        REAL         NOT NULL,
+        updated_at INTEGER      NOT NULL,
+        UNIQUE(exchange, symbol)
+      );
+      CREATE TABLE IF NOT EXISTS ticker_log (
+        id         INTEGER PRIMARY KEY AUTOINCREMENT,
+        exchange   VARCHAR(255) NOT NULL,
+        symbol     VARCHAR(255) NOT NULL,
+        ask        REAL         NOT NULL,
+        bid        REAL         NOT NULL,
+        income_at  INTEGER      NOT NULL
+      );
+    `);
 
     return (db = myDb);
   },

@@ -8,6 +8,10 @@ module.exports = class GridTradingCalculator {
   constructor(candlestickRepository, logger) {
     this.logger = logger;
     this.candlestickRepository = candlestickRepository;
+    // Track peak prices for trailing logic
+    this.peakPrices = {};
+    // Track when trailing was activated
+    this.trailingActivated = {};
   }
 
   checkDuplicateStopOrders(position, orders) {
@@ -16,14 +20,16 @@ module.exports = class GridTradingCalculator {
       ordersCheck = orders.filter(
         order =>
           (order.type === ExchangeOrder.TYPE_STOP ||
-            (order.type === ExchangeOrder.TYPE_TRAILING_STOP_MARKET && order.reduceOnly)) &&
+            order.type === ExchangeOrder.TYPE_STOP_LOSS ||
+            order.type === ExchangeOrder.TYPE_STOP_MARKET) &&
           order.positionSide === position.raw.positionSide
       );
     } else {
       ordersCheck = orders.filter(
         order =>
           order.type === ExchangeOrder.TYPE_STOP ||
-          (order.type === ExchangeOrder.TYPE_TRAILING_STOP_MARKET && order.reduceOnly)
+          order.type === ExchangeOrder.TYPE_STOP_LOSS ||
+          order.type === ExchangeOrder.TYPE_STOP_MARKET
       );
     }
 
@@ -52,12 +58,12 @@ module.exports = class GridTradingCalculator {
     if (position.raw && position.raw.positionSide !== 'BOTH') {
       ordersCheck = orders.filter(
         order =>
-          order.type === ExchangeOrder.TYPE_TRAILING_STOP_MARKET &&
+          order.type === ExchangeOrder.TYPE_LIMIT &&
           !order.reduceOnly &&
           order.positionSide === position.raw.positionSide
       );
     } else {
-      ordersCheck = orders.filter(order => order.type === ExchangeOrder.TYPE_TRAILING_STOP_MARKET && !order.reduceOnly);
+      ordersCheck = orders.filter(order => order.type === ExchangeOrder.TYPE_LIMIT && !order.reduceOnly);
     }
 
     const orderAmounts = new Set();
@@ -89,42 +95,84 @@ module.exports = class GridTradingCalculator {
       return undefined;
     }
 
+    const posKey = `${position.symbol}_${position.side}`;
+    const currentPrice = position.markPrice || entryPrice;
+    // Track peak price for trailing stop
+    // Peak is the best price seen since position opened
+    if (!this.peakPrices[posKey]) {
+      this.peakPrices[posKey] = currentPrice;
+    } else {
+      // Update peak only if price moved in favorable direction
+      if (position.side === 'long' && currentPrice > this.peakPrices[posKey]) {
+        this.peakPrices[posKey] = currentPrice;
+      } else if (position.side === 'short' && currentPrice < this.peakPrices[posKey]) {
+        this.peakPrices[posKey] = currentPrice;
+      }
+    }
+
+    const peakPrice = this.peakPrices[posKey];
+
     const result = {
       stopPrice: undefined,
-      targetPrice: undefined
+      targetPrice: undefined,
+      shouldCreateStop: false,
+      shouldUpdateStop: false,
+      isTrailing: false
     };
 
     entryPrice = Math.abs(entryPrice);
+    const trailingRate = options.trailing_stop_rate || 4;
+    const step_percent = Math.sqrt(size / options.step_resolution) + trailingRate;
 
-    const step_percent = Math.sqrt(size / options.step_resolution) + options.trailing_stop_rate;
-    let hedge_step_percent = Math.sqrt(size / options.hedge_step_resolution);
-
-    if (options.hedge_profit_mode) {
-      hedge_step_percent = options.take_profit + options.trailing_stop_rate;
+    // Calculate target price (for pyramiding)
+    if (position.side === 'long') {
+      result.targetPrice = currentPrice * (1 - step_percent / 100);
+    } else {
+      result.targetPrice = currentPrice * (1 + step_percent / 100);
     }
 
+    // Ensure target price is valid
+    if (position.markPrice) {
+      if (position.side === 'long' && result.targetPrice >= position.markPrice) {
+        result.targetPrice = position.markPrice * 0.998;
+      }
+      if (position.side === 'short' && result.targetPrice <= position.markPrice) {
+        result.targetPrice = position.markPrice * 1.002;
+      }
+    }
+
+    // SIMPLE TRAILING STOP LOSS
+    // Create stop only when peak price profit >= trailing_stop_rate
+    result.isTrailing = true;
+    
     if (position.side === 'long') {
-      result.targetPrice = entryPrice * (1 - step_percent / 100);
-      if (options.stop_loss_mode > 0 && position.profit >= options.stop_loss_mode) {
-        result.stopPrice = entryPrice * (1 / 100);
+      // For LONG: calculate profit % from entry to peak
+      const peakProfitPercent = ((peakPrice - entryPrice) / entryPrice) * 100;
+      
+      if (peakProfitPercent >= trailingRate) {
+        // Peak profit is >= trailing rate - create trailing stop
+        result.stopPrice = peakPrice * (1 - trailingRate / 100);
+        result.shouldCreateStop = true;
+        result.shouldUpdateStop = true;
       } else {
-        result.stopPrice = entryPrice * (1 + hedge_step_percent / 100);
+        // Peak profit not high enough yet - don't create stop
+        result.shouldCreateStop = false;
+        result.shouldUpdateStop = false;
       }
     } else {
-      result.targetPrice = entryPrice * (1 + step_percent / 100);
-      if (options.stop_loss_mode > 0 && position.profit >= options.stop_loss_mode) {
-        result.stopPrice = entryPrice * (-1 / 100);
+      // For SHORT: calculate profit % from entry to peak (lower is better)
+      const peakProfitPercent = ((entryPrice - peakPrice) / entryPrice) * 100;
+      
+      if (peakProfitPercent >= trailingRate) {
+        // Peak profit is >= trailing rate - create trailing stop
+        result.stopPrice = peakPrice * (1 + trailingRate / 100);
+        result.shouldCreateStop = true;
+        result.shouldUpdateStop = true;
       } else {
-        result.stopPrice = entryPrice * (1 - hedge_step_percent / 100);
+        // Peak profit not high enough yet - don't create stop
+        result.shouldCreateStop = false;
+        result.shouldUpdateStop = false;
       }
-    }
-
-    if (position.side === 'long' && result.targetPrice >= position.markPrice) {
-      result.targetPrice = position.markPrice * 0.998;
-    }
-
-    if (position.side === 'short' && result.targetPrice <= position.markPrice) {
-      result.targetPrice = position.markPrice * 1.002;
     }
 
     return result;
@@ -134,63 +182,103 @@ module.exports = class GridTradingCalculator {
     const newOrders = {};
     const result = this.calculateForOpenPosition(position, options);
 
+    if (!result) {
+      return newOrders;
+    }
+
+    // Extract trailing rate from options for use in stop orders
+    const trailingRate = options.trailing_stop_rate || 4;
+
+    // Handle STOP orders
     let stopOrders;
     if (position.raw && position.raw.positionSide !== 'BOTH') {
       stopOrders = orders.filter(
         order =>
           (order.type === ExchangeOrder.TYPE_STOP ||
-            (order.type === ExchangeOrder.TYPE_TRAILING_STOP_MARKET && order.reduceOnly)) &&
+            order.type === ExchangeOrder.TYPE_STOP_LOSS ||
+            order.type === ExchangeOrder.TYPE_STOP_MARKET) &&
           order.positionSide === position.raw.positionSide
       );
     } else {
       stopOrders = orders.filter(
         order =>
           order.type === ExchangeOrder.TYPE_STOP ||
-          (order.type === ExchangeOrder.TYPE_TRAILING_STOP_MARKET && order.reduceOnly)
+          order.type === ExchangeOrder.TYPE_STOP_LOSS ||
+          order.type === ExchangeOrder.TYPE_STOP_MARKET
       );
     }
 
     if (stopOrders.length === 0) {
-      newOrders.stop = {
-        amount: Math.abs(position.amount),
-        price: result.stopPrice
-      };
+      // No stop exists - create one if conditions met
+      if (result.shouldCreateStop && result.stopPrice) {
+        newOrders.stop = {
+          amount: Math.abs(position.amount),
+          price: result.stopPrice,
+          type: 'limit',
+          trailingRate: trailingRate  // Store trailing rate for order executor
+        };
 
-      // inverse price for lose long position via sell
-      if (position.side === 'short') {
-        // eslint-disable-next-line operator-assignment
-        newOrders.stop.price = newOrders.stop.price * -1;
+        if (position.side === 'short') {
+          newOrders.stop.amount *= -1;
+        }
       }
     } else {
-      // update order
+      // Stop order exists - check if it needs updating
       const stopOrder = stopOrders[0];
-
-      // only +1% amount change is important for us
-      if (OrderUtil.isPercentDifferentGreaterThen(position.amount, stopOrder.amount, 1)) {
-        let amount = Math.abs(position.amount);
-        if (position.isShort()) {
-          amount *= -1;
-        }
-
+      
+      if (!result.shouldCreateStop || !result.stopPrice) {
+        // Should not have stop anymore - cancel it
         newOrders.stop = {
           id: stopOrder.id,
-          amount: amount
+          amount: 0,
+          price: 0,
+          type: 'cancel'
         };
+      } else {
+        // Check if update needed
+        const amountChanged = OrderUtil.isPercentDifferentGreaterThen(position.amount, stopOrder.amount, 1);
+        
+        // Check if stop price should move (only tighten, never loosen)
+        let needsPriceUpdate = false;
+        const currentStopPrice = Math.abs(stopOrder.price);
+        
+        if (position.side === 'long') {
+          // Long: Update if new stop is higher (tighter)
+          const priceImprovement = ((result.stopPrice - currentStopPrice) / currentStopPrice) * 100;
+          needsPriceUpdate = priceImprovement > 0.3; // Update if 0.3%+ improvement
+        } else {
+          // Short: Update if new stop is lower (tighter)
+          const priceImprovement = ((currentStopPrice - result.stopPrice) / currentStopPrice) * 100;
+          needsPriceUpdate = priceImprovement > 0.3;
+        }
+
+        if (amountChanged || needsPriceUpdate) {
+          let amount = Math.abs(position.amount);
+          if (position.isShort()) {
+            amount *= -1;
+          }
+
+          newOrders.stop = {
+            id: stopOrder.id,
+            amount: amount,
+            price: result.stopPrice,
+            type: 'limit_update'
+          };
+        }
       }
     }
 
+    // Handle TARGET orders (for pyramiding)
     let targetOrders;
     if (position.raw && position.raw.positionSide !== 'BOTH') {
       targetOrders = orders.filter(
         order =>
-          order.type === ExchangeOrder.TYPE_TRAILING_STOP_MARKET &&
+          order.type === ExchangeOrder.TYPE_LIMIT &&
           !order.reduceOnly &&
           order.positionSide === position.raw.positionSide
       );
     } else {
-      targetOrders = orders.filter(
-        order => order.type === ExchangeOrder.TYPE_TRAILING_STOP_MARKET && !order.reduceOnly
-      );
+      targetOrders = orders.filter(order => order.type === ExchangeOrder.TYPE_LIMIT && !order.reduceOnly);
     }
 
     if (targetOrders.length === 0) {
@@ -200,14 +288,11 @@ module.exports = class GridTradingCalculator {
       };
 
       if (position.side === 'short') {
-        // eslint-disable-next-line operator-assignment
         newOrders.target.price = newOrders.target.price * -1;
       }
     } else {
-      // update order
       const targetOrder = targetOrders[0];
 
-      // only +1% amount change is important for us
       if (OrderUtil.isPercentDifferentGreaterThen(position.amount, targetOrder.amount, 1)) {
         let amount = Math.abs(position.amount);
         if (position.isShort()) {
@@ -228,6 +313,7 @@ module.exports = class GridTradingCalculator {
     const currentOrders = await this.syncGridTradingOrders(position, orders, options);
 
     const newOrders = [];
+    
     if (currentOrders.target) {
       if (currentOrders.target.id) {
         newOrders.push({
@@ -251,18 +337,25 @@ module.exports = class GridTradingCalculator {
           id: currentOrders.stop.id,
           price: currentOrders.stop.price,
           amount: currentOrders.stop.amount,
-          type: 'stop'
+          type: currentOrders.stop.type
         });
       } else {
         newOrders.push({
           price: currentOrders.stop.price,
           amount: currentOrders.stop.amount,
-          type: 'stop'
+          type: currentOrders.stop.type
         });
       }
     }
 
     return newOrders;
+  }
+
+  // Clean up tracking when position closes
+  clearTrailingActivation(symbol, side) {
+    const posKey = `${symbol}_${side}`;
+    delete this.peakPrices[posKey];
+    delete this.trailingActivated[posKey];
   }
 
   async rsiCalculate(exchange, symbol, period) {

@@ -20,6 +20,10 @@ module.exports = class TechnicalAnalysisValidator {
       factor = 40;
     } else if (minutes === 2) {
       factor = 20;
+    } else if (minutes === 60) {
+      factor = 20;
+    } else if (minutes === 240) {
+      factor = 20;
     } else if (minutes < 10) {
       factor = 4;
     }

@@ -1,15 +1,16 @@
 version: '3.7'
 
 services:
-  bot:
-    container_name: crypto-trading-bot
-    image: node:10
+  canbot:
+    container_name: canbot
     build:
-        context: .
-        dockerfile: Dockerfile
+      context: .
+      dockerfile: Dockerfile
     volumes:
-        - .:/usr/src/app
-        - /usr/src/app/node_modules
+      - ./bot.db:/usr/src/app/bot.db
+      - ./conf.json:/usr/src/app/conf.json
+      - ./var:/usr/src/app/var
+      - ./sessions:/usr/src/app/sessions
     ports:
-        - "8080:8080"
-    command: npm start
+      - "8068:8068"
+    restart: unless-stopped

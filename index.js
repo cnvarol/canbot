@@ -6,6 +6,16 @@ const Backfill = require('./src/command/backfill.js');
 // init
 const services = require('./src/modules/services');
 
+// Global error handlers to prevent crashes from unhandled promise rejections
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('❌ Unhandled Promise Rejection:', reason);
+  console.error('Promise:', promise);
+});
+
+process.on('uncaughtException', (error) => {
+  console.error('❌ Uncaught Exception:', error);
+});
+
 program
   .command('trade')
   .description('start crypto trading bot')

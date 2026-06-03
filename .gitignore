@@ -243,3 +243,7 @@ Temporary Items
 /instance.js
 /conf.json
 /sessions
+volume_history.json
+nodesource_setup.sh
+bot.db.corrupted
+src/modules/backtest copy.js

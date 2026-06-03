@@ -23,6 +23,11 @@ module.exports = class CcxtExchangeOrder {
 
     let parameters = {};
 
+    // Add order options (reduce_only, etc) to parameters
+    if (order.options) {
+      _.merge(parameters, order.options);
+    }
+
     if (this.callbacks && 'createOrder' in this.callbacks) {
       const custom = this.callbacks.createOrder(order);
 
@@ -43,7 +48,7 @@ module.exports = class CcxtExchangeOrder {
           side,
           order.getAmount(),
           order.getPrice(),
-          parameters.args || undefined
+          parameters.args || parameters || undefined
         );
         break;
       case Order.TYPE_MARKET:
@@ -56,7 +61,7 @@ module.exports = class CcxtExchangeOrder {
           side,
           order.getAmount(),
           undefined,
-          parameters.args || undefined
+          parameters.args || parameters || undefined
         );
         break;
       default:

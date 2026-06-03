@@ -1,4 +1,5 @@
 const request = require('request');
+const ExchangeManager = require('../modules/exchange/exchange_manager'); // adjust path if different
 
 module.exports = {
   /**
@@ -324,5 +325,46 @@ module.exports = {
         resolve(pairs);
       });
     });
+  }
+  ,
+
+  /**
+   * Return open positions for a given exchange name (default: binance_futures)
+   * Tries to get the exchange instance from ExchangeManager and filters positions with non-zero amount.
+   */
+  getOpenPositions: async (exchangeName = 'binance_futures') => {
+    try {
+      let manager = ExchangeManager;
+
+      // If ExchangeManager is a class, there might be a singleton instance elsewhere.
+      // Try common fallbacks: check for exported singleton, or a `.getInstance()` method.
+      if (typeof manager === 'function') {
+        // it's a constructor - try to see if a singleton was exported elsewhere
+        // fallback: require the module that usually holds instances (if present)
+        try {
+          const services = require('../modules/services');
+          if (services && typeof services.getExchangeManager === 'function') {
+            manager = services.getExchangeManager();
+          } else if (services && services.exchangeManager) {
+            manager = services.exchangeManager;
+          }
+        } catch (e) {
+          // ignore, we'll attempt to use constructor's static get if available
+        }
+      }
+
+      // If manager exposes a get(exchangeName) method, use it
+      const exchange = manager && typeof manager.get === 'function' ? manager.get(exchangeName) : undefined;
+      if (!exchange) {
+        console.error(`⚠️ Exchange not found: ${exchangeName}`);
+        return [];
+      }
+
+      const positions = await exchange.getPositions();
+      return (Array.isArray(positions) ? positions : []).filter(p => p && p.amount && Math.abs(p.amount) > 0);
+    } catch (err) {
+      console.error(`⚠️ Error fetching open positions: ${err && err.message ? err.message : err}`);
+      return [];
+    }
   }
 };

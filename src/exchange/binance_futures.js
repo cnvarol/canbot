@@ -26,6 +26,7 @@ module.exports = class BinanceFutures {
     this.candleImporter = candleImporter;
     this.throttler = throttler;
     this.influxDB = influxDB;
+    this.requestClient = requestClient;
 
     this.exchange = null;
 
@@ -233,12 +234,225 @@ module.exports = class BinanceFutures {
     return amount; // done by ccxt
   }
 
+  formatPriceForBinance(price, symbol) {
+    /**
+     * Format price to match Binance's tick size requirement
+     * Binance rejects prices that don't align with the symbol's minimum price increment
+     * 
+     * @param price {number} The price to format
+     * @param symbol {string} Symbol like 'INJ/USDT' or 'INJUSDT'
+     * @returns {number} Price formatted to match tick size
+     */
+    try {
+      const cleanSymbol = symbol.replace('/', '');
+      const market = this.ccxtClient.market(cleanSymbol);
+      
+      if (!market) {
+        this.logger.warn(`formatPriceForBinance: Market not found for ${symbol}`);
+        return price;
+      }
+
+      // Get the precision for this symbol
+      const precision = market.precision.price;
+      if (!precision || precision < 0) {
+        this.logger.warn(`formatPriceForBinance: No precision data for ${symbol}, using original price`);
+        return price;
+      }
+
+      // Round to the correct number of decimal places
+      const factor = Math.pow(10, precision);
+      const formattedPrice = Math.round(price * factor) / factor;
+
+      return formattedPrice;
+    } catch (e) {
+      this.logger.warn(`formatPriceForBinance error for ${symbol}: ${e.message}, using original price`);
+      return price;
+    }
+  }
+
   getName() {
     return 'binance_futures';
   }
 
   async order(order) {
+    // Handle stop-market orders specially for Binance Futures
+    // CCXT needs stopPrice in params for Binance Futures
+    if (order.getType && order.getType() === 'stop_market') {
+      // Create a params object with stopPrice for Binance
+      if (!order.info) {
+        order.info = {};
+      }
+      // Pass stopPrice in params for CCXT/Binance
+      order.info.stopPrice = order.price;
+    }
+    
     return this.ccxtExchangeOrder.createOrder(order);
+  }
+
+  async createAlgoOrder(symbol, side, quantity, stopPrice) {
+    /**
+     * Create a stop-loss order as a limit order at the stop price
+     * When market hits the stop price, this limit order will execute
+     */
+    try {
+      const binanceSymbol = symbol.replace('/', '');
+      
+      // Determine the position side being closed
+      // BUY closes a SHORT position, SELL closes a LONG position
+      const positionSide = side === 'BUY' ? 'SHORT' : 'LONG';
+      
+      // Create a limit order at the stop price that will reduce the position
+      // When market price reaches this level, the order will execute
+      const response = await this.ccxtClient.createOrder(
+        binanceSymbol,
+        'limit',
+        side.toLowerCase(),
+        quantity,
+        stopPrice,
+        {
+          positionSide: positionSide
+        }
+      );
+
+      this.logger.info(
+        `Stop-Loss Order created: ${JSON.stringify({
+          symbol: symbol,
+          side: side,
+          quantity: quantity,
+          stopPrice: stopPrice,
+          response: response
+        })}`
+      );
+
+      return response;
+    } catch (e) {
+      this.logger.error(
+        `Stop-Loss Order creation failed: ${JSON.stringify({
+          symbol: symbol,
+          side: side,
+          quantity: quantity,
+          stopPrice: stopPrice,
+          error: e.message
+        })}`
+      );
+      throw e;
+    }
+  }
+
+  async createTrailingStopMarketOrder(symbol, side, quantity, activatePrice, callbackRate) {
+    /**
+     * Create a trailing stop market order using Binance Algo Orders API
+     * The stop automatically trails as price moves favorably
+     * 
+     * @param symbol BTCUSDT format
+     * @param side 'BUY' or 'SELL'
+     * @param quantity order quantity
+     * @param activatePrice The activation price
+     * @param callbackRate The trailing distance percentage (0.1-10, where 1 = 1%)
+     */
+    try {
+      const binanceSymbol = symbol.replace('/', '');
+      
+      // Call Binance Algo Orders API directly with TRAILING_STOP_MARKET
+      const response = await this.ccxtClient.fapiPrivatePostAlgoOrder(
+        {
+          symbol: binanceSymbol,
+          side: side.toUpperCase(),
+          positionSide: side === 'BUY' ? 'SHORT' : 'LONG', // BUY closes SHORT, SELL closes LONG
+          type: 'TRAILING_STOP_MARKET',
+          quantity: quantity,
+          activatePrice: activatePrice,
+          callbackRate: callbackRate,
+          workingType: 'CONTRACT_PRICE',
+          reduceOnly: true
+        }
+      );
+
+      this.logger.info(
+        `Trailing Stop Market Order created: ${JSON.stringify({
+          symbol: symbol,
+          side: side,
+          quantity: quantity,
+          activatePrice: activatePrice,
+          callbackRate: callbackRate,
+          algoId: response.algoId
+        })}`
+      );
+
+      return response;
+    } catch (e) {
+      this.logger.error(
+        `Trailing Stop Market Order creation failed: ${JSON.stringify({
+          symbol: symbol,
+          side: side,
+          quantity: quantity,
+          activatePrice: activatePrice,
+          callbackRate: callbackRate,
+          error: e.message
+        })}`
+      );
+      throw e;
+    }
+  }
+
+  async createReduceOnlyLimitOrder(symbol, side, quantity, price, positionSide) {
+    /**
+     * Create a reduce-only limit order that only closes an existing position
+     * This bypasses CCXT wrapper to ensure proper parameter handling
+     * 
+     * @param symbol BTCUSDT format
+     * @param side 'buy' or 'sell'
+     * @param quantity order quantity
+     * @param price limit price
+     * @param positionSide 'LONG' or 'SHORT' - which position to close
+     */
+    try {
+      const binanceSymbol = symbol.replace('/', '');
+      
+      // Format price to match Binance's tick size requirement
+      const formattedPrice = this.formatPriceForBinance(price, symbol);
+      
+      // Call Binance API directly with explicit parameters
+      // Note: We specify positionSide to explicitly target which position to close
+      // This makes reduceOnly parameter unnecessary and can cause "Parameter 'reduceonly' sent when not required" errors
+      const response = await this.ccxtClient.fapiPrivatePostOrder(
+        {
+          symbol: binanceSymbol,
+          side: side.toUpperCase(),
+          type: 'LIMIT',
+          timeInForce: 'GTC',
+          quantity: quantity,
+          price: formattedPrice,
+          positionSide: positionSide
+        }
+      );
+
+      this.logger.info(
+        `Reduce-Only Limit Order created: ${JSON.stringify({
+          symbol: symbol,
+          side: side,
+          quantity: quantity,
+          originalPrice: price,
+          formattedPrice: formattedPrice,
+          positionSide: positionSide,
+          orderId: response.orderId
+        })}`
+      );
+
+      return response;
+    } catch (e) {
+      this.logger.error(
+        `Reduce-Only Limit Order creation failed: ${JSON.stringify({
+          symbol: symbol,
+          side: side,
+          quantity: quantity,
+          price: price,
+          positionSide: positionSide,
+          error: String(e)
+        })}`
+      );
+      throw e;
+    }
   }
 
   getLeverage(symbol) {
@@ -510,7 +724,11 @@ module.exports = class BinanceFutures {
     await this.influxDB.writeFloat('account', 'balance', walletBalance.toNumber());
     await this.influxDB.writeFloat('account', 'riskratio', riskRatio.toNumber());
 
-    this.logger.debug(`Binance Futures: balances updates`);
+    // Throttle logging to once per minute
+    if (!this.lastBalancesUpdateLog || Date.now() - this.lastBalancesUpdateLog > 60000) {
+      this.logger.debug(`Binance Futures: balances updates`);
+      this.lastBalancesUpdateLog = Date.now();
+    }
   }
 
   /**
@@ -519,7 +737,7 @@ module.exports = class BinanceFutures {
   async syncPositionViaRestApi() {
     let response;
     try {
-      response = await this.ccxtClient.fapiPrivateGetPositionRisk();
+      response = await this.ccxtClient.fapiPrivateV2GetPositionRisk();
     } catch (e) {
       this.logger.error(`Binance Futures: error getting positions:${e}`);
       return;
@@ -528,7 +746,11 @@ module.exports = class BinanceFutures {
     const positions = response.filter(position => position.entryPrice && parseFloat(position.entryPrice) > 0);
     this.fullPositionsUpdate(BinanceFutures.createPositions(positions));
 
-    this.logger.debug(`Binance Futures: positions updates: ${positions.length}`);
+    // Throttle logging to once per minute
+    if (!this.lastPositionsUpdateLog || Date.now() - this.lastPositionsUpdateLog > 60000) {
+      this.logger.debug(`Binance Futures: positions updates: ${positions.length}`);
+      this.lastPositionsUpdateLog = Date.now();
+    }
   }
 
   isInverseSymbol(symbol) {
@@ -598,16 +820,36 @@ module.exports = class BinanceFutures {
     const me = this;
     const ws = new WebSocket('wss://fstream.binance.com/stream');
 
+    // Prevent memory leak from accumulated listeners
+    ws.setMaxListeners(30);
+
     ws.onerror = function(event) {
       me.logger.error(
         `Binance Futures: Public stream (${indexConnection}) error: ${JSON.stringify([event.code, event.message])}`
       );
     };
 
+    // Add a listener for unexpected errors to prevent connection from dying silently
+    ws.addEventListener('error', function(event) {
+      me.logger.error(
+        `Binance Futures: Public stream (${indexConnection}) unexpected error event: ${String(event)}`
+      );
+    });
+
     let subscriptionTimeouts = {};
+    let heartbeat = null;
+    const connectionStartTime = Date.now();
+    let lastPingTime = null;
+    let lastMessageTime = null;
 
     ws.onopen = function() {
       me.logger.info(`Binance Futures: Public stream (${indexConnection}) opened.`);
+      lastMessageTime = Date.now();
+
+      // Set max listeners on underlying socket to prevent memory leak warnings
+      if (ws._socket && ws._socket.setMaxListeners) {
+        ws._socket.setMaxListeners(100);
+      }
 
       me.logger.info(
         `Binance Futures: Needed Websocket (${indexConnection}) subscriptions: ${JSON.stringify(subscriptions.length)}`
@@ -631,53 +873,115 @@ module.exports = class BinanceFutures {
           delete subscriptionTimeouts[index];
         }, (index + 1) * 1500);
       });
+
+      // Start heartbeat to keep connection alive (Binance closes idle connections)
+      // Reduced from 30s to 60s to reduce ping frequency
+      heartbeat = setInterval(() => {
+        if (ws && ws.readyState === WebSocket.OPEN) {
+          try {
+            ws.ping();
+            lastPingTime = Date.now();
+          } catch (e) {
+            me.logger.error(`Binance Futures: Public stream (${indexConnection}) ping error: ${String(e)}`);
+          }
+        }
+      }, 1000 * 60); // Send ping every 60 seconds to keep connection alive
     };
 
     ws.onmessage = async function(event) {
-      if (event.type && event.type === 'message') {
-        const body = JSON.parse(event.data);
+      try {
+        lastMessageTime = Date.now();
+        if (event.type && event.type === 'message') {
+          try {
+            const body = JSON.parse(event.data);
+            
+            // Log first message to debug startup issues
+            if (!me.firstMessageLogged) {
+              me.logger.debug(`Binance Futures: Public stream (${indexConnection}) first message received: ${event.data.substring(0, 100)}`);
+              me.firstMessageLogged = true;
+            }
 
-        if (body.stream && body.stream.toLowerCase().includes('@bookticker')) {
-          me.eventEmitter.emit(
-            'ticker',
-            new TickerEvent(
-              me.getName(),
-              body.data.s,
-              (me.tickers[body.data.s] = new Ticker(
-                me.getName(),
-                body.data.s,
-                moment().format('X'),
-                parseFloat(body.data.b),
-                parseFloat(body.data.a)
-              ))
-            )
-          );
-        } else if (body.stream && body.stream.toLowerCase().includes('@markprice')) {
-          await me.positionMarkPriceUpdate(body.data.s, parseFloat(body.data.p));
-        } else if (body.stream && body.stream.toLowerCase().includes('@kline')) {
-          await me.candleImporter.insertThrottledCandles([
-            new ExchangeCandlestick(
-              me.getName(),
-              body.data.s,
-              body.data.k.i,
-              Math.round(body.data.k.t / 1000),
-              parseFloat(body.data.k.o),
-              parseFloat(body.data.k.h),
-              parseFloat(body.data.k.l),
-              parseFloat(body.data.k.c),
-              parseFloat(body.data.k.v)
-            )
-          ]);
+            if (body.stream && body.stream.toLowerCase().includes('@bookticker')) {
+              try {
+                const bid = parseFloat(body.data.b);
+                const ask = parseFloat(body.data.a);
+                
+                if (isNaN(bid) || isNaN(ask)) {
+                  me.logger.warn(`Binance Futures: Public stream (${indexConnection}) invalid ticker data: bid=${body.data.b}, ask=${body.data.a}`);
+                  return;
+                }
+                
+                const ticker = new Ticker(
+                  me.getName(),
+                  body.data.s,
+                  moment().format('X'),
+                  bid,
+                  ask
+                );
+                
+                me.tickers[body.data.s] = ticker;
+                
+                // Safely emit event with error handling for listeners
+                try {
+                  const tickerEvent = new TickerEvent(
+                    me.getName(),
+                    body.data.s,
+                    ticker
+                  );
+                  
+                  // Emit synchronously with comprehensive error catching
+                  me.eventEmitter.emit('ticker', tickerEvent);
+                } catch (e) {
+                  me.logger.error(`Binance Futures: Public stream (${indexConnection}) ticker emit error: ${String(e)} | Stack: ${e.stack}`);
+                }
+              } catch (e) {
+                me.logger.error(`Binance Futures: Public stream (${indexConnection}) ticker processing error: ${String(e)} | Stack: ${e.stack}`);
+              }
+            } else if (body.stream && body.stream.toLowerCase().includes('@markprice')) {
+              try {
+                await me.positionMarkPriceUpdate(body.data.s, parseFloat(body.data.p));
+              } catch (e) {
+                me.logger.error(`Binance Futures: Public stream (${indexConnection}) positionMarkPriceUpdate error: ${String(e)} | Stack: ${e.stack}`);
+              }
+            } else if (body.stream && body.stream.toLowerCase().includes('@kline')) {
+              try {
+                await me.candleImporter.insertThrottledCandles([
+                  new ExchangeCandlestick(
+                    me.getName(),
+                    body.data.s,
+                    body.data.k.i,
+                    Math.round(body.data.k.t / 1000),
+                    parseFloat(body.data.k.o),
+                    parseFloat(body.data.k.h),
+                    parseFloat(body.data.k.l),
+                    parseFloat(body.data.k.c),
+                    parseFloat(body.data.k.v)
+                  )
+                ]);
+              } catch (e) {
+                me.logger.error(`Binance Futures: Public stream (${indexConnection}) candleImporter error: ${String(e)} | Stack: ${e.stack}`);
+              }
+            }
+          } catch (e) {
+            me.logger.error(`Binance Futures: Public stream (${indexConnection}) message parsing error: ${String(e)} | Stack: ${e.stack} | Raw data: ${event.data.substring(0, 200)}`);
+          }
         }
+      } catch (e) {
+        me.logger.error(`Binance Futures: Public stream (${indexConnection}) onmessage fatal error: ${String(e)} | Stack: ${e.stack}`);
       }
     };
 
     ws.onclose = function(event) {
+      const connectionDuration = Date.now() - connectionStartTime;
+      const timeSinceLastMessage = lastMessageTime ? Date.now() - lastMessageTime : 'unknown';
+      const timeSinceLastPing = lastPingTime ? Date.now() - lastPingTime : 'no pings sent';
+      
       me.logger.error(
         `Binance Futures: Public Stream (${indexConnection}) connection closed: ${JSON.stringify([
           event.code,
+          event.reason,
           event.message
-        ])}`
+        ])} | Uptime: ${connectionDuration}ms | Last message: ${timeSinceLastMessage}ms ago | Last ping: ${timeSinceLastPing}`
       );
 
       Object.values(subscriptionTimeouts).forEach(timeout => {
@@ -686,8 +990,20 @@ module.exports = class BinanceFutures {
 
       subscriptionTimeouts = {};
 
+      // Clear heartbeat interval
+      if (heartbeat) {
+        clearInterval(heartbeat);
+        heartbeat = null;
+      }
+
+      // Properly remove message/open/error listeners to prevent memory leak
+      // but keep track of which ones we added so we can remove them
+      ws.removeAllListeners('message');
+      ws.removeAllListeners('open');
+      ws.removeAllListeners('close'); // Remove old close listener to prevent cascade
+
       setTimeout(async () => {
-        me.logger.info(`Binance Futures: Public stream (${indexConnection}) connection reconnect`);
+        me.logger.info(`Binance Futures: Public stream (${indexConnection}) connection reconnect (was alive for ${connectionDuration}ms)`);
         await me.initPublicWebsocketChunk(subscriptions, indexConnection);
       }, 1000 * 30);
     };
@@ -709,12 +1025,21 @@ module.exports = class BinanceFutures {
 
     const me = this;
     const ws = new WebSocket(`wss://fstream.binance.com/ws/${response.listenKey}`);
+    
+    // Prevent memory leak from accumulated listeners
+    ws.setMaxListeners(30);
+    
     ws.onerror = function(e) {
       me.logger.info(`Binance Futures: Connection error: ${String(e)}`);
     };
 
     ws.onopen = function() {
       me.logger.info(`Binance Futures: Opened user stream`);
+      
+      // Set max listeners on underlying socket to prevent memory leak warnings
+      if (ws._socket && ws._socket.setMaxListeners) {
+        ws._socket.setMaxListeners(100);
+      }
     };
 
     ws.onmessage = async function(event) {
@@ -806,6 +1131,11 @@ module.exports = class BinanceFutures {
         if (config.hedge) {
           request.args.positionSide = order.side.toUpperCase();
           request.args.side = order.side === Order.SIDE_SHORT ? 'SELL' : 'BUY';
+        }
+
+        // For stop-market orders, pass stopPrice in params
+        if (order.getType && order.getType() === 'stop_market' && order.price) {
+          request.args.stopPrice = order.price;
         }
 
         if (order.isReduceOnly()) {

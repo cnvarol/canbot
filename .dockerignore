@@ -1,2 +1,9 @@
 node_modules
 npm-debug.log
+bot.db
+bot.db.corrupted
+conf.json
+var
+sessions
+.git
+.gitignore
