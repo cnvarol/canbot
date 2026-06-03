@@ -80,6 +80,18 @@ Docker mounts: `bot.db`, `conf.json`, `var/`, `sessions/` as volumes.
 - ESLint: airbnb + prettier, `no-console: off`, `camelcase: off`, `func-names: off`
 - Node engines: `^8.3.0 || ^10 || ^14 || ^15` (package.json), but Docker uses Node 16
 
+## Auto-sync (GitHub + Server)
+
+After every local `git commit`, changes auto-push to GitHub and pull on the server (`78.189.161.234`), via `.git/hooks/post-commit`.
+
+For manual sync:
+```bash
+git push origin master
+ssh canvarol@78.189.161.234 "cd ~/canbot && git pull origin master"
+```
+
+> **Warning**: The `post-commit` hook runs silently. If sync fails (e.g., server down, merge conflict), the commit still succeeds locally. Check with `git push` manually if unsure.
+
 ## Telegram bot
 
 Commands handled in `tick_listener.js` via Telegraf. Requires `notify.telegram.chat_id` and `token` in `conf.json`.
