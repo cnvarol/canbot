@@ -33,7 +33,7 @@
     "lodash": "^4.17.20",
     "mocha": "^9.1.2",
     "moment": "^2.29.1",
-    "node-fetch": ">=3.0.0",
+    "node-fetch": ">=3.3.2",
     "nodemailer": "^6.6.5",
     "numbro": "^2.3.5",
     "p-queue": "^6.6.2",
