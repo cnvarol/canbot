@@ -34,7 +34,7 @@
     "mocha": "^9.1.2",
     "moment": "^2.29.1",
     "node-fetch": ">=3.0.0",
-    "nodemailer": "^6.6.5",
+    "nodemailer": "^8.0.10",
     "numbro": "^2.3.5",
     "p-queue": "^6.6.2",
     "patch-package": "^6.4.7",
