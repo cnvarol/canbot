@@ -50,7 +50,7 @@ module.exports = class TickListener {
     let context = StrategyContext.create(strategy.options, ticker, true);
     const positions = await this.exchangeManager.getPosition(symbol.exchange, symbol.symbol);
 
-	let count = 0;
+    let count = 0;
     let position = positions;
     if (Array.isArray(positions)) {
       position = positions.find(p => p.symbol === symbol.symbol && p.side === 'long');
@@ -59,7 +59,7 @@ module.exports = class TickListener {
       }
       count = positions.length;
     }
-	strategy.options.positionCount = count;
+    strategy.options.positionCount = count;
 
     if (position) {
       context = StrategyContext.createFromPosition(strategy.options, ticker, position, true);
@@ -209,7 +209,7 @@ Margin Risk Ratio: ${riskRatio.toFixed(2)}%`);
 
     const positionCount = allPositions.length;
 
-    if (symbol.trade.max_position && (positionCount+this.signalCounter) >= symbol.trade.max_position) {
+    if (symbol.trade.max_position && (positionCount + this.signalCounter) >= symbol.trade.max_position) {
       return;
     }
 
@@ -218,16 +218,16 @@ Margin Risk Ratio: ${riskRatio.toFixed(2)}%`);
     let context = StrategyContext.create(strategy.options, ticker);
     const positions = await this.exchangeManager.getPosition(symbol.exchange, symbol.symbol);
 
-	let count = 0;
+    let count = 0;
     let position = positions;
     if (Array.isArray(positions)) {
-      position = positions.find(p => p.symbol === symbol.symbol && p.side === 'long');
+      position = positions.find(p => p.symbol === symbol.symbol && p.side === 'short');
       if (!position) {
-        position = positions.find(p => p.symbol === symbol.symbol && p.side === 'short');
+        position = positions.find(p => p.symbol === symbol.symbol && p.side === 'long');
       }
       count = positions.length;
     }
-	strategy.options.positionCount = count;
+    strategy.options.positionCount = count;
 
     if (position) {
       context = StrategyContext.createFromPosition(strategy.options, ticker, position);
@@ -261,7 +261,7 @@ Margin Risk Ratio: ${riskRatio.toFixed(2)}%`);
       throw new Error(`Invalid signal: ${JSON.stringify(signal, strategy)}`);
     }
 
-    if(['short', 'long'].includes(signal)) {
+    if (['short', 'long'].includes(signal)) {
       if (this.signalCounter === 0) {
         setTimeout(async () => {
           this.signalCounter = 0;
@@ -406,8 +406,7 @@ Margin Risk Ratio: ${riskRatio.toFixed(2)}%`);
           const timeoutWindow = timeout + (Math.floor(Math.random() * 9000) + 5000);
 
           me.logger.info(
-            `"${symbol.exchange}" - "${symbol.symbol}" - "${type.name}" - init strategy "${
-              strategy.strategy
+            `"${symbol.exchange}" - "${symbol.symbol}" - "${type.name}" - init strategy "${strategy.strategy
             }" (${myInterval}) in ${(timeoutWindow / 60 / 1000).toFixed(3)} minutes`
           );
 
@@ -430,8 +429,7 @@ Margin Risk Ratio: ${riskRatio.toFixed(2)}%`);
 
           setTimeout(() => {
             me.logger.info(
-              `"${symbol.exchange}" - "${symbol.symbol}" - "${type.name}" first strategy run "${
-                strategy.strategy
+              `"${symbol.exchange}" - "${symbol.symbol}" - "${type.name}" first strategy run "${strategy.strategy
               }" now every ${(interval / 60 / 1000).toFixed(2)} minutes`
             );
 
