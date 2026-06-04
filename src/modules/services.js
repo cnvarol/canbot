@@ -227,10 +227,10 @@ module.exports = {
     }
 
     const myDb = Sqlite('bot.db');
-    myDb.pragma('journal_mode = WAL');
+    myDb.pragma('journal_mode = DELETE');
 
     myDb.pragma('SYNCHRONOUS = 1;');
-    myDb.pragma('LOCKING_MODE = EXCLUSIVE;');
+    myDb.pragma('LOCKING_MODE = NORMAL;');
 
     // Auto-create tables if they don't exist (needed on fresh database)
     myDb.exec(`
