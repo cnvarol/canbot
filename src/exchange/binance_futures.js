@@ -303,31 +303,26 @@ module.exports = class BinanceFutures {
 
   async createAlgoOrder(symbol, side, quantity, stopPrice) {
     /**
-     * Create a stop-loss order as a limit order at the stop price
-     * When market hits the stop price, this limit order will execute
+     * Create a STOP_MARKET order using Binance Algo Orders API
      */
     try {
       const binanceSymbol = symbol.replace('/', '');
-      
-      // Determine the position side being closed
-      // BUY closes a SHORT position, SELL closes a LONG position
-      const positionSide = side === 'BUY' ? 'SHORT' : 'LONG';
-      
-      // Create a limit order at the stop price that will reduce the position
-      // When market price reaches this level, the order will execute
-      const response = await this.ccxtClient.createOrder(
-        binanceSymbol,
-        'limit',
-        side.toLowerCase(),
-        quantity,
-        stopPrice,
+
+      const response = await this.ccxtClient.fapiPrivatePostAlgoOrder(
         {
-          positionSide: positionSide
+          symbol: binanceSymbol,
+          side: side.toUpperCase(),
+          positionSide: side === 'BUY' ? 'SHORT' : 'LONG',
+          type: 'STOP_MARKET',
+          quantity: quantity,
+          stopPrice: stopPrice,
+          workingType: 'CONTRACT_PRICE',
+          reduceOnly: true
         }
       );
 
       this.logger.info(
-        `Stop-Loss Order created: ${JSON.stringify({
+        `Algo Order STOP_MARKET created: ${JSON.stringify({
           symbol: symbol,
           side: side,
           quantity: quantity,
@@ -339,7 +334,7 @@ module.exports = class BinanceFutures {
       return response;
     } catch (e) {
       this.logger.error(
-        `Stop-Loss Order creation failed: ${JSON.stringify({
+        `Algo Order STOP_MARKET creation failed: ${JSON.stringify({
           symbol: symbol,
           side: side,
           quantity: quantity,

@@ -39,26 +39,26 @@ module.exports = class ExchangeOrderWatchdogListener {
     this.fillQuarantinelist();
   }
 
-  onTick() {
+  async onTick() {
     const { instances } = this;
 
-    this.exchangeManager.all().forEach(async exchange => {
+    for (const exchange of this.exchangeManager.all()) {
       const positions = await exchange.getPositions();
 
       if (positions.length === 0) {
-        return;
+        continue;
       }
 
-      positions.forEach(async position => {
+      for (const position of positions) {
         const pair = instances.symbols.find(
           instance => instance.exchange === exchange.getName() && instance.symbol === position.symbol
         );
 
         if (!pair || !pair.watchdogs) {
-          return;
+          continue;
         }
 
-        if (!this.pairStateManager.isNeutral(exchange.getName(), position.symbol)) {
+        if (!this.pairStateManager.isNeutral(exchange.getName(), position.symbol, position.side)) {
           this.logger.debug(
             `Watchdog: block for action in place: ${JSON.stringify({
               exchange: exchange.getName(),
@@ -66,7 +66,7 @@ module.exports = class ExchangeOrderWatchdogListener {
             })}`
           );
 
-          return;
+          continue;
         }
 
         const stopLoss = pair.watchdogs.find(watchdog => watchdog.name === 'stoploss');
@@ -93,8 +93,8 @@ module.exports = class ExchangeOrderWatchdogListener {
         if (trailingStoplossWatch) {
           await this.trailingStoplossWatch(exchange, position, trailingStoplossWatch);
         }
-      });
-    });
+      }
+    }
   }
 
   async onPositionChanged(positionStateChangeEvent) {
@@ -200,7 +200,7 @@ module.exports = class ExchangeOrderWatchdogListener {
       }
 
       // create
-      let price = stopLossCalculator.calculateForOpenPosition(exchange.getName(), position, stopLoss);
+      let price = await stopLossCalculator.calculateForOpenPosition(exchange.getName(), position, stopLoss);
       if (!price) {
         console.log('Stop loss: auto price skipping');
         return;
@@ -463,7 +463,7 @@ async gridTradingWatchdog(
     // SMART STOP MARKET LOGIC (No Algo API required!)
     const orderChanges = await this.gridTradingCalculator.createGridTradingOrders(position, orders, options);
 
-    orderChanges.forEach(async orderChange => {
+    for (const orderChange of orderChanges) {
       // Handle stop order cancellation
       if (orderChange.type === 'cancel') {
         logger.info(
@@ -484,9 +484,9 @@ async gridTradingWatchdog(
               exchange: exchange.getName(),
               error: e.message
             })}`
-          );
+        );
         }
-        return;
+        continue;
       }
 
       // Handle stop order updates
@@ -508,7 +508,7 @@ async gridTradingWatchdog(
           const price = exchange.calculatePrice(orderChange.price, symbol);
           if (!price) {
             logger.error(`Grid Trading: Invalid stop price: ${orderChange.price}`);
-            return;
+            continue;
           }
 
           // Use Binance Algo Orders API for more reliable conditional orders
@@ -528,24 +528,23 @@ async gridTradingWatchdog(
               })}`
             );
           } else {
-            // Fallback to regular order
-            const stopOrder = new Order(
-              Math.round(new Date().getTime().toString() * Math.random()),
+            // Fallback to STOP_MARKET order
+            const orderSide = position.side === 'short' ? Order.SIDE_LONG : Order.SIDE_SHORT;
+            const orderAmount = position.side === 'short'
+              ? Math.abs(orderChange.amount)
+              : -Math.abs(orderChange.amount);
+            const stopOrder = Order.createStopMarketOrder(
               symbol,
-              position.side === 'short' ? Order.SIDE_SELL : Order.SIDE_BUY,
+              orderSide,
               price,
-              position.side === 'short' ? -Math.abs(orderChange.amount) : Math.abs(orderChange.amount),
-              Order.TYPE_LIMIT,
-              {
-                post_only: true,
-                reduce_only: true
-              }
+              orderAmount,
+              { reduce_only: true }
             );
 
             await this.orderExecutor.executeOrder(exchange.getName(), stopOrder);
 
             logger.info(
-              `Grid Trading: smart stop updated successfully: ${JSON.stringify({
+              `Grid Trading: smart stop updated via STOP_MARKET: ${JSON.stringify({
                 symbol: symbol,
                 price: price,
                 amount: orderChange.amount
@@ -563,7 +562,7 @@ async gridTradingWatchdog(
           );
         }
 
-        return;
+        continue;
       }
 
       // Handle regular order updates (target orders)
@@ -589,7 +588,7 @@ async gridTradingWatchdog(
           );
         }
 
-        return;
+        continue;
       }
 
       // Create new stop order using Binance Algo Orders API
@@ -601,9 +600,9 @@ async gridTradingWatchdog(
               orderChange: orderChange,
               symbol: symbol,
               exchange: exchange.getName()
-            })}`
+            }            )}`
           );
-          return;
+          continue;
         }
 
         try {
@@ -617,7 +616,7 @@ async gridTradingWatchdog(
                 markPrice: position.markPrice
               })}`
             );
-            return;
+            continue;
           }
 
           // Get fresh position data to ensure we have the side property
@@ -637,7 +636,7 @@ async gridTradingWatchdog(
                 originalPosition: { side: position.side, amount: position.amount }
               })}`
             );
-            return;
+            continue;
           }
 
           // Use Binance Algo Orders API for trailing stop market orders
@@ -671,13 +670,13 @@ async gridTradingWatchdog(
           );
         }
 
-        return;
+        continue;
       }
 
       // Handle target orders (for pyramiding)
       if (orderChange.type === 'target') {
         if (qKey in this.quarantine) {
-          return;
+          continue;
         }
 
         const price = exchange.calculatePrice(orderChange.price, symbol);
@@ -689,7 +688,7 @@ async gridTradingWatchdog(
               exchange: exchange.getName()
             })}`
           );
-          return;
+          continue;
         }
 
         const limitOrder = Order.createLimitPostOnlyOrder(
@@ -709,9 +708,9 @@ async gridTradingWatchdog(
           })}`
         );
       }
-    });
+    }
   }
-  
+
   async riskRewardRatioWatchdog(exchange, position, riskRewardRatioOptions) {
     const { logger } = this;
 
@@ -906,7 +905,7 @@ async gridTradingWatchdog(
           return undefined;
         }
 
-        const exchangeSymbol = position.symbol.substring(0, 3).toUpperCase();
+        const exchangeSymbol = 'USDT';
         let trailingOffset = (activationPrice * parseFloat(config.stop_percent)) / 100;
         trailingOffset = exchange.calculatePrice(trailingOffset, exchangeSymbol);
         const order = Order.createTrailingStopLossOrder(position.symbol, trailingOffset, orderChange.amount);
