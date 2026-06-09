@@ -305,21 +305,22 @@ module.exports = class BinanceFutures {
 
   async createAlgoOrder(symbol, side, quantity, stopPrice) {
     /**
-     * Create a STOP_MARKET order using Binance Algo Orders API
+     * Create a STOP_MARKET order using ccxt's createOrder
      */
     try {
       const binanceSymbol = symbol.replace('/', '');
 
-      const response = await this.ccxtClient.fapiPrivatePostAlgoOrder(
+      const response = await this.ccxtClient.createOrder(
+        binanceSymbol,
+        'STOP_MARKET',
+        side.toLowerCase(),
+        quantity,
+        undefined,
         {
-          symbol: binanceSymbol,
-          side: side.toUpperCase(),
-          positionSide: side === 'BUY' ? 'SHORT' : 'LONG',
-          type: 'STOP_MARKET',
-          quantity: quantity,
           stopPrice: stopPrice,
-          workingType: 'CONTRACT_PRICE',
-          reduceOnly: true
+          positionSide: side === 'BUY' ? 'SHORT' : 'LONG',
+          reduceOnly: true,
+          workingType: 'CONTRACT_PRICE'
         }
       );
 
@@ -349,29 +350,20 @@ module.exports = class BinanceFutures {
   }
 
   async createTrailingStopMarketOrder(symbol, side, quantity, activatePrice, callbackRate) {
-    /**
-     * Create a trailing stop market order using Binance Algo Orders API
-     * The stop automatically trails as price moves favorably
-     * 
-     * @param symbol BTCUSDT format
-     * @param side 'BUY' or 'SELL'
-     * @param quantity order quantity
-     * @param activatePrice The activation price
-     * @param callbackRate The trailing distance percentage (0.1-10, where 1 = 1%)
-     */
     try {
       const binanceSymbol = symbol.replace('/', '');
-      
-      // Call Binance Algo Orders API directly with TRAILING_STOP_MARKET
-      const response = await this.ccxtClient.fapiPrivatePostAlgoOrder(
+
+      // Use ccxt createOrder with TRAILING_STOP_MARKET type
+      const response = await this.ccxtClient.createOrder(
+        binanceSymbol,
+        'TRAILING_STOP_MARKET',
+        side.toLowerCase(),
+        quantity,
+        undefined,
         {
-          symbol: binanceSymbol,
-          side: side.toUpperCase(),
-          positionSide: side === 'BUY' ? 'SHORT' : 'LONG', // BUY closes SHORT, SELL closes LONG
-          type: 'TRAILING_STOP_MARKET',
-          quantity: quantity,
           activatePrice: activatePrice,
           callbackRate: callbackRate,
+          positionSide: side === 'BUY' ? 'SHORT' : 'LONG',
           workingType: 'CONTRACT_PRICE',
           reduceOnly: true
         }
@@ -384,7 +376,7 @@ module.exports = class BinanceFutures {
           quantity: quantity,
           activatePrice: activatePrice,
           callbackRate: callbackRate,
-          algoId: response.algoId
+          response: response
         })}`
       );
 
