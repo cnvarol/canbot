@@ -18,7 +18,8 @@ module.exports = class Trade {
     logsRepository,
     tickerLogRepository,
     exchangePositionWatcher,
-    pairStateManager
+    pairStateManager,
+    database
   ) {
     this.eventEmitter = eventEmitter;
     this.instances = instances;
@@ -34,6 +35,7 @@ module.exports = class Trade {
     this.tickerLogRepository = tickerLogRepository;
     this.exchangePositionWatcher = exchangePositionWatcher;
     this.pairStateManager = pairStateManager;
+    this.database = database;
   }
 
   start() {
@@ -42,19 +44,31 @@ module.exports = class Trade {
     const instanceId = crypto.randomBytes(4).toString('hex');
 
     process.on('SIGINT', async () => {
-      setTimeout(() => {
-        process.exit(0);
-      }, 2000); // may 7500 if pairStateManager active
-
       console.log('Stopping...');
 
-      // await this.pairStateManager.onTerminate();
+      try {
+        await this.pairStateManager.onTerminate();
+      } catch (e) {
+        console.error('Error canceling orders:', e.message);
+      }
+
+      try {
+        this.database.pragma('wal_checkpoint(RESTART)');
+        this.database.close();
+      } catch (e) {
+        console.error('Error closing database:', e.message);
+      }
 
       const message = `Stop (${'SIGINT'}): ${instanceId} - ${os.hostname()} - ${os.platform()} - ${moment().format()}`;
 
       this.notify.send(message);
-      // process.exit();
+
+      setTimeout(() => {
+        process.exit(0);
+      }, 2000);
     });
+
+    this.startDatabaseMaintenance();
 
     // TODO (semihalev): open this comment later
     process.on('uncaughtException', (err, origin) => {
@@ -150,5 +164,25 @@ module.exports = class Trade {
     eventEmitter.on('quarantine_delete', async event => {
       await me.exchangeOrderWatchdogListener.onQuarantineDelete(event);
     });
+  }
+
+  startDatabaseMaintenance() {
+    const runIntegrityCheck = () => {
+      try {
+        const result = this.database.pragma('integrity_check');
+        if (result && result[0] && result[0].integrity_check !== 'ok') {
+          this.logger.error(`DB integrity check failed: ${JSON.stringify(result)}`);
+          this.notify.send(`DB integrity check FAILED: ${JSON.stringify(result)}`);
+        }
+      } catch (e) {
+        this.logger.error(`DB integrity check error: ${e.message}`);
+      }
+    };
+
+    runIntegrityCheck();
+
+    setInterval(() => {
+      runIntegrityCheck();
+    }, 21600000);
   }
 };

@@ -411,19 +411,18 @@ Margin Risk Ratio: ${riskRatio.toFixed(2)}%`);
           );
 
           const strategyIntervalCallback = async () => {
-            /*
-            // logging can be high traffic on alot of pairs
-            me.logger.debug(
-              `"${symbol.exchange}" - "${symbol.symbol}" - "${type.name}" strategy running "${strategy.strategy}"`
-            );
-            */
-
-            if (type.name === 'watch') {
-              await me.visitStrategy(strategy, symbol);
-            } else if (type.name === 'trade') {
-              await me.visitTradeStrategy(strategy, symbol);
-            } else {
-              throw new Error(`Invalid strategy type${type.name}`);
+            try {
+              if (type.name === 'watch') {
+                await me.visitStrategy(strategy, symbol);
+              } else if (type.name === 'trade') {
+                await me.visitTradeStrategy(strategy, symbol);
+              } else {
+                throw new Error(`Invalid strategy type${type.name}`);
+              }
+            } catch (e) {
+              me.logger.error(
+                `Strategy error: ${strategy.strategy} on ${symbol.exchange}:${symbol.symbol} - ${e.message}`
+              );
             }
           };
 

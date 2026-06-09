@@ -227,7 +227,8 @@ module.exports = {
     }
 
     const myDb = Sqlite('bot.db');
-    myDb.pragma('journal_mode = DELETE');
+    myDb.pragma('journal_mode = WAL');
+    myDb.pragma('busy_timeout = 5000');
 
     myDb.pragma('SYNCHRONOUS = 1;');
     myDb.pragma('LOCKING_MODE = NORMAL;');
@@ -430,6 +431,14 @@ module.exports = {
   getInfluxRepository: function() {
     if (influxRepository) {
       return influxRepository;
+    }
+
+    if (!config.influx || !config.influx.host) {
+      const noop = {
+        writeFloat: async () => {},
+        queryAggr: async () => [],
+      };
+      return (influxRepository = noop);
     }
 
     const { org, host, token, bucket } = config.influx;
@@ -863,7 +872,8 @@ module.exports = {
       this.getLogsRepository(),
       this.getTickerLogRepository(),
       this.getExchangePositionWatcher(),
-      this.getPairStateManager()
+      this.getPairStateManager(),
+      this.getDatabase()
     );
   },
 
@@ -878,7 +888,7 @@ module.exports = {
 
     return mail.createTransport(
       `smtps://${config.notify.mail.username}:${config.notify.mail.password}@${config.notify.mail.server}:${config
-        .notify.mail.password || 465}`,
+        .notify.mail.port || 465}`,
       {
         from: config.notify.mail.username
       }
