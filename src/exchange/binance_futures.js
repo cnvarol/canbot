@@ -350,19 +350,22 @@ module.exports = class BinanceFutures {
   }
 
   async createTrailingStopMarketOrder(symbol, side, quantity, activatePrice, callbackRate) {
+    /**
+     * Algo API (TRAILING_STOP_MARKET) not available on this account/endpoint.
+     * Fallback: create a regular STOP_MARKET order at activation price.
+     * The watchdog updates the stop price on each tick (manual trailing stop).
+     */
     try {
       const binanceSymbol = symbol.replace('/', '');
 
-      // Use ccxt createOrder with TRAILING_STOP_MARKET type
       const response = await this.ccxtClient.createOrder(
         binanceSymbol,
-        'TRAILING_STOP_MARKET',
+        'STOP_MARKET',
         side.toLowerCase(),
         quantity,
         undefined,
         {
-          activatePrice: activatePrice,
-          callbackRate: callbackRate,
+          stopPrice: activatePrice,
           positionSide: side === 'BUY' ? 'SHORT' : 'LONG',
           workingType: 'CONTRACT_PRICE',
           reduceOnly: true
@@ -370,12 +373,12 @@ module.exports = class BinanceFutures {
       );
 
       this.logger.info(
-        `Trailing Stop Market Order created: ${JSON.stringify({
+        `Trailing Stop (STOP_MARKET fallback) created: ${JSON.stringify({
           symbol: symbol,
           side: side,
           quantity: quantity,
-          activatePrice: activatePrice,
-          callbackRate: callbackRate,
+          stopPrice: activatePrice,
+          wantedCallbackRate: callbackRate,
           response: response
         })}`
       );
@@ -383,7 +386,7 @@ module.exports = class BinanceFutures {
       return response;
     } catch (e) {
       this.logger.error(
-        `Trailing Stop Market Order creation failed: ${JSON.stringify({
+        `Trailing Stop creation failed: ${JSON.stringify({
           symbol: symbol,
           side: side,
           quantity: quantity,

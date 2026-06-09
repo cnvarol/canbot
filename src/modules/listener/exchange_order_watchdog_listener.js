@@ -656,7 +656,7 @@ async gridTradingWatchdog(
               side: side,
               amount: quantity,
               profit: position.profit,
-              note: 'Binance Algo API - TRAILING_STOP_MARKET'
+              note: 'STOP_MARKET fallback (Algo API unavailable)'
             })}`
           );
         } catch (algoOrderError) {
