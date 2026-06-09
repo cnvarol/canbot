@@ -1,6 +1,20 @@
 version: '3.7'
 
 services:
+  influxdb:
+    container_name: canbot-influxdb
+    image: influxdb:2.7
+    volumes:
+      - ./influxdb-data:/var/lib/influxdb2
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=admin
+      - DOCKER_INFLUXDB_INIT_PASSWORD=C@nbot2024!Influx
+      - DOCKER_INFLUXDB_INIT_ORG=cbot.local
+      - DOCKER_INFLUXDB_INIT_BUCKET=cbot
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=4Bf9yKGFs7qgNzxRHVZ7zCK69y-VQhIBqh2nMLXiXMk9u6LxtErLIQd1kADy5cA3qJ5hsW6Q_LtOYKHqILD2Wg==
+    restart: unless-stopped
+
   canbot:
     container_name: canbot
     build:
@@ -13,4 +27,6 @@ services:
       - ./sessions:/usr/src/app/sessions
     ports:
       - "8068:8068"
+    depends_on:
+      - influxdb
     restart: unless-stopped
