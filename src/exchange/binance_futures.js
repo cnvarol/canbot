@@ -96,14 +96,16 @@ module.exports = class BinanceFutures {
         await ccxtClient.fetchMarkets();
 
         // Filter symbols to only those ccxt recognizes (avoids BadSymbol errors)
-        const supportedMarkets = new Set(Object.keys(ccxtClient.markets));
-        const before = me.symbols.length;
-        me.symbols = me.symbols.filter(s => {
-          const fmt = s.symbol.replace('USDT', '/USDT');
-          return supportedMarkets.has(fmt);
-        });
-        if (me.symbols.length < before) {
-          me.logger.info(`Binance Futures: filtered ${before - me.symbols.length} unsupported symbols (ccxt market mismatch)`);
+        if (ccxtClient.markets) {
+          const supportedMarkets = new Set(Object.keys(ccxtClient.markets));
+          const before = me.symbols.length;
+          me.symbols = me.symbols.filter(s => {
+            const fmt = s.symbol.replace('USDT', '/USDT');
+            return supportedMarkets.has(fmt);
+          });
+          if (me.symbols.length < before) {
+            me.logger.info(`Binance Futures: filtered ${before - me.symbols.length} unsupported symbols (ccxt market mismatch)`);
+          }
         }
 
         me.throttler.addTask('binance_futures_sync_orders', async () => {
