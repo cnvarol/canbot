@@ -180,6 +180,7 @@ module.exports = class GridTradingCalculator {
       }
     }
 
+    console.log('Calc result:', position.symbol, position.side, JSON.stringify({shouldCreateStop: result.shouldCreateStop, stopPrice: result.stopPrice, targetPrice: result.targetPrice, peakPrice: peakPrice, trailingRate: trailingRate, peakProfit: position.side === 'long' ? ((peakPrice - Math.abs(entryPrice)) / Math.abs(entryPrice) * 100) : ((Math.abs(entryPrice) - peakPrice) / Math.abs(entryPrice) * 100)}));
     return result;
   }
 
