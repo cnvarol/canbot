@@ -319,7 +319,6 @@ module.exports = class BinanceFutures {
         {
           stopPrice: stopPrice,
           positionSide: side === 'BUY' ? 'SHORT' : 'LONG',
-          reduceOnly: true,
           workingType: 'CONTRACT_PRICE'
         }
       );
@@ -367,8 +366,7 @@ module.exports = class BinanceFutures {
         {
           stopPrice: activatePrice,
           positionSide: side === 'BUY' ? 'SHORT' : 'LONG',
-          workingType: 'CONTRACT_PRICE',
-          reduceOnly: true
+          workingType: 'CONTRACT_PRICE'
         }
       );
 

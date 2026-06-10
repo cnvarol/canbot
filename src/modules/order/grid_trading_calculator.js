@@ -97,7 +97,6 @@ module.exports = class GridTradingCalculator {
 
     const posKey = `${position.symbol}_${position.side}`;
     const currentPrice = position.markPrice || (position.raw && position.raw.markPrice) || entryPrice;
-    console.log('Calc peak:', position.symbol, position.side, 'entry:', entryPrice, 'current:', currentPrice, 'markPrice:', position.markPrice, 'rawMark:', position.raw && position.raw.markPrice, 'profit:', position.profit);
     // Track peak price for trailing stop
     // On first tick after restart, initialize from entry price to preserve accumulated profit
     if (!this.peakPrices[posKey]) {
@@ -180,7 +179,6 @@ module.exports = class GridTradingCalculator {
       }
     }
 
-    console.log('Calc result:', position.symbol, position.side, JSON.stringify({shouldCreateStop: result.shouldCreateStop, stopPrice: result.stopPrice, targetPrice: result.targetPrice, peakPrice: peakPrice, trailingRate: trailingRate, peakProfit: position.side === 'long' ? ((peakPrice - Math.abs(entryPrice)) / Math.abs(entryPrice) * 100) : ((Math.abs(entryPrice) - peakPrice) / Math.abs(entryPrice) * 100)}));
     return result;
   }
 
@@ -213,8 +211,6 @@ module.exports = class GridTradingCalculator {
           order.type === ExchangeOrder.TYPE_STOP_MARKET
       );
     }
-
-    console.log('Sync stopOrders:', position.symbol, position.side, 'count:', stopOrders.length, 'shouldCreateStop:', result.shouldCreateStop, 'stopPrice:', result.stopPrice);
 
     if (stopOrders.length === 0) {
       // No stop exists - create one if conditions met
