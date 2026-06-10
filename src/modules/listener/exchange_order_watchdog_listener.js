@@ -45,8 +45,6 @@ module.exports = class ExchangeOrderWatchdogListener {
     for (const exchange of this.exchangeManager.all()) {
       const positions = await exchange.getPositions();
 
-      console.log(`Watchdog: tick for ${exchange.getName()} - ${positions.length} positions`);
-
       if (positions.length === 0) {
         continue;
       }
@@ -252,13 +250,6 @@ async gridTradingWatchdog(
     }
   ) {
     const { logger } = this;
-
-    if (
-      this.throttler.inTasks('binance_futures_sync_orders') ||
-      this.throttler.inTasks('binance_futures_sync_positions')
-    ) {
-      return;
-    }
 
     const symbol = position.getSymbol();
     const orders = await exchange.getOrdersForSymbol(symbol);
@@ -711,13 +702,6 @@ async gridTradingWatchdog(
 
   async riskRewardRatioWatchdog(exchange, position, riskRewardRatioOptions) {
     const { logger } = this;
-
-    if (
-      this.throttler.inTasks('binance_futures_sync_orders') ||
-      this.throttler.inTasks('binance_futures_sync_positions')
-    ) {
-      return;
-    }
 
     const symbol = position.getSymbol();
     const orders = await exchange.getOrdersForSymbol(symbol);
