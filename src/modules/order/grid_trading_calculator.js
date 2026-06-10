@@ -98,9 +98,13 @@ module.exports = class GridTradingCalculator {
     const posKey = `${position.symbol}_${position.side}`;
     const currentPrice = position.markPrice || entryPrice;
     // Track peak price for trailing stop
-    // Peak is the best price seen since position opened
+    // On first tick after restart, initialize from entry price to preserve accumulated profit
     if (!this.peakPrices[posKey]) {
-      this.peakPrices[posKey] = currentPrice;
+      if (position.side === 'long') {
+        this.peakPrices[posKey] = Math.max(Math.abs(entryPrice), currentPrice);
+      } else {
+        this.peakPrices[posKey] = Math.min(Math.abs(entryPrice), currentPrice);
+      }
     } else {
       // Update peak only if price moved in favorable direction
       if (position.side === 'long' && currentPrice > this.peakPrices[posKey]) {
