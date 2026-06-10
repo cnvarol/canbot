@@ -628,26 +628,57 @@ async gridTradingWatchdog(
             continue;
           }
 
-          // Use Binance Algo Orders API for trailing stop market orders
-          const side = positionToClose.side === 'long' ? 'SELL' : 'BUY';
+          // Store trailing stop price in-memory and close via market if price crosses it
+          const stopSide = positionToClose.side === 'long' ? 'SELL' : 'BUY';
           const quantity = Math.abs(orderChange.amount);
           const trailingRate = orderChange.trailingRate || 2;
-          
-          await exchange.createTrailingStopMarketOrder(symbol, side, quantity, price, trailingRate);
 
-          logger.info(
-            `Grid Trading: SMART STOP triggered - Trailing Stop Market Order created: ${JSON.stringify({
-              symbol: symbol,
-              exchange: exchange.getName(),
-              activatePrice: price,
-              callbackRate: trailingRate,
-              positionSide: positionToClose.side,
-              side: side,
-              amount: quantity,
-              profit: position.profit,
-              note: 'STOP_MARKET fallback (Algo API unavailable)'
-            })}`
-          );
+          // Check if current market price has crossed the stop level
+          const markPrice = positionToClose.markPrice || (positionToClose.raw && positionToClose.raw.markPrice);
+          let stopTriggered = false;
+
+          if (markPrice) {
+            if (positionToClose.side === 'long' && markPrice <= price) {
+              stopTriggered = true;
+            } else if (positionToClose.side === 'short' && markPrice >= price) {
+              stopTriggered = true;
+            }
+          }
+
+          if (stopTriggered) {
+            logger.info(
+              `Grid Trading: Trailing stop triggered - closing position: ${JSON.stringify({
+                symbol: symbol,
+                side: stopSide,
+                stopPrice: price,
+                markPrice: markPrice,
+                profit: position.profit
+              })}`
+            );
+
+            await this.pairStateManager.update(
+              exchange.getName(),
+              symbol,
+              'close',
+              positionToClose.side,
+              { market: true }
+            );
+          } else {
+            logger.info(
+              `Grid Trading: Trailing stop set (in-memory): ${JSON.stringify({
+                symbol: symbol,
+                side: stopSide,
+                stopPrice: price,
+                markPrice: markPrice,
+                profit: position.profit,
+                trailingRate: trailingRate,
+                note: 'Algo API unavailable, monitoring in watchdog'
+              })}`
+            );
+
+            // Store stop price in gridTradingCalculator so syncGridTradingOrders knows about it
+            this.gridTradingCalculator.setTrailingStop(symbol, positionToClose.side, price);
+          }
         } catch (algoOrderError) {
           logger.error(
             `Grid Trading: SMART STOP order failed: ${JSON.stringify({

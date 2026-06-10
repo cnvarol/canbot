@@ -12,6 +12,8 @@ module.exports = class GridTradingCalculator {
     this.peakPrices = {};
     // Track when trailing was activated
     this.trailingActivated = {};
+    // Track in-memory trailing stop prices (for when Algo API is unavailable)
+    this.trailingStopPrices = {};
   }
 
   checkDuplicateStopOrders(position, orders) {
@@ -360,6 +362,17 @@ module.exports = class GridTradingCalculator {
     const posKey = `${symbol}_${side}`;
     delete this.peakPrices[posKey];
     delete this.trailingActivated[posKey];
+    delete this.trailingStopPrices[posKey];
+  }
+
+  setTrailingStop(symbol, side, stopPrice) {
+    const posKey = `${symbol}_${side}`;
+    this.trailingStopPrices[posKey] = stopPrice;
+  }
+
+  getTrailingStop(symbol, side) {
+    const posKey = `${symbol}_${side}`;
+    return this.trailingStopPrices[posKey];
   }
 
   async rsiCalculate(exchange, symbol, period) {
