@@ -45,6 +45,8 @@ module.exports = class ExchangeOrderWatchdogListener {
     for (const exchange of this.exchangeManager.all()) {
       const positions = await exchange.getPositions();
 
+      console.log(`Watchdog: tick for ${exchange.getName()} - ${positions.length} positions`);
+
       if (positions.length === 0) {
         continue;
       }
