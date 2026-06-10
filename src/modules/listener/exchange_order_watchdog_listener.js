@@ -453,6 +453,7 @@ async gridTradingWatchdog(
 
     // SMART STOP MARKET LOGIC (No Algo API required!)
     const orderChanges = await this.gridTradingCalculator.createGridTradingOrders(position, orders, options);
+    console.log('Grid orderChanges for', symbol, JSON.stringify({count: orderChanges.length, types: orderChanges.map(o => o.type)}));
 
     for (const orderChange of orderChanges) {
       // Handle stop order cancellation
