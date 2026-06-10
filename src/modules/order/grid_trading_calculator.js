@@ -214,6 +214,8 @@ module.exports = class GridTradingCalculator {
       );
     }
 
+    console.log('Sync stopOrders:', position.symbol, position.side, 'count:', stopOrders.length, 'shouldCreateStop:', result.shouldCreateStop, 'stopPrice:', result.stopPrice);
+
     if (stopOrders.length === 0) {
       // No stop exists - create one if conditions met
       if (result.shouldCreateStop && result.stopPrice) {
