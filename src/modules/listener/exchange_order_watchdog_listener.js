@@ -251,6 +251,8 @@ async gridTradingWatchdog(
   ) {
     const { logger } = this;
 
+    console.log('Grid Watchdog: processing', position.symbol, 'side:', position.side, 'profit:', position.profit);
+
     const symbol = position.getSymbol();
     const orders = await exchange.getOrdersForSymbol(symbol);
     const currentPositions = await exchange.getPositionForSymbol(symbol);
